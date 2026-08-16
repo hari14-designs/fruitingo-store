@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Nutritional Facts & Usage Guide | Nendran Banana Powder</title>
+    <meta name="description" content="View the scientific nutritional profile of Fruitingo Nendran Banana Powder. Learn about its high potassium, vitamin B6, fiber content and preparation guides.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .product-details-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        .main-showcase {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+            margin-bottom: 5rem;
+        }
+        .product-gallery {
+            background-color: var(--sand);
+            border-radius: 32px;
+            padding: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            box-shadow: var(--shadow-sm);
+        }
+        .product-gallery img {
+            max-width: 90%;
+            height: auto;
+            border-radius: 20px;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.08));
+        }
+        .purchase-card {
+            background-color: var(--white);
+            padding: 2.5rem;
+            border-radius: 28px;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            box-shadow: var(--shadow-md);
+        }
+        .purchase-card h1 {
+            font-size: 2.25rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .purchase-card .tagline {
+            color: var(--gray-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+        .pack-selector-label {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: block;
+            font-size: 0.95rem;
+            color: var(--chocolate);
+        }
+        .pack-option-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .pack-item {
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-fast);
+        }
+        .pack-item:hover {
+            border-color: var(--secondary);
+            background-color: rgba(22, 163, 74, 0.02);
+        }
+        .pack-item.active {
+            border-color: var(--secondary);
+            background-color: rgba(22, 163, 74, 0.05);
+        }
+        .pack-info h4 {
+            font-size: 1.05rem;
+            color: var(--chocolate);
+            font-weight: 700;
+        }
+        .pack-info p {
+            font-size: 0.85rem;
+            color: var(--gray-muted);
+        }
+        .pack-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--chocolate);
+        }
+        .nutrition-header-text {
+            margin-bottom: 2rem;
+        }
+        .prep-step-card {
+            display: flex;
+            gap: 1.5rem;
+            background-color: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(69, 26, 3, 0.03);
+            box-shadow: var(--shadow-sm);
+        }
+        .prep-step-num {
+            width: 42px;
+            height: 42px;
+            background-color: var(--primary);
+            color: var(--chocolate);
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .prep-step-body h4 {
+            font-size: 1.1rem;
+            color: var(--chocolate);
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+        .prep-step-body p {
+            color: var(--gray-muted);
+            font-size: 0.95rem;
+        }
+        @media (max-width: 992px) {
+            .main-showcase {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html" class="active">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="checkout.html">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="product-details-container">
+        <!-- Main Product Page Showcase -->
+        <div class="main-showcase">
+            <div class="product-gallery">
+                <img src="assets/fruitingo_product.jpg" alt="Fruitingo Nendran Banana Powder Detail view">
+            </div>
+            
+            <div class="purchase-card">
+                <h1>Fruitingo Nendran Powder</h1>
+                <div class="product-rating" style="margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span>4.9 (294 Total Ratings)</span>
+                </div>
+                <p class="tagline">100% natural raw banana supplement sourced directly from sustainable South Indian orchards.</p>
+                
+                <!-- Package Selector -->
+                <span class="pack-selector-label"><i class="fa-solid fa-box-open"></i> Select Weight & Quantity</span>
+                <div class="pack-option-grid" id="product-option-grid">
+                    <!-- Populated dynamically via javascript -->
+                </div>
+
+                <!-- Add to Cart & Buy Buttons -->
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button class="btn btn-primary" id="btn-add-main" style="flex-grow: 1; padding: 1.1rem; border-radius: 14px;">
+                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    </button>
+                    <a href="checkout.html" class="btn btn-secondary" id="btn-buy-instant" style="flex-grow: 1; padding: 1.1rem; border-radius: 14px; text-align: center;">
+                        Buy Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin-bottom: 5rem;">
+
+        <!-- Nutrition & Usage Section -->
+        <div class="details-grid">
+            <div>
+                <div class="nutrition-header-text">
+                    <h2 style="font-size: 2.25rem; color: var(--chocolate); font-weight: 800; margin-bottom: 1rem;">Nutritional Fact Sheet</h2>
+                    <p style="color: var(--gray-muted); font-size: 1.05rem;">Fruitingo is processed below 45°C to preserve natural vitamins, potassium, and active starch structures. Check the high nutritional values below.</p>
+                </div>
+                
+                <!-- Nutrition Table Mock -->
+                <div class="nutrition-card">
+                    <h3>Nutrition Facts</h3>
+                    <div class="nutrition-serving">Serving Size: 1 scoop (approx 10g) <br>Servings Per Container: 25</div>
+                    <div class="nutrition-calories">
+                        <span>Calories</span>
+                        <span>36 kcal</span>
+                    </div>
+                    
+                    <div class="nutrition-row bold">
+                        <span>Amount Per Serving</span>
+                        <span>% Daily Value*</span>
+                    </div>
+                    <div class="nutrition-row bold">
+                        <span>Total Fat 0g</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="nutrition-row indent">
+                        <span>Saturated Fat 0g</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="nutrition-row indent">
+                        <span>Trans Fat 0g</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="nutrition-row bold">
+                        <span>Cholesterol 0mg</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="nutrition-row bold">
+                        <span>Sodium 2mg</span>
+                        <span>0.1%</span>
+                    </div>
+                    <div class="nutrition-row bold">
+                        <span>Total Carbohydrates 8.5g</span>
+                        <span>3.1%</span>
+                    </div>
+                    <div class="nutrition-row indent">
+                        <span>Dietary Fiber 1.2g</span>
+                        <span>4.8%</span>
+                    </div>
+                    <div class="nutrition-row indent">
+                        <span>Total Sugars 0.4g</span>
+                        <span>-</span>
+                    </div>
+                    <div class="nutrition-row bold">
+                        <span>Protein 0.6g</span>
+                        <span>1.2%</span>
+                    </div>
+                    <div class="nutrition-row bold no-border">
+                        <span>Potassium 120mg</span>
+                        <span>3.4%</span>
+                    </div>
+                    <div class="nutrition-row no-border">
+                        <span>Calcium 15mg</span>
+                        <span>1.5%</span>
+                    </div>
+                    <div class="nutrition-row no-border">
+                        <span>Vitamin B6 0.12mg</span>
+                        <span>6.0%</span>
+                    </div>
+                    
+                    <div class="nutrition-footer">
+                        * Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preparation & Cook Guide -->
+            <div>
+                <h2 style="font-size: 2.25rem; color: var(--chocolate); font-weight: 800; margin-bottom: 2rem;"><i class="fa-solid fa-kitchen-set"></i> Preparation Guide</h2>
+                
+                <div class="prep-step-card">
+                    <div class="prep-step-num">1</div>
+                    <div class="prep-step-body">
+                        <h4>Measure Ingredients</h4>
+                        <p>Take 2 scoops (approx 20g) of Fruitingo Nendran Banana powder in a clean cooking pan. Add 1 cup (200ml) of milk or water.</p>
+                    </div>
+                </div>
+
+                <div class="prep-step-card">
+                    <div class="prep-step-num">2</div>
+                    <div class="prep-step-body">
+                        <h4>Whisk Out Lumps</h4>
+                        <p>Whisk the mixture thoroughly before heating. Ensure there are absolutely no dry lumps remaining in the pan.</p>
+                    </div>
+                </div>
+
+                <div class="prep-step-card">
+                    <div class="prep-step-num">3</div>
+                    <div class="prep-step-body">
+                        <h4>Cook on Low Flame</h4>
+                        <p>Place the pan on low-to-medium heat. Stir continuously for 5 to 8 minutes. The mixture will begin to glaze and thicken.</p>
+                    </div>
+                </div>
+
+                <div class="prep-step-card">
+                    <div class="prep-step-num">4</div>
+                    <div class="prep-step-body">
+                        <h4>Sweeten & Serve</h4>
+                        <p>Turn off heat. Add organic jaggery powder, dates syrup, or a teaspoon of ghee for flavor. Serve warm.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>🍌 Fruitingo.</h3>
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Nutritional Details</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-backdrop"></div>
+    <div class="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Basket</h3>
+            <button class="cart-close-btn" aria-label="Close Basket">&times;</button>
+        </div>
+        <div class="cart-body">
+            <!-- Populated dynamically via main.js -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-value">₹0</span>
+            </div>
+            <a href="checkout.html" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1rem;">
+                <i class="fa-solid fa-basket-shopping"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        // Specific logic to switch sizes dynamically
+        let selectedProductId = '';
+
+        function renderProductOptions() {
+            const grid = document.getElementById('product-option-grid');
+            if (!grid) return;
+
+            if (products.length === 0) {
+                grid.innerHTML = '<p style="color: var(--gray-muted);">No product packages available.</p>';
+                return;
+            }
+
+            let html = '';
+            products.forEach((p, idx) => {
+                const activeClass = idx === 0 ? 'active' : '';
+                if (idx === 0) {
+                    selectedProductId = p.id;
+                }
+                html += `
+                    <div class="pack-item ${activeClass}" data-id="${p.id}">
+                        <div class="pack-info">
+                            <h4>${p.name}</h4>
+                            <p>${p.desc.substring(0, 75)}...</p>
+                        </div>
+                        <div class="pack-price">₹${p.price}</div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+
+            // Re-bind click event handlers
+            const packItems = document.querySelectorAll('.pack-item');
+            packItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    packItems.forEach(pi => pi.classList.remove('active'));
+                    item.classList.add('active');
+                    selectedProductId = item.getAttribute('data-id');
+                });
+            });
+        }
+
+        // Initialize rendering
+        renderProductOptions();
+
+        const addToCartBtn = document.getElementById('btn-add-main');
+        const buyInstantBtn = document.getElementById('btn-buy-instant');
+
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', () => {
+                if (selectedProductId) {
+                    addToCart(selectedProductId, 1, true);
+                } else {
+                    alert('Please select a product package first.');
+                }
+            });
+        }
+
+        if (buyInstantBtn) {
+            buyInstantBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (selectedProductId) {
+                    addToCart(selectedProductId, 1, false);
+                    window.location.href = 'checkout.html';
+                } else {
+                    alert('Please select a product package first.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Secure Checkout | Order Nendran Banana Powder</title>
+    <meta name="description" content="Securely complete your Fruitingo purchase. Organic banana powder delivered straight to your home.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            min-height: calc(100vh - 400px);
+        }
+        .empty-checkout-message {
+            text-align: center;
+            padding: 5rem 2rem;
+            background-color: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .empty-checkout-message i {
+            font-size: 4rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        .coupon-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .summary-items-list {
+            margin: 1.5rem 0;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+        .summary-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-light);
+            font-size: 0.9rem;
+        }
+        .summary-item-title {
+            font-weight: 700;
+            color: var(--chocolate);
+        }
+        .summary-item-qty {
+            color: var(--gray-muted);
+            font-size: 0.8rem;
+        }
+        .summary-item-price {
+            font-weight: 800;
+            color: var(--chocolate);
+        }
+        .card-input-wrap {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="checkout.html" class="active">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <!-- If cart is empty -->
+        <div id="checkout-empty" class="empty-checkout-message" style="display: none;">
+            <i class="fa-solid fa-cart-flatbed-suitcase"></i>
+            <h2 style="font-size: 1.75rem; color: var(--chocolate); margin-bottom: 1rem; font-weight: 800;">Your Cart is Empty</h2>
+            <p style="color: var(--gray-muted); margin-bottom: 2rem;">Please add Fruitingo banana powder products to your cart before proceeding to checkout.</p>
+            <a href="index.html#shop" class="btn btn-primary">Browse Products</a>
+        </div>
+
+        <!-- Checkout Grid -->
+        <div id="checkout-content" class="checkout-grid">
+            
+            <!-- Left Side: Shipping and Payments -->
+            <div class="checkout-card">
+                <h2>Shipping & Payment Details</h2>
+                
+                <form id="checkout-form" onsubmit="handlePlaceOrder(event)">
+                    <!-- Contact Section -->
+                    <div style="margin-bottom: 2.5rem;">
+                        <h3 style="font-size: 1.15rem; color: var(--chocolate); font-weight: 700; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                            1. Shipping Address
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label for="ship-name">Full Name</label>
+                            <input type="text" id="ship-name" class="form-input" placeholder="Enter first and last name" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ship-email">Email Address</label>
+                                <input type="email" id="ship-email" class="form-input" placeholder="e.g. mom@example.com" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="ship-phone">Phone Number</label>
+                                <input type="tel" id="ship-phone" class="form-input" placeholder="10-digit mobile number" required pattern="[0-9]{10}" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ship-address">Street Address</label>
+                            <input type="text" id="ship-address" class="form-input" placeholder="House/Flat No, Apartment, Street name" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ship-city">City</label>
+                                <input type="text" id="ship-city" class="form-input" placeholder="Enter City" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="ship-pin">PIN Code (Zip)</label>
+                                <input type="text" id="ship-pin" class="form-input" placeholder="6-digit PIN code" required pattern="[0-9]{6}" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Section -->
+                    <div>
+                        <h3 style="font-size: 1.15rem; color: var(--chocolate); font-weight: 700; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                            2. Choose Payment Mode
+                        </h3>
+                        
+                        <div class="payment-options">
+                            <div class="payment-option-card active" data-type="upi">
+                                <i class="fa-solid fa-qrcode"></i>
+                                UPI / GPay / PhonePe
+                            </div>
+                            <div class="payment-option-card" data-type="card">
+                                <i class="fa-solid fa-credit-card"></i>
+                                Credit/Debit Card
+                            </div>
+                            <div class="payment-option-card" data-type="cod">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                                Cash on Delivery (COD)
+                            </div>
+                        </div>
+
+                        <!-- UPI QR block -->
+                        <div id="payment-upi" class="payment-details active">
+                            <p style="font-size: 0.9rem; color: var(--gray-muted); text-align: center;">Scan the QR code below using GPay, PhonePe, Paytm, or any BHIM UPI App to pay securely.</p>
+                            <div class="upi-qr-wrap">
+                                <div class="qr-code">
+                                    <i class="fa-solid fa-qrcode" style="font-size: 9rem; color: var(--chocolate);"></i>
+                                </div>
+                                <span style="font-size: 0.85rem; font-weight: 700; color: var(--secondary);">Payee: FRUITINGOFOODS@okaxis</span>
+                            </div>
+                        </div>
+
+                        <!-- Card block -->
+                        <div id="payment-card" class="payment-details">
+                            <div class="form-group card-input-wrap">
+                                <label for="card-num">Card Number</label>
+                                <input type="text" id="card-num" class="form-input" placeholder="4532 •••• •••• 8824" pattern="[0-9\s]{16,19}" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group card-input-wrap">
+                                    <label for="card-expiry">Expiry Date</label>
+                                    <input type="text" id="card-expiry" class="form-input" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                                </div>
+                                <div class="form-group card-input-wrap">
+                                    <label for="card-cvv">CVV</label>
+                                    <input type="password" id="card-cvv" class="form-input" placeholder="•••" pattern="[0-9]{3}" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                                </div>
+                            </div>
+                            <div class="form-group card-input-wrap">
+                                <label for="card-name">Cardholder Name</label>
+                                <input type="text" id="card-name" class="form-input" placeholder="Name written on card" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <!-- COD block -->
+                        <div id="payment-cod" class="payment-details">
+                            <div style="background-color: rgba(22, 163, 74, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(22, 163, 74, 0.15); display: flex; gap: 1rem; align-items: center;">
+                                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; color: var(--secondary);"></i>
+                                <p style="font-size: 0.9rem; color: var(--chocolate); font-weight: 500; margin: 0;">You can pay cash/card to the delivery executive when the package arrives at your doorstep. Safe & contactless.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Place Order Button -->
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.1rem; border-radius: 14px; margin-top: 2.5rem; font-size: 1.1rem;">
+                        <i class="fa-solid fa-circle-check"></i> Place Secure Order
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Side: Order Summary -->
+            <div class="order-summary-wrap">
+                <h3 style="font-size: 1.25rem; color: var(--chocolate); font-weight: 800; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    Order Summary
+                </h3>
+
+                <!-- Cart Items List -->
+                <div class="summary-items-list" id="summary-items">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Price Breakdowns -->
+                <div class="order-summary-item">
+                    <span>Subtotal</span>
+                    <span id="summary-subtotal">₹0</span>
+                </div>
+                
+                <div class="order-summary-item">
+                    <span>Shipping</span>
+                    <span style="color: var(--secondary); font-weight: 700;">FREE</span>
+                </div>
+
+                <div class="order-summary-item" id="summary-discount-row" style="display: none; color: var(--secondary);">
+                    <span>Promo Applied (10% Off)</span>
+                    <span id="summary-discount">-₹0</span>
+                </div>
+
+                <div class="order-summary-item total">
+                    <span>Total Amount</span>
+                    <span id="summary-total">₹0</span>
+                </div>
+
+                <!-- Promo Code Box -->
+                <div class="coupon-row">
+                    <input type="text" id="coupon-code" class="form-input" placeholder="PROMO CODE" style="padding: 0.65rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; text-transform: uppercase; color: var(--chocolate);">
+                    <button class="btn btn-secondary" onclick="applyCoupon()" style="padding: 0.65rem 1.25rem; font-size: 0.85rem; border-radius: 8px;">Apply</button>
+                </div>
+                <div id="coupon-message" style="font-size: 0.8rem; margin-top: 0.5rem; display: none;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Success Modal Overlay -->
+    <div class="cart-backdrop" id="success-backdrop"></div>
+    <div class="success-modal" id="success-modal">
+        <div class="success-icon-wrap">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2>Order Confirmed!</h2>
+        <p>Your order <strong id="success-order-id">FR-98375</strong> has been placed successfully. A receipt and confirmation has been sent to your email.</p>
+        
+        <div style="background-color: var(--sand); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid rgba(69,26,3,0.05); text-align: left;">
+            <h4 style="font-weight: 800; color: var(--chocolate); margin-bottom: 0.5rem;"><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Bonus Healthy Diet Guide</h4>
+            <p style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 1rem;">Get started right with our Nendran Banana Porridge & baking recipes PDF guide.</p>
+            <a href="javascript:void(0)" onclick="alert('Downloading Fruitingo Diet & Recipe Guide.pdf ...')" class="btn btn-secondary" style="width: 100%; font-size: 0.85rem; padding: 0.6rem; border-radius: 8px; justify-content: center;">
+                <i class="fa-solid fa-download"></i> Download Recipe PDF
+            </a>
+        </div>
+        
+        <button class="btn btn-primary" onclick="closeSuccessAndHome()" style="width: 100%; border-radius: 12px; padding: 1rem;">
+            Continue Shopping
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>🍌 Fruitingo.</h3>
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Nutritional Details</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        let discountMultiplier = 1.0;
+
+        // Custom checkout page logic
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCheckoutSummary();
+            initPaymentOptionSelector();
+        });
+
+        function renderCheckoutSummary() {
+            const listEl = document.getElementById('summary-items');
+            const emptyEl = document.getElementById('checkout-empty');
+            const contentEl = document.getElementById('checkout-content');
+            
+            const subtotalEl = document.getElementById('summary-subtotal');
+            const discountRow = document.getElementById('summary-discount-row');
+            const discountEl = document.getElementById('summary-discount');
+            const totalEl = document.getElementById('summary-total');
+
+            if (!listEl) return;
+
+            if (cart.length === 0) {
+                emptyEl.style.display = 'block';
+                contentEl.style.display = 'none';
+                return;
+            }
+
+            emptyEl.style.display = 'none';
+            contentEl.style.display = 'grid';
+
+            let itemsHtml = '';
+            cart.forEach(item => {
+                itemsHtml += `
+                    <div class="summary-item-row">
+                        <div>
+                            <span class="summary-item-title">${item.name}</span>
+                            <span class="summary-item-qty">x ${item.qty}</span>
+                        </div>
+                        <span class="summary-item-price">₹${item.price * item.qty}</span>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = itemsHtml;
+
+            const subtotal = getCartTotal();
+            subtotalEl.textContent = '₹' + subtotal;
+
+            if (discountMultiplier < 1.0) {
+                const discAmt = Math.round(subtotal * (1.0 - discountMultiplier));
+                discountRow.style.display = 'flex';
+                discountEl.textContent = '-₹' + discAmt;
+                totalEl.textContent = '₹' + (subtotal - discAmt);
+            } else {
+                discountRow.style.display = 'none';
+                totalEl.textContent = '₹' + subtotal;
+            }
+        }
+
+        function initPaymentOptionSelector() {
+            const options = document.querySelectorAll('.payment-option-card');
+            
+            options.forEach(card => {
+                card.addEventListener('click', () => {
+                    options.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    
+                    const payType = card.getAttribute('data-type');
+                    
+                    // Toggle form visibility
+                    document.querySelectorAll('.payment-details').forEach(p => p.classList.remove('active'));
+                    document.getElementById('payment-' + payType).classList.add('active');
+
+                    // Manage required attribute inputs
+                    const cardNum = document.getElementById('card-num');
+                    const cardExpiry = document.getElementById('card-expiry');
+                    const cardCvv = document.getElementById('card-cvv');
+                    const cardName = document.getElementById('card-name');
+
+                    if (payType === 'card') {
+                        cardNum.required = true;
+                        cardExpiry.required = true;
+                        cardCvv.required = true;
+                        cardName.required = true;
+                    } else {
+                        cardNum.required = false;
+                        cardExpiry.required = false;
+                        cardCvv.required = false;
+                        cardName.required = false;
+                    }
+                });
+            });
+        }
+
+        function applyCoupon() {
+            const couponInput = document.getElementById('coupon-code');
+            const msgEl = document.getElementById('coupon-message');
+            const code = couponInput.value.trim().toUpperCase();
+
+            if (code === 'FRUITINGO10') {
+                discountMultiplier = 0.90;
+                msgEl.style.display = 'block';
+                msgEl.style.color = 'var(--secondary)';
+                msgEl.textContent = 'Coupon applied successfully! 10% Discount credited.';
+                renderCheckoutSummary();
+            } else {
+                discountMultiplier = 1.0;
+                msgEl.style.display = 'block';
+                msgEl.style.color = '#EF4444';
+                msgEl.textContent = 'Invalid Coupon Code. Try entering FRUITINGO10';
+                renderCheckoutSummary();
+            }
+        }
+
+        function handlePlaceOrder(e) {
+            e.preventDefault();
+
+            // Form validation passed, show success modal
+            const mockOrderId = 'FR-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('success-order-id').textContent = mockOrderId;
+
+            const modal = document.getElementById('success-modal');
+            const backdrop = document.getElementById('success-backdrop');
+            
+            modal.classList.add('active');
+            backdrop.classList.add('active');
+        }
+
+        function closeSuccessAndHome() {
+            // Clear cart
+            cart = [];
+            saveCart();
+            updateCartBadge();
+            
+            // Redirect
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

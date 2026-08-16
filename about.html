@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Our Story, Sourcing & FAQs | Nendran Banana Powder</title>
+    <meta name="description" content="Learn about the traditional story of Nendran Banana Powder sourcing. Find answers to FAQs about baby nutrition, storage, and preparation.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .about-hero {
+            background-color: var(--chocolate);
+            color: var(--white);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+        .about-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .about-hero p {
+            max-width: 600px;
+            margin: 0 auto;
+            color: #E4E4E7;
+            font-size: 1.1rem;
+        }
+        .about-container {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        .story-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 5rem;
+        }
+        .story-content h2 {
+            font-size: 2rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        .story-content p {
+            color: var(--gray-muted);
+            margin-bottom: 1.25rem;
+        }
+        .story-image {
+            background-color: var(--sand);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .story-image img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 12px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.05));
+        }
+        /* Contact Form Layout */
+        .contact-box {
+            background-color: var(--white);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid rgba(69, 26, 3, 0.04);
+            box-shadow: var(--shadow-md);
+            margin-top: 4rem;
+        }
+        .contact-box h2 {
+            font-size: 2rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .contact-box p {
+            text-align: center;
+            color: var(--gray-muted);
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) {
+            .story-block {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .contact-box {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Products</a></li>
+                    <li><a href="about.html" class="active">About</a></li>
+                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="checkout.html">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <h1>Birthed in South Indian Farms</h1>
+        <p>Bringing you the natural goodness of pure sun-dried Nendran Bananas, directly from organic agricultural clusters to your kitchen table.</p>
+    </section>
+
+    <div class="about-container">
+        <!-- Story Block 1 -->
+        <div class="story-block">
+            <div class="story-content">
+                <h2>The Premium Nendran Legacy</h2>
+                <p>Nendran plantains (French Plantain variety) are exclusive fruits cultivated majorly in Kerala and parts of Western Tamil Nadu. Known for their unique starch properties, these bananas are rich in nutrition and highly prized in Ayurveda.</p>
+                <p>We source raw, unripe bananas at the precise pre-ripening stage. This ensures the starch is resistant starch, acting as a prebiotic that feeds gut-healthy probiotics.</p>
+            </div>
+            <div class="story-image">
+                <img src="assets/fruitingo_product.jpg" alt="Fruitingo Banana farm sourcing">
+            </div>
+        </div>
+
+        <!-- Story Block 2 -->
+        <div class="story-block">
+            <div class="story-image" style="order: 2;">
+                <img src="assets/fruitingo_product.jpg" alt="Fruitingo Packing and Sun drying">
+            </div>
+            <div class="story-content" style="order: 1;">
+                <h2>Sun-Dried & Cleanly Crafted</h2>
+                <p>Traditional methods matter. Rather than relying on industrial dehydrators that operate at extreme temperatures and strip vital minerals, our bananas are micro-sliced and sun-dried in clean, enclosed solar domes.</p>
+                <p>This retains the bright pale yellow color of the bananas and seals the delicate sweetness and vitamins. No artificial colors, preservatives, or sweeteners are added. It's just 100% pure banana.</p>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 5rem 0;">
+
+        <!-- FAQ Section -->
+        <section id="faq">
+            <h2 style="font-size: 2.25rem; color: var(--chocolate); font-weight: 800; text-align: center; margin-bottom: 1rem;">Frequently Asked Questions</h2>
+            <p style="text-align: center; color: var(--gray-muted); margin-bottom: 3rem;">All you need to know about preparing, storing, and buying Fruitingo Nendran Banana powder.</p>
+            
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Is it safe to give Nendran Banana Powder to a 6-month-old baby?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Yes, absolutely. Raw Nendran Banana powder is a traditional first solid food recommended for babies in South India. It is highly digestible, hypoallergenic, and does not cause cold or cough, unlike regular bananas.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Are there any added sugars or artificial flavors?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>No. Fruitingo Nendran Banana Powder contains exactly one ingredient: 100% raw Nendran bananas. We add zero white sugar, salt, milk solids, starch thickeners, or artificial colors.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>How should I store the powder and what is the shelf life?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Our powder has a shelf life of 6 months from packaging. Once opened, transfer it to a dry, airtight jar. Store in a cool dry cupboard. You can also refrigerate it to preserve freshness longer in humid regions.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Does it help in baby weight gain?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Yes. Raw banana powder contains healthy complex carbohydrates and potassium that help in steady, natural weight gain in growing infants and toddlers, without causing bloating.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Box -->
+        <div class="contact-box">
+            <h2>Have Questions? Reach Out!</h2>
+            <p>Our nutrition experts and support team are here to help you choose the best diet plan for your family.</p>
+            
+            <form onsubmit="event.preventDefault(); alert('Thank you! Your message has been received. Our team will contact you back in 24 hours.'); this.reset();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact-name">Your Name</label>
+                        <input type="text" id="contact-name" class="form-input" placeholder="Enter name" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email Address</label>
+                        <input type="email" id="contact-email" class="form-input" placeholder="Enter email" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact-msg">Message</label>
+                    <textarea id="contact-msg" class="form-input" rows="4" placeholder="How can we help you?" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px;">
+                    <i class="fa-solid fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>🍌 Fruitingo.</h3>
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Nutritional Details</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-backdrop"></div>
+    <div class="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Basket</h3>
+            <button class="cart-close-btn" aria-label="Close Basket">&times;</button>
+        </div>
+        <div class="cart-body">
+            <!-- Populated dynamically via main.js -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-value">₹0</span>
+            </div>
+            <a href="checkout.html" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1rem;">
+                <i class="fa-solid fa-basket-shopping"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

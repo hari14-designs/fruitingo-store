@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Admin Portal | Product Management</title>
+    <meta name="description" content="Manage Fruitingo products database. Add, delete, and monitor packaging configs.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            min-height: calc(100vh - 400px);
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        .admin-card {
+            background-color: var(--white);
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            box-shadow: var(--shadow-md);
+        }
+        .admin-card h2 {
+            font-size: 1.5rem;
+            color: var(--chocolate);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stats-badge {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--secondary);
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+        .dashboard-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: var(--chocolate);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-header p {
+            color: var(--gray-muted);
+            font-size: 1.05rem;
+        }
+        
+        /* Table styles */
+        .table-wrap {
+            overflow-x: auto;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: var(--sand);
+            color: var(--chocolate);
+            padding: 1rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+        }
+        td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--gray-dark);
+        }
+        tr:hover td {
+            background-color: var(--gray-light);
+        }
+        
+        @media (max-width: 992px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="checkout.html">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        
+        <div class="dashboard-header">
+            <h1>Product Management Dashboard</h1>
+            <p>Admin Portal to dynamically add or delete Fruitingo banana powder packs.</p>
+        </div>
+
+        <div class="admin-grid">
+            
+            <!-- Add Product Form Card -->
+            <div class="admin-card">
+                <h2><i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add New Package</h2>
+                
+                <form id="admin-add-form" onsubmit="adminAddProduct(event)">
+                    <div class="form-group">
+                        <label for="new-prod-name">Product / Package Name</label>
+                        <input type="text" id="new-prod-name" class="form-input" placeholder="e.g. Fruitingo Gold Pack (750g)" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-prod-price">Price (₹ INR)</label>
+                            <input type="number" id="new-prod-price" class="form-input" placeholder="Price e.g. 599" min="1" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-prod-weight">Weight Description</label>
+                            <input type="text" id="new-prod-weight" class="form-input" placeholder="e.g. 750g" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-prod-tag">Promo Tag Badge</label>
+                            <input type="text" id="new-prod-tag" class="form-input" placeholder="e.g. New Arrival, Sale" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-prod-image">Product Image Mockup</label>
+                            <select id="new-prod-image" class="form-select" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                                <option value="assets/fruitingo_product.jpg" selected>Fruitingo Pouch Mockup (Default)</option>
+                                <option value="assets/fruitingo_kitchen.jpg">Kitchen Counter layout</option>
+                                <option value="assets/fruitingo_porridge.jpg">Cooked Porridge Bowl</option>
+                                <option value="assets/fruitingo_farm.jpg">Banana Farm view</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-prod-desc">Product Description</label>
+                        <textarea id="new-prod-desc" class="form-input" rows="4" placeholder="Brief details about the nutritional benefits, packaging etc." style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+                        <i class="fa-solid fa-save"></i> Save & Publish Product
+                    </button>
+                </form>
+            </div>
+
+            <!-- Current Products List Card -->
+            <div class="admin-card">
+                <h2>
+                    <span><i class="fa-solid fa-list-check" style="color: var(--chocolate);"></i> Published Products</span>
+                    <span class="stats-badge"><strong id="admin-total-products">0</strong> active</span>
+                </h2>
+                
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 80px;">Image</th>
+                                <th>Name</th>
+                                <th>Weight</th>
+                                <th>Price</th>
+                                <th>Badge</th>
+                                <th style="text-align: center; width: 80px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-table">
+                            <!-- Populated dynamically via main.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>🍌 Fruitingo.</h3>
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Nutritional Details</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-backdrop"></div>
+    <div class="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Basket</h3>
+            <button class="cart-close-btn" aria-label="Close Basket">&times;</button>
+        </div>
+        <div class="cart-body">
+            <!-- Populated dynamically via main.js -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-value">₹0</span>
+            </div>
+            <a href="checkout.html" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1rem;">
+                <i class="fa-solid fa-basket-shopping"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
