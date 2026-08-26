@@ -148,11 +148,12 @@ nav ul li a::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--neu-light);
+    box-shadow: none;
     transition: color 0.2s ease, box-shadow 0.3s ease;
 }
 
-.cart-icon-btn:hover {
+.cart-icon-btn:hover,
+.cart-icon-btn:active {
     color: var(--primary);
     box-shadow: var(--neu-light-inset);
 }
@@ -238,11 +239,12 @@ nav ul li a::after {
 .btn-primary {
     background-color: var(--primary); /* Gold */
     color: var(--chocolate);
-    box-shadow: var(--neu-gold);
+    box-shadow: none;
     border: none;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:active {
     background-color: var(--primary-hover);
     color: var(--chocolate);
     transform: translateY(-2px);
@@ -253,10 +255,11 @@ nav ul li a::after {
     background-color: var(--secondary); /* Green */
     color: var(--white); /* White text */
     border: none;
-    box-shadow: var(--neu-green);
+    box-shadow: none;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:active {
     background-color: var(--secondary-hover);
     color: var(--white);
     transform: translateY(-2px);
@@ -417,7 +420,7 @@ nav ul li a::after {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin: 0 auto 1.5rem;
-    box-shadow: var(--neu-green);
+    box-shadow: none;
 }
 
 .why-choose-header h2 {
@@ -514,7 +517,7 @@ nav ul li a::after {
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.08em;
-    box-shadow: var(--neu-gold);
+    box-shadow: none;
     transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
@@ -524,7 +527,8 @@ nav ul li a::after {
     flex-shrink: 0;
 }
 
-.why-choose-pill:hover {
+.why-choose-pill:hover,
+.why-choose-pill:active {
     transform: scale(1.04);
     box-shadow: var(--neu-gold-hover);
 }
@@ -1050,7 +1054,7 @@ footer .form-input {
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    box-shadow: var(--neu-gold);
+    box-shadow: none;
 }
 
 .review-pin-badge {
@@ -1336,9 +1340,10 @@ footer .form-input {
     font-size: 0.9rem;
     color: var(--chocolate);
     background: var(--white);
-    box-shadow: var(--neu-light);
+    box-shadow: none;
 }
 
+.payment-option-card:hover,
 .payment-option-card.active {
     box-shadow: var(--neu-light-inset);
     background-color: var(--sand);
@@ -1507,11 +1512,12 @@ footer::after {
     align-items: center;
     justify-content: center;
     color: var(--white);
-    box-shadow: var(--neu-green);
+    box-shadow: none;
     transition: var(--transition-fast);
 }
 
-.social-btn:hover {
+.social-btn:hover,
+.social-btn:active {
     background-color: #D8C27A;
     color: #0B5D3B;
     transform: translateY(-2px);
@@ -1587,11 +1593,12 @@ footer::after {
     padding: 0.75rem 1.25rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: var(--neu-gold);
+    box-shadow: none;
     transition: var(--transition-fast);
 }
 
-.newsletter-form button:hover {
+.newsletter-form button:hover,
+.newsletter-form button:active {
     background-color: var(--primary-hover);
     box-shadow: var(--neu-gold-hover);
 }
@@ -1928,11 +1935,12 @@ footer::after {
     z-index: 10;
     font-size: 1.2rem;
     color: var(--chocolate);
-    box-shadow: var(--neu-light);
+    box-shadow: none;
     transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.slider-arrow:hover {
+.slider-arrow:hover,
+.slider-arrow:active {
     background-color: var(--primary);
     color: var(--chocolate);
     transform: translateY(-50%) scale(1.05);
