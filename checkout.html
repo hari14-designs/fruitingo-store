@@ -21,8 +21,8 @@
             padding: 5rem 2rem;
             background-color: var(--white);
             border-radius: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
+            box-shadow: var(--neu-light);
+            border: none;
             max-width: 600px;
             margin: 0 auto;
         }
@@ -74,7 +74,7 @@
     <header>
         <div class="header-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+                <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
             
             <nav>
@@ -294,7 +294,7 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <h3>🍌 Fruitingo.</h3>
+                <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
                     <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -317,7 +317,7 @@
                 <ul>
                     <li><a href="about.html#faq">FAQs & Usage</a></li>
                     <li><a href="#">Shipping Policy</a></li>
-                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
             
@@ -435,13 +435,25 @@
             const couponInput = document.getElementById('coupon-code');
             const msgEl = document.getElementById('coupon-message');
             const code = couponInput.value.trim().toUpperCase();
+            
+            const pastPurchasedQty = parseInt(localStorage.getItem('fruitingo_lifetime_qty') || '0');
+            const currentCartQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalEligibleQty = pastPurchasedQty + currentCartQty;
 
             if (code === 'FRUITINGO10') {
-                discountMultiplier = 0.90;
-                msgEl.style.display = 'block';
-                msgEl.style.color = 'var(--secondary)';
-                msgEl.textContent = 'Coupon applied successfully! 10% Discount credited.';
-                renderCheckoutSummary();
+                if (totalEligibleQty >= 5) {
+                    discountMultiplier = 0.90;
+                    msgEl.style.display = 'block';
+                    msgEl.style.color = 'var(--secondary)';
+                    msgEl.textContent = 'Loyalty Coupon applied successfully! 10% Discount credited.';
+                    renderCheckoutSummary();
+                } else {
+                    discountMultiplier = 1.0;
+                    msgEl.style.display = 'block';
+                    msgEl.style.color = '#EF4444';
+                    msgEl.textContent = 'Coupon is only for regular customers (5+ items purchased). You need ' + (5 - totalEligibleQty) + ' more!';
+                    renderCheckoutSummary();
+                }
             } else {
                 discountMultiplier = 1.0;
                 msgEl.style.display = 'block';
@@ -454,8 +466,60 @@
         function handlePlaceOrder(e) {
             e.preventDefault();
 
-            // Form validation passed, show success modal
             const mockOrderId = 'FR-' + Math.floor(100000 + Math.random() * 900000);
+            
+            // Collect order details
+            const customerName = document.getElementById('ship-name').value.trim();
+            const customerEmail = document.getElementById('ship-email').value.trim();
+            const customerPhone = document.getElementById('ship-phone').value.trim();
+            const customerAddress = document.getElementById('ship-address').value.trim();
+            const customerCity = document.getElementById('ship-city').value.trim();
+            const customerPin = document.getElementById('ship-pin').value.trim();
+            
+            // Get selected payment option
+            const activePaymentCard = document.querySelector('.payment-option-card.active');
+            const paymentType = activePaymentCard ? activePaymentCard.getAttribute('data-type') : 'upi';
+            
+            let paymentLabel = 'UPI / QR Code';
+            let orderStatus = 'Paid (UPI)';
+            if (paymentType === 'card') {
+                paymentLabel = 'Credit/Debit Card';
+                orderStatus = 'Paid (Card)';
+            } else if (paymentType === 'cod') {
+                paymentLabel = 'Cash on Delivery';
+                orderStatus = 'Pending (COD)';
+            }
+
+            const subtotal = getCartTotal();
+            const finalTotal = discountMultiplier < 1.0 ? Math.round(subtotal * discountMultiplier) : subtotal;
+
+            const newOrder = {
+                orderId: mockOrderId,
+                date: new Date().toLocaleString(),
+                customer: {
+                    name: customerName,
+                    email: customerEmail,
+                    phone: customerPhone,
+                    address: `${customerAddress}, ${customerCity} - ${customerPin}`
+                },
+                items: [...cart],
+                subtotal: subtotal,
+                total: finalTotal,
+                paymentMethod: paymentLabel,
+                status: orderStatus
+            };
+
+            // Save to LocalStorage database
+            let orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            orders.push(newOrder);
+            localStorage.setItem('fruitingo_orders', JSON.stringify(orders));
+
+            // Track lifetime purchases for loyalty discounts
+            const pastQty = parseInt(localStorage.getItem('fruitingo_lifetime_qty') || '0');
+            const currentCartQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            localStorage.setItem('fruitingo_lifetime_qty', pastQty + currentCartQty);
+
+            // Form validation passed, show success modal
             document.getElementById('success-order-id').textContent = mockOrderId;
 
             const modal = document.getElementById('success-modal');

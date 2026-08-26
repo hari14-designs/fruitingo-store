@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRecipeCalc();
     initAccordion();
     initSlider();
+    initWhyChooseReveal();
     
     // Dynamic Page Render Initializations
     if (document.getElementById('products-container')) {
@@ -59,6 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (document.getElementById('admin-products-table')) {
         renderAdminDashboard();
+    }
+    if (document.getElementById('admin-feedback-table')) {
+        renderAdminFeedbacks();
+    }
+    if (document.getElementById('dynamic-reviews-grid')) {
+        renderFeedbacks();
+        initStarRating();
     }
 });
 
@@ -323,6 +331,22 @@ function initAccordion() {
     });
 }
 
+function initWhyChooseReveal() {
+    const items = document.querySelectorAll('.why-choose-reveal');
+    if (!items.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
+
+    items.forEach((item) => observer.observe(item));
+}
+
 // Image Slider Logic
 function initSlider() {
     const slides = document.querySelectorAll('.slide');
@@ -409,6 +433,9 @@ function renderProductsHome() {
         const tagHTML = p.tag ? `<span class="badge-tag">${p.tag}</span>` : '';
         const starsHTML = getRatingStarsHTML(p.rating);
         
+        const mrpHtml = p.strikePrice ? `<del style="color: var(--gray-muted); font-size: 0.85rem; font-weight: 500; margin-left: 0.5rem;">₹${p.strikePrice}</del>` : '';
+        const nutritionHtml = p.nutrition ? `<p style="font-size: 0.8rem; color: var(--secondary); margin-top: 0.5rem; font-weight: 600;"><i class="fa-solid fa-leaf"></i> ${p.nutrition}</p>` : '';
+        
         html += `
             <div class="product-card">
                 <div class="product-image-wrap">
@@ -417,13 +444,14 @@ function renderProductsHome() {
                 </div>
                 <div class="product-card-info">
                     <h3 class="product-card-title">${p.name}</h3>
-                    <p class="product-card-desc">${p.desc}</p>
-                    <div class="product-rating">
+                    <p class="product-card-desc" style="margin-bottom: 0.5rem;">${p.desc}</p>
+                    ${nutritionHtml}
+                    <div class="product-rating" style="margin-top: 1rem;">
                         ${starsHTML}
                         <span>${p.rating} (${p.reviewsCount} reviews)</span>
                     </div>
                     <div class="product-card-footer">
-                        <div class="price-tag">₹${p.price} <span>/ ${p.weight}</span></div>
+                        <div class="price-tag">₹${p.price} ${mrpHtml} <span style="display:block; font-size:0.75rem; margin-top:0.15rem;">/ ${p.weight}</span></div>
                         <button class="btn btn-primary" onclick="addToCart('${p.id}', 1)" style="padding: 0.65rem 1.25rem; font-size: 0.9rem;">
                             <i class="fa-solid fa-cart-plus"></i> Add
                         </button>
@@ -477,7 +505,8 @@ function renderAdminDashboard() {
     }
 
     let html = '';
-    products.forEach((p, idx) => {
+    products.forEach((p) => {
+        let mrpHtml = p.strikePrice ? `₹${p.strikePrice}` : '-';
         html += `
             <tr>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center;">
@@ -486,8 +515,11 @@ function renderAdminDashboard() {
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--chocolate);">${p.name}</td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">${p.weight}</td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--chocolate);">₹${p.price}</td>
-                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);"><span class="badge-tag" style="position: static; font-size: 0.7rem; background-color: var(--secondary);">${p.tag || 'Standard'}</span></td>
-                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center;">
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--gray-muted);"><del>${mrpHtml}</del></td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center; white-space: nowrap;">
+                    <button onclick="editProduct('${p.id}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Edit Product">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
                     <button onclick="adminDeleteProduct('${p.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Product">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
@@ -500,58 +532,317 @@ function renderAdminDashboard() {
 }
 
 // Delete Product
-function adminDeleteProduct(id) {
+window.adminDeleteProduct = function(id) {
     if (!confirm('Are you sure you want to delete this product?')) return;
     
     products = products.filter(p => p.id !== id);
     localStorage.setItem('fruitingo_products', JSON.stringify(products));
     
-    // Refresh table and cart badge count
     renderAdminDashboard();
     
-    // Also remove from cart if present
     cart = cart.filter(item => item.id !== id);
     localStorage.setItem('fruitingo_cart', JSON.stringify(cart));
     updateCartBadge();
-}
+};
 
-// Add Product from admin form
-function adminAddProduct(e) {
+// Edit Product
+window.editProduct = function(id) {
+    const p = products.find(prod => prod.id === id);
+    if (!p) return;
+
+    document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--secondary);"></i> Edit Package';
+    document.getElementById('edit-prod-id').value = p.id;
+    
+    document.getElementById('new-prod-name').value = p.name;
+    document.getElementById('new-prod-price').value = p.price;
+    document.getElementById('new-prod-strike-price').value = p.strikePrice || '';
+    document.getElementById('new-prod-weight').value = p.weight;
+    document.getElementById('new-prod-desc').value = p.desc || '';
+    document.getElementById('new-prod-nutrition').value = p.nutrition || '';
+    
+    // Reset file input since we can't set it programmatically
+    document.getElementById('new-prod-image').value = '';
+    
+    document.getElementById('form-submit-btn').innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
+    document.getElementById('form-cancel-btn').style.display = 'flex';
+    
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.cancelEdit = function() {
+    document.getElementById('admin-add-form').reset();
+    document.getElementById('edit-prod-id').value = '';
+    document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add New Package';
+    document.getElementById('form-submit-btn').innerHTML = '<i class="fa-solid fa-save"></i> Save & Publish Product';
+    document.getElementById('form-cancel-btn').style.display = 'none';
+};
+
+// Add / Update Product from admin form
+window.adminAddProduct = function(e) {
     e.preventDefault();
 
+    const editId = document.getElementById('edit-prod-id').value;
     const name = document.getElementById('new-prod-name').value.trim();
     const price = parseInt(document.getElementById('new-prod-price').value);
+    const strikePriceRaw = document.getElementById('new-prod-strike-price').value;
+    const strikePrice = strikePriceRaw ? parseInt(strikePriceRaw) : null;
     const weight = document.getElementById('new-prod-weight').value.trim();
     const desc = document.getElementById('new-prod-desc').value.trim();
-    const tag = document.getElementById('new-prod-tag').value.trim();
-    const imageSelect = document.getElementById('new-prod-image').value;
+    const nutrition = document.getElementById('new-prod-nutrition').value.trim();
+    const imageInput = document.getElementById('new-prod-image');
 
     if (!name || !price || !weight) return;
 
-    // Generate unique ID
-    const id = 'fruitingo-' + Date.now();
+    const saveOrUpdateProduct = (imgDataUrl) => {
+        if (editId) {
+            // Update existing
+            const idx = products.findIndex(p => p.id === editId);
+            if (idx > -1) {
+                products[idx].name = name;
+                products[idx].price = price;
+                products[idx].strikePrice = strikePrice;
+                products[idx].weight = weight;
+                products[idx].desc = desc;
+                products[idx].nutrition = nutrition;
+                if (imgDataUrl) {
+                    products[idx].image = imgDataUrl; // update image only if new one uploaded
+                }
+            }
+            alert('Product updated successfully!');
+        } else {
+            // Add new
+            const id = 'fruitingo-' + Date.now();
+            const newProduct = {
+                id,
+                name,
+                price,
+                strikePrice,
+                weight,
+                desc: desc || '100% pure organic Nendran banana powder.',
+                nutrition: nutrition || '',
+                image: imgDataUrl || 'assets/fruitingo_product.jpg',
+                rating: 5.0,
+                reviewsCount: 1
+            };
+            products.push(newProduct);
+            alert('Product added successfully!');
+        }
 
-    const newProduct = {
-        id,
-        name,
-        price,
-        weight,
-        desc: desc || '100% pure organic Nendran banana powder. Sourced directly from farms, sun-dried and finely ground.',
-        image: imageSelect || 'assets/fruitingo_product.jpg',
-        rating: 5.0,
-        reviewsCount: 1,
-        tag: tag || 'New'
+        localStorage.setItem('fruitingo_products', JSON.stringify(products));
+        cancelEdit();
+        renderAdminDashboard();
     };
 
-    products.push(newProduct);
-    localStorage.setItem('fruitingo_products', JSON.stringify(products));
-
-    // Clear form
-    document.getElementById('admin-add-form').reset();
-
-    // Re-render
-    renderAdminDashboard();
-
-    // Alert success
-    alert('Product added successfully!');
+    if (imageInput.files && imageInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            saveOrUpdateProduct(evt.target.result);
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+    } else {
+        saveOrUpdateProduct(null);
+    }
 }
+
+// User Feedback Logic — stored in local database (localStorage)
+if (!localStorage.getItem('fruitingo_reviews_v2')) {
+    localStorage.removeItem('fruitingo_reviews');
+    localStorage.setItem('fruitingo_reviews_v2', '1');
+}
+
+let reviews = JSON.parse(localStorage.getItem('fruitingo_reviews')) || [];
+
+function saveReviews() {
+    localStorage.setItem('fruitingo_reviews', JSON.stringify(reviews));
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function sortedReviews() {
+    return reviews.slice().sort((a, b) => {
+        const pinDiff = Number(!!b.pinned) - Number(!!a.pinned);
+        if (pinDiff !== 0) return pinDiff;
+        return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+}
+
+window.renderFeedbacks = function() {
+    const grid = document.getElementById('dynamic-reviews-grid');
+    if (!grid) return;
+
+    const list = sortedReviews();
+
+    if (list.length === 0) {
+        grid.style.display = 'block';
+        grid.innerHTML = '<p class="reviews-empty">No customer feedback yet. Be the first to share your experience.</p>';
+        return;
+    }
+
+    grid.style.display = 'grid';
+
+    let html = '';
+    list.forEach(r => {
+        html += `
+            <div class="review-card${r.pinned ? ' pinned' : ''}">
+                ${r.pinned ? '<span class="review-pin-badge"><i class="fa-solid fa-thumbtack"></i> Pinned</span>' : ''}
+                <div class="review-stars">
+                    ${getRatingStarsHTML(r.rating)}
+                </div>
+                <p class="review-text">"${escapeHtml(r.text)}"</p>
+                <div class="review-user">
+                    <div class="user-avatar">${escapeHtml(r.avatar)}</div>
+                    <div class="user-details">
+                        <h4>${escapeHtml(r.name)}</h4>
+                        <p>${escapeHtml(r.role)}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+};
+
+window.submitFeedback = function(e) {
+    e.preventDefault();
+    const name = document.getElementById('fb-name').value.trim();
+    const role = document.getElementById('fb-role').value.trim();
+    const rating = parseInt(document.getElementById('fb-rating').value);
+    const text = document.getElementById('fb-text').value.trim();
+    
+    if (!name || !role || !text) return;
+    
+    const avatar = name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    
+    const newReview = {
+        id: 'fb-' + Date.now(),
+        name,
+        role,
+        rating,
+        text,
+        avatar,
+        pinned: false,
+        createdAt: Date.now()
+    };
+    reviews.unshift(newReview);
+    saveReviews();
+    
+    document.getElementById('feedback-form').reset();
+    
+    // Reset stars to 5 visually
+    const stars = document.querySelectorAll('#star-rating-widget i');
+    if (stars) {
+        stars.forEach(s => {
+            s.classList.remove('fa-regular');
+            s.classList.add('fa-solid');
+            s.style.color = 'var(--primary)';
+        });
+        document.getElementById('fb-rating').value = 5;
+    }
+    
+    renderFeedbacks();
+    alert('Thank you for your feedback!');
+};
+
+window.renderAdminFeedbacks = function() {
+    const tableBody = document.getElementById('admin-feedback-table');
+    const totalCount = document.getElementById('admin-total-feedback');
+    if (!tableBody) return;
+
+    if (totalCount) {
+        totalCount.textContent = reviews.length;
+    }
+
+    if (reviews.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                    No feedback submitted yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    let html = '';
+    sortedReviews().forEach(r => {
+        const date = r.createdAt ? new Date(r.createdAt).toLocaleString() : '—';
+        html += `
+            <tr>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    ${r.pinned ? '<span class="stats-badge" style="background-color: rgba(212, 175, 55, 0.18); color: var(--chocolate);"><i class="fa-solid fa-thumbtack"></i> Pinned</span>' : '<span style="color: var(--gray-muted); font-size: 0.85rem;">—</span>'}
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <strong style="color: var(--chocolate);">${escapeHtml(r.name)}</strong><br>
+                    <span style="font-size: 0.8rem; color: var(--gray-muted);">${escapeHtml(r.role)}</span>
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); color: #FBBF24; white-space: nowrap;">${getRatingStarsHTML(r.rating)}</td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); max-width: 360px;">${escapeHtml(r.text)}</td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; color: var(--gray-muted); white-space: nowrap;">${date}</td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center; white-space: nowrap;">
+                    <button onclick="togglePinFeedback('${r.id}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 1.1rem; padding: 0.5rem;" title="${r.pinned ? 'Unpin feedback' : 'Pin feedback'}">
+                        <i class="fa-solid ${r.pinned ? 'fa-thumbtack' : 'fa-map-pin'}"></i>
+                    </button>
+                    <button onclick="adminDeleteFeedback('${r.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1.1rem; padding: 0.5rem;" title="Delete feedback">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    tableBody.innerHTML = html;
+};
+
+window.togglePinFeedback = function(id) {
+    const idx = reviews.findIndex(r => r.id === id);
+    if (idx === -1) return;
+    reviews[idx].pinned = !reviews[idx].pinned;
+    saveReviews();
+    renderAdminFeedbacks();
+    renderFeedbacks();
+};
+
+window.adminDeleteFeedback = function(id) {
+    if (!confirm('Delete this feedback? This cannot be undone.')) return;
+    reviews = reviews.filter(r => r.id !== id);
+    saveReviews();
+    renderAdminFeedbacks();
+    renderFeedbacks();
+};
+
+// Interactive Star Rating for form
+window.initStarRating = function() {
+    const starWidget = document.getElementById('star-rating-widget');
+    if (!starWidget) return;
+    
+    const stars = starWidget.querySelectorAll('i');
+    const ratingInput = document.getElementById('fb-rating');
+    
+    // Initialize stars to Gold
+    stars.forEach(s => s.style.color = 'var(--primary)');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const val = parseInt(star.getAttribute('data-val'));
+            ratingInput.value = val;
+            
+            // Update visuals
+            stars.forEach(s => {
+                const sVal = parseInt(s.getAttribute('data-val'));
+                if (sVal <= val) {
+                    s.classList.remove('fa-regular');
+                    s.classList.add('fa-solid');
+                } else {
+                    s.classList.remove('fa-solid');
+                    s.classList.add('fa-regular');
+                }
+            });
+        });
+    });
+};

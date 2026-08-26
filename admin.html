@@ -27,7 +27,7 @@
             padding: 2.5rem;
             border-radius: 24px;
             border: 1px solid rgba(69, 26, 3, 0.05);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--neu-light);
         }
         .admin-card h2 {
             font-size: 1.5rem;
@@ -90,6 +90,27 @@
             background-color: var(--gray-light);
         }
         
+        .tab-btn {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: var(--primary) !important;
+            color: var(--white) !important;
+            border: none !important;
+        }
+        
+        .order-items-list {
+            margin: 0;
+            padding-left: 1.2rem;
+            font-size: 0.85rem;
+            color: var(--gray-dark);
+        }
+        .order-customer-info {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
         @media (max-width: 992px) {
             .admin-grid {
                 grid-template-columns: 1fr;
@@ -103,7 +124,7 @@
     <header>
         <div class="header-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+                <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
             
             <nav>
@@ -128,86 +149,196 @@
         </div>
     </header>
 
-    <div class="admin-container">
-        
-        <div class="dashboard-header">
-            <h1>Product Management Dashboard</h1>
-            <p>Admin Portal to dynamically add or delete Fruitingo banana powder packs.</p>
+    <!-- Admin Login Screen -->
+    <div id="admin-login-container" class="admin-container" style="display: none; max-width: 450px; margin: 6rem auto;">
+        <div class="admin-card" style="text-align: center;">
+            <h2 style="justify-content: center;"><i class="fa-solid fa-lock" style="color: var(--secondary); margin-right: 0.5rem;"></i> Admin Login</h2>
+            <p style="color: var(--gray-muted); margin-bottom: 2rem; font-size: 0.9rem;">Sign in to manage Fruitingo products, orders, and feedback</p>
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label for="admin-user">Username</label>
+                    <input type="text" id="admin-user" class="form-input" required placeholder="Enter username" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                </div>
+                <div class="form-group" style="text-align: left; margin-top: 1.25rem;">
+                    <label for="admin-pass">Password</label>
+                    <input type="password" id="admin-pass" class="form-input" required placeholder="Enter password" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                </div>
+                <div id="login-error-msg" style="color: #EF4444; font-size: 0.85rem; margin-top: 1rem; display: none; font-weight: 600;">
+                    <i class="fa-solid fa-circle-exclamation"></i> Invalid username or password.
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 2rem; justify-content: center;">
+                    Login to Dashboard
+                </button>
+            </form>
         </div>
+    </div>
 
-        <div class="admin-grid">
+    <!-- Admin Dashboard Container -->
+    <div id="admin-dashboard-container" style="display: none;">
+        <div class="admin-container">
             
-            <!-- Add Product Form Card -->
-            <div class="admin-card">
-                <h2><i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add New Package</h2>
+            <div class="dashboard-header">
+                <h1>Fruitingo Admin Dashboard</h1>
+                <p>Manage products, customer orders, and submitted feedback.</p>
                 
-                <form id="admin-add-form" onsubmit="adminAddProduct(event)">
-                    <div class="form-group">
-                        <label for="new-prod-name">Product / Package Name</label>
-                        <input type="text" id="new-prod-name" class="form-input" placeholder="e.g. Fruitingo Gold Pack (750g)" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="new-prod-price">Price (₹ INR)</label>
-                            <input type="number" id="new-prod-price" class="form-input" placeholder="Price e.g. 599" min="1" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
-                        </div>
-                        <div class="form-group">
-                            <label for="new-prod-weight">Weight Description</label>
-                            <input type="text" id="new-prod-weight" class="form-input" placeholder="e.g. 750g" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="new-prod-tag">Promo Tag Badge</label>
-                            <input type="text" id="new-prod-tag" class="form-input" placeholder="e.g. New Arrival, Sale" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
-                        </div>
-                        <div class="form-group">
-                            <label for="new-prod-image">Product Image Mockup</label>
-                            <select id="new-prod-image" class="form-select" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
-                                <option value="assets/fruitingo_product.jpg" selected>Fruitingo Pouch Mockup (Default)</option>
-                                <option value="assets/fruitingo_kitchen.jpg">Kitchen Counter layout</option>
-                                <option value="assets/fruitingo_porridge.jpg">Cooked Porridge Bowl</option>
-                                <option value="assets/fruitingo_farm.jpg">Banana Farm view</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="new-prod-desc">Product Description</label>
-                        <textarea id="new-prod-desc" class="form-input" rows="4" placeholder="Brief details about the nutritional benefits, packaging etc." style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem;">
-                        <i class="fa-solid fa-save"></i> Save & Publish Product
+                <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn tab-btn active" id="tab-btn-products" onclick="switchTab('products')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700;">
+                        <i class="fa-solid fa-box"></i> Products
                     </button>
-                </form>
+                    <button class="btn tab-btn" id="tab-btn-orders" onclick="switchTab('orders')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-receipt"></i> Orders
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-comments"></i> Feedback
+                    </button>
+                    <button class="btn" onclick="handleAdminLogout()" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; cursor: pointer;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
             </div>
 
-            <!-- Current Products List Card -->
-            <div class="admin-card">
-                <h2>
-                    <span><i class="fa-solid fa-list-check" style="color: var(--chocolate);"></i> Published Products</span>
-                    <span class="stats-badge"><strong id="admin-total-products">0</strong> active</span>
-                </h2>
+            <!-- Tab 1: Products View -->
+            <div id="tab-products" class="admin-grid">
                 
-                <div class="table-wrap">
-                    <table>
-                        <thead>
+                <!-- Add Product Form Card -->
+                <div class="admin-card">
+                    <h2 id="form-title"><i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add / Edit Package</h2>
+                    
+                    <form id="admin-add-form" onsubmit="adminAddProduct(event)">
+                        <input type="hidden" id="edit-prod-id" value="">
+                        
+                        <div class="form-group">
+                            <label for="new-prod-name">Product / Package Name</label>
+                            <input type="text" id="new-prod-name" class="form-input" placeholder="e.g. Fruitingo Gold Pack (750g)" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-price">Sale Price (₹ INR)</label>
+                                <input type="number" id="new-prod-price" class="form-input" placeholder="Sale Price e.g. 599" min="1" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-strike-price">Original/Strike Price (₹ INR)</label>
+                                <input type="number" id="new-prod-strike-price" class="form-input" placeholder="MRP e.g. 899" min="1" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-weight">Weight Description</label>
+                                <input type="text" id="new-prod-weight" class="form-input" placeholder="e.g. 750g" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-image">Upload Product Image</label>
+                                <input type="file" id="new-prod-image" accept="image/*" class="form-input" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); padding: 0.6rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-prod-desc">Product Description</label>
+                            <textarea id="new-prod-desc" class="form-input" rows="3" placeholder="Brief details about the packaging, usage etc." style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new-prod-nutrition">Manual Nutritional Details</label>
+                            <textarea id="new-prod-nutrition" class="form-input" rows="3" placeholder="e.g. Rich in Potassium, 0g Trans Fat, High Fiber" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+
+                        <button type="submit" id="form-submit-btn" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem; justify-content: center;">
+                            <i class="fa-solid fa-save"></i> Save & Publish Product
+                        </button>
+                        <button type="button" id="form-cancel-btn" onclick="cancelEdit()" class="btn" style="display: none; width: 100%; padding: 1rem; border-radius: 12px; margin-top: 0.5rem; justify-content: center; background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                            Cancel Edit
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Current Products List Card -->
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-list-check" style="color: var(--chocolate);"></i> Published Products</span>
+                        <span class="stats-badge"><strong id="admin-total-products">0</strong> active</span>
+                    </h2>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
                             <tr>
                                 <th style="text-align: center; width: 80px;">Image</th>
                                 <th>Name</th>
                                 <th>Weight</th>
-                                <th>Price</th>
-                                <th>Badge</th>
-                                <th style="text-align: center; width: 80px;">Action</th>
+                                <th>Sale Price</th>
+                                <th>MRP</th>
+                                <th style="text-align: center; width: 120px;">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-products-table">
-                            <!-- Populated dynamically via main.js -->
-                        </tbody>
-                    </table>
+                            <tbody id="admin-products-table">
+                                <!-- Populated dynamically via main.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab 2: Orders View -->
+            <div id="tab-orders" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-receipt" style="color: var(--chocolate);"></i> Customer Orders</span>
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <span class="stats-badge" style="background-color: rgba(14, 165, 233, 0.1); color: #0284c7;"><strong id="admin-total-orders">0</strong> active orders</span>
+                            <span class="stats-badge" style="background-color: rgba(22, 163, 74, 0.1); color: var(--secondary);">Total Revenue: <strong id="admin-total-revenue">₹0</strong></span>
+                        </div>
+                    </h2>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer Info</th>
+                                    <th>Items Ordered</th>
+                                    <th>Total Amount</th>
+                                    <th>Payment Mode</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-orders-table">
+                                <!-- Populated dynamically via javascript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Feedback View -->
+            <div id="tab-feedback" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-comments" style="color: var(--chocolate);"></i> Customer Feedback</span>
+                        <span class="stats-badge"><strong id="admin-total-feedback">0</strong> submitted</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">Pin reviews to keep them at the top of the homepage. Delete any entry to remove it from the public feedback section.</p>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Customer</th>
+                                    <th>Rating</th>
+                                    <th>Feedback</th>
+                                    <th>Submitted</th>
+                                    <th style="text-align: center; width: 120px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-feedback-table">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -218,7 +349,7 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <h3>🍌 Fruitingo.</h3>
+                <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
                     <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -241,7 +372,7 @@
                 <ul>
                     <li><a href="about.html#faq">FAQs & Usage</a></li>
                     <li><a href="#">Shipping Policy</a></li>
-                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
             
@@ -283,5 +414,176 @@
     </div>
 
     <script src="main.js"></script>
+    <script>
+        // Check Admin Auth status
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminAuth();
+        });
+
+        function checkAdminAuth() {
+            const loggedIn = sessionStorage.getItem('fruitingo_admin_logged_in');
+            const loginContainer = document.getElementById('admin-login-container');
+            const dashboardContainer = document.getElementById('admin-dashboard-container');
+            
+            if (loggedIn === 'true') {
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                // Render products and orders
+                renderAdminDashboard();
+                renderAdminOrders();
+                renderAdminFeedbacks();
+            } else {
+                loginContainer.style.display = 'block';
+                dashboardContainer.style.display = 'none';
+            }
+        }
+
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            const errorMsg = document.getElementById('login-error-msg');
+            
+            if (user === 'admin' && pass === 'admin123') {
+                sessionStorage.setItem('fruitingo_admin_logged_in', 'true');
+                errorMsg.style.display = 'none';
+                checkAdminAuth();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        };
+
+        window.handleAdminLogout = function() {
+            sessionStorage.removeItem('fruitingo_admin_logged_in');
+            // Clear input fields
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
+            checkAdminAuth();
+        };
+
+        window.switchTab = function(tabName) {
+            const tabs = {
+                products: { btn: document.getElementById('tab-btn-products'), panel: document.getElementById('tab-products'), display: 'grid' },
+                orders: { btn: document.getElementById('tab-btn-orders'), panel: document.getElementById('tab-orders'), display: 'block' },
+                feedback: { btn: document.getElementById('tab-btn-feedback'), panel: document.getElementById('tab-feedback'), display: 'block' }
+            };
+
+            Object.keys(tabs).forEach((name) => {
+                const { btn, panel, display } = tabs[name];
+                const isActive = name === tabName;
+                btn.classList.toggle('active', isActive);
+                if (isActive) {
+                    btn.style.background = '';
+                    btn.style.border = '';
+                    btn.style.color = '';
+                    panel.style.display = display;
+                } else {
+                    btn.style.background = 'var(--gray-light)';
+                    btn.style.border = '1px solid var(--border-color)';
+                    btn.style.color = 'var(--chocolate)';
+                    panel.style.display = 'none';
+                }
+            });
+
+            if (tabName === 'orders') renderAdminOrders();
+            if (tabName === 'feedback') renderAdminFeedbacks();
+        };
+
+        window.renderAdminOrders = function() {
+            const tableBody = document.getElementById('admin-orders-table');
+            const totalOrdersCount = document.getElementById('admin-total-orders');
+            const totalRevenueAmount = document.getElementById('admin-total-revenue');
+            
+            if (!tableBody) return;
+
+            const orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            
+            if (totalOrdersCount) {
+                totalOrdersCount.textContent = orders.length;
+            }
+
+            let revenue = 0;
+            orders.forEach(o => {
+                revenue += o.total;
+            });
+            if (totalRevenueAmount) {
+                totalRevenueAmount.textContent = '₹' + revenue;
+            }
+
+            if (orders.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No orders received yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            orders.slice().reverse().forEach(o => {
+                let itemsList = '<ul class="order-items-list">';
+                o.items.forEach(item => {
+                    itemsList += `<li>${item.name} (${item.weight}) x ${item.qty}</li>`;
+                });
+                itemsList += '</ul>';
+
+                const customerInfo = `
+                    <div class="order-customer-info">
+                        <strong>${o.customer.name}</strong><br>
+                        <i class="fa-solid fa-phone" style="font-size:0.75rem;"></i> ${o.customer.phone}<br>
+                        <i class="fa-solid fa-location-dot" style="font-size:0.75rem;"></i> ${o.customer.address}
+                    </div>
+                `;
+
+                const statusOptions = ['Paid (UPI)', 'Paid (Card)', 'Pending (COD)', 'Shipped', 'Completed', 'Cancelled'];
+                let statusSelect = `<select onchange="updateOrderStatus('${o.orderId}', this)" class="form-select" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; width: auto; border-radius: 6px; color: var(--chocolate); background: var(--gray-light); border: 1px solid var(--border-color); cursor: pointer;">`;
+                statusOptions.forEach(opt => {
+                    const selected = o.status === opt ? 'selected' : '';
+                    statusSelect += `<option value="${opt}" ${selected}>${opt}</option>`;
+                });
+                statusSelect += '</select>';
+
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${o.orderId}</td>
+                        <td style="font-size: 0.8rem; color: var(--gray-muted);">${o.date}</td>
+                        <td>${customerInfo}</td>
+                        <td>${itemsList}</td>
+                        <td style="font-weight: 800; color: var(--chocolate);">₹${o.total}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark);">${o.paymentMethod}</td>
+                        <td>${statusSelect}</td>
+                        <td style="text-align: center;">
+                            <button onclick="deleteOrder('${o.orderId}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Order">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        };
+
+        window.updateOrderStatus = function(orderId, selectEl) {
+            const newStatus = selectEl.value;
+            let orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            const idx = orders.findIndex(o => o.orderId === orderId);
+            if (idx > -1) {
+                orders[idx].status = newStatus;
+                localStorage.setItem('fruitingo_orders', JSON.stringify(orders));
+                renderAdminOrders();
+            }
+        };
+
+        window.deleteOrder = function(orderId) {
+            if (!confirm('Are you sure you want to delete this order?')) return;
+            let orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            orders = orders.filter(o => o.orderId !== orderId);
+            localStorage.setItem('fruitingo_orders', JSON.stringify(orders));
+            renderAdminOrders();
+        };
+    </script>
 </body>
 </html>

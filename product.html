@@ -30,7 +30,7 @@
             justify-content: center;
             align-items: center;
             border: 1px solid rgba(69, 26, 3, 0.05);
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--neu-light);
         }
         .product-gallery img {
             max-width: 90%;
@@ -43,7 +43,7 @@
             padding: 2.5rem;
             border-radius: 28px;
             border: 1px solid rgba(69, 26, 3, 0.05);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--neu-light);
         }
         .purchase-card h1 {
             font-size: 2.25rem;
@@ -112,7 +112,7 @@
             border-radius: 20px;
             margin-bottom: 1.25rem;
             border: 1px solid rgba(69, 26, 3, 0.03);
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--neu-light);
         }
         .prep-step-num {
             width: 42px;
@@ -150,7 +150,7 @@
     <header>
         <div class="header-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+                <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
             
             <nav>
@@ -333,7 +333,7 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <h3>🍌 Fruitingo.</h3>
+                <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
                     <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -356,7 +356,7 @@
                 <ul>
                     <li><a href="about.html#faq">FAQs & Usage</a></li>
                     <li><a href="#">Shipping Policy</a></li>
-                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
             
@@ -417,13 +417,16 @@
                 if (idx === 0) {
                     selectedProductId = p.id;
                 }
+                const mrp = p.strikePrice ? `<del style="color:var(--gray-muted); font-size:0.8rem; margin-right:0.5rem;">₹${p.strikePrice}</del>` : '';
+                const nut = p.nutrition ? `<div style="font-size:0.75rem; color:var(--secondary); margin-top:4px;"><i class="fa-solid fa-leaf"></i> ${p.nutrition}</div>` : '';
                 html += `
                     <div class="pack-item ${activeClass}" data-id="${p.id}">
                         <div class="pack-info">
                             <h4>${p.name}</h4>
                             <p>${p.desc.substring(0, 75)}...</p>
+                            ${nut}
                         </div>
-                        <div class="pack-price">₹${p.price}</div>
+                        <div class="pack-price" style="text-align: right;">${mrp}<br>₹${p.price}</div>
                     </div>
                 `;
             });

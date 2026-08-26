@@ -54,7 +54,8 @@
             background-color: var(--sand);
             border-radius: 24px;
             padding: 2rem;
-            border: 1px solid rgba(69, 26, 3, 0.05);
+            border: none;
+            box-shadow: var(--neu-light);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -70,8 +71,7 @@
             background-color: var(--white);
             padding: 3rem;
             border-radius: 24px;
-            border: 1px solid rgba(69, 26, 3, 0.04);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--neu-light);
             margin-top: 4rem;
         }
         .contact-box h2 {
@@ -103,7 +103,7 @@
     <header>
         <div class="header-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">🍌</span> Fruitingo<span>.</span>
+                <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
             
             <nav>
@@ -158,9 +158,50 @@
                 <p>This retains the bright pale yellow color of the bananas and seals the delicate sweetness and vitamins. No artificial colors, preservatives, or sweeteners are added. It's just 100% pure banana.</p>
             </div>
         </div>
+    </div>
 
-        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 5rem 0;">
+        <!-- Sourcing Flow (From Farm to Bowl) -->
+        <section class="timeline-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>Our Sourcing & Packing Journey</h2>
+                    <p>We trace every single banana back to organic orchards in Western Ghats foothills.</p>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot">1</div>
+                        <div class="timeline-content">
+                            <h3>Organic Farming</h3>
+                            <p>Naturally grown raw Nendran plantains cultivated by farmers under strict organic norms without chemical pesticides.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">2</div>
+                        <div class="timeline-content">
+                            <h3>Manual Hand-Picking</h3>
+                            <p>Only raw green bananas at optimal starch content are selected, washed thoroughly in running clean water, and peeled.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">3</div>
+                        <div class="timeline-content">
+                            <h3>Traditional Sun Drying</h3>
+                            <p>Bananas are cut into micro-slices and laid on pristine clean racks. They dry naturally under the hot tropical sun to retain maximum enzymes and nutrients.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">4</div>
+                        <div class="timeline-content">
+                            <h3>Fine Milling & Sealing</h3>
+                            <p>Dried banana chips are milled into a silky soft flour, double tested for impurities, and sealed immediately in food-safe bags.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
+    <div class="about-container">
         <!-- FAQ Section -->
         <section id="faq">
             <h2 style="font-size: 2.25rem; color: var(--chocolate); font-weight: 800; text-align: center; margin-bottom: 1rem;">Frequently Asked Questions</h2>
@@ -242,7 +283,7 @@
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <h3>🍌 Fruitingo.</h3>
+                <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
                     <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -265,7 +306,7 @@
                 <ul>
                     <li><a href="about.html#faq">FAQs & Usage</a></li>
                     <li><a href="#">Shipping Policy</a></li>
-                    <li><a href="admin.html" style="font-weight: bold; color: var(--primary);"><i class="fa-solid fa-gears"></i> Admin Portal</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
             
