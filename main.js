@@ -207,7 +207,7 @@ function renderCartDrawer() {
                 <a href="index.html#shop" class="btn btn-primary" style="margin-top: 1.5rem; font-size: 0.9rem;">Shop Fruitingo</a>
             </div>
         `;
-        if (totalVal) totalVal.textContent = 'â‚¹0';
+        if (totalVal) totalVal.textContent = '₹0';
         return;
     }
 
@@ -221,7 +221,7 @@ function renderCartDrawer() {
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.name}</div>
                     <div class="cart-item-weight">${item.weight}</div>
-                    <div class="cart-item-price">â‚¹${item.price}</div>
+                    <div class="cart-item-price">₹${item.price}</div>
                     <div class="cart-item-controls">
                         <div class="qty-wrap">
                             <button class="qty-btn" onclick="updateQuantity('${item.id}', -1)">-</button>
@@ -239,7 +239,7 @@ function renderCartDrawer() {
 
     cartBody.innerHTML = html;
     if (totalVal) {
-        totalVal.textContent = 'â‚¹' + getCartTotal();
+        totalVal.textContent = '₹' + getCartTotal();
     }
 }
 
@@ -441,7 +441,7 @@ function renderProductsHome() {
         const tagHTML = p.tag ? `<span class="badge-tag">${p.tag}</span>` : '';
         const starsHTML = getRatingStarsHTML(p.rating);
         
-        const mrpHtml = p.strikePrice ? `<del style="color: var(--gray-muted); font-size: 0.85rem; font-weight: 500; margin-left: 0.5rem;">â‚¹${p.strikePrice}</del>` : '';
+        const mrpHtml = p.strikePrice ? `<del style="color: var(--gray-muted); font-size: 0.85rem; font-weight: 500; margin-left: 0.5rem;">₹${p.strikePrice}</del>` : '';
         const nutritionHtml = p.nutrition ? `<p style="font-size: 0.8rem; color: var(--secondary); margin-top: 0.5rem; font-weight: 600;"><i class="fa-solid fa-leaf"></i> ${p.nutrition}</p>` : '';
         
         html += `
@@ -459,7 +459,7 @@ function renderProductsHome() {
                         <span>${p.rating} (${p.reviewsCount} reviews)</span>
                     </div>
                     <div class="product-card-footer">
-                        <div class="price-tag">â‚¹${p.price} ${mrpHtml} <span style="display:block; font-size:0.75rem; margin-top:0.15rem;">/ ${p.weight}</span></div>
+                        <div class="price-tag">₹${p.price} ${mrpHtml} <span style="display:block; font-size:0.75rem; margin-top:0.15rem;">/ ${p.weight}</span></div>
                         <button class="btn btn-primary" onclick="addToCart('${p.id}', 1)" style="padding: 0.65rem 1.25rem; font-size: 0.9rem;">
                             <i class="fa-solid fa-cart-plus"></i> Add
                         </button>
@@ -516,7 +516,7 @@ function renderAdminDashboard() {
     products.forEach((p) => {
         const stockStatus = p.stockStatus || 'in-stock';
         const stockQuantity = p.stockQuantity || 0;
-        const mrpHtml = p.strikePrice ? `â‚¹${p.strikePrice}` : '-';
+        const mrpHtml = p.strikePrice ? `₹${p.strikePrice}` : '-';
         
         const stockBadge = getStockBadge(stockStatus);
         
@@ -540,7 +540,7 @@ function renderAdminDashboard() {
                     <input type="text" id="product-weight-edit-${p.id}" class="inline-edit-input" value="${p.weight}" style="display: none;">
                 </td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
-                    <span id="product-price-${p.id}" class="product-display" style="font-weight: 800; color: var(--chocolate);">â‚¹${p.price}</span>
+                    <span id="product-price-${p.id}" class="product-display" style="font-weight: 800; color: var(--chocolate);">₹${p.price}</span>
                     <input type="number" id="product-price-edit-${p.id}" class="inline-edit-input" value="${p.price}" style="display: none;">
                 </td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
@@ -554,9 +554,9 @@ function renderAdminDashboard() {
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
                     <span id="product-status-${p.id}" class="product-display">${stockBadge}</span>
                     <select id="product-status-edit-${p.id}" class="inline-edit-select" style="display: none;">
-                        <option value="in-stock" ${stockStatus === 'in-stock' ? 'selected' : ''}>ðŸŸ¢ In Stock</option>
-                        <option value="low-stock" ${stockStatus === 'low-stock' ? 'selected' : ''}>ðŸŸ¡ Low Stock</option>
-                        <option value="out-of-stock" ${stockStatus === 'out-of-stock' ? 'selected' : ''}>ðŸ”´ Out of Stock</option>
+                        <option value="in-stock" ${stockStatus === 'in-stock' ? 'selected' : ''}>🟢 In Stock</option>
+                        <option value="low-stock" ${stockStatus === 'low-stock' ? 'selected' : ''}>🟡 Low Stock</option>
+                        <option value="out-of-stock" ${stockStatus === 'out-of-stock' ? 'selected' : ''}>🔴 Out of Stock</option>
                     </select>
                 </td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center; white-space: nowrap;">
@@ -587,13 +587,13 @@ function renderAdminDashboard() {
 function getStockBadge(status) {
     switch(status) {
         case 'in-stock':
-            return '<span class="stock-badge in-stock">ðŸŸ¢ In Stock</span>';
+            return '<span class="stock-badge in-stock">🟢 In Stock</span>';
         case 'low-stock':
-            return '<span class="stock-badge low-stock">ðŸŸ¡ Low Stock</span>';
+            return '<span class="stock-badge low-stock">🟡 Low Stock</span>';
         case 'out-of-stock':
-            return '<span class="stock-badge out-of-stock">ðŸ”´ Out of Stock</span>';
+            return '<span class="stock-badge out-of-stock">🔴 Out of Stock</span>';
         default:
-            return '<span class="stock-badge in-stock">ðŸŸ¢ In Stock</span>';
+            return '<span class="stock-badge in-stock">🟢 In Stock</span>';
     }
 }
 
@@ -881,7 +881,7 @@ window.adminAddProduct = function(e) {
     }
 }
 
-// User Feedback Logic â€” stored in local database (localStorage)
+// User Feedback Logic — stored in local database (localStorage)
 if (!localStorage.getItem('fruitingo_reviews_v2')) {
     localStorage.removeItem('fruitingo_reviews');
     localStorage.setItem('fruitingo_reviews_v2', '1');
@@ -889,7 +889,7 @@ if (!localStorage.getItem('fruitingo_reviews_v2')) {
 
 let reviews = JSON.parse(localStorage.getItem('fruitingo_reviews')) || [];
 
-// Contact Messages Logic â€” stored in local database (localStorage)
+// Contact Messages Logic — stored in local database (localStorage)
 let contactMessages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
 
 function saveReviews() {
@@ -1059,11 +1059,11 @@ window.renderAdminFeedbacks = function() {
 
     let html = '';
     sortedReviews().forEach(r => {
-        const date = r.createdAt ? new Date(r.createdAt).toLocaleString() : 'â€”';
+        const date = r.createdAt ? new Date(r.createdAt).toLocaleString() : '—';
         html += `
             <tr>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
-                    ${r.pinned ? '<span class="stats-badge" style="background-color: rgba(212, 175, 55, 0.18); color: var(--chocolate);"><i class="fa-solid fa-thumbtack"></i> Pinned</span>' : '<span style="color: var(--gray-muted); font-size: 0.85rem;">â€”</span>'}
+                    ${r.pinned ? '<span class="stats-badge" style="background-color: rgba(212, 175, 55, 0.18); color: var(--chocolate);"><i class="fa-solid fa-thumbtack"></i> Pinned</span>' : '<span style="color: var(--gray-muted); font-size: 0.85rem;">—</span>'}
                 </td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
                     <strong style="color: var(--chocolate);">${escapeHtml(r.name)}</strong><br>
