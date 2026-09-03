@@ -11,7 +11,9 @@ const defaultProducts = [
         image: 'assets/fruitingo_product.jpg',
         rating: 4.8,
         reviewsCount: 142,
-        tag: 'Best Seller'
+        tag: 'Best Seller',
+        stockStatus: 'in-stock',
+        stockQuantity: 50
     },
     {
         id: 'fruitingo-500',
@@ -22,7 +24,9 @@ const defaultProducts = [
         image: 'assets/fruitingo_product.jpg',
         rating: 4.9,
         reviewsCount: 88,
-        tag: 'Popular'
+        tag: 'Popular',
+        stockStatus: 'in-stock',
+        stockQuantity: 35
     },
     {
         id: 'fruitingo-1000',
@@ -33,7 +37,9 @@ const defaultProducts = [
         image: 'assets/fruitingo_product.jpg',
         rating: 4.9,
         reviewsCount: 64,
-        tag: 'Super Saver'
+        tag: 'Super Saver',
+        stockStatus: 'low-stock',
+        stockQuantity: 8
     }
 ];
 
@@ -53,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initAccordion();
     initSlider();
     initWhyChooseReveal();
+    initScrollAnimations();
+    initAnnouncementBar();
     
     // Dynamic Page Render Initializations
     if (document.getElementById('products-container')) {
@@ -482,7 +490,7 @@ function getRatingStarsHTML(rating) {
     return starsHTML;
 }
 
-// Render Admin Dashboard list
+// Render Admin Dashboard list with inline editing
 function renderAdminDashboard() {
     const tableBody = document.getElementById('admin-products-table');
     const totalProdCount = document.getElementById('admin-total-products');
@@ -496,7 +504,7 @@ function renderAdminDashboard() {
     if (products.length === 0) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                <td colspan="9" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
                     No products listed. Fill the form to add a new product.
                 </td>
             </tr>
@@ -506,29 +514,233 @@ function renderAdminDashboard() {
 
     let html = '';
     products.forEach((p) => {
-        let mrpHtml = p.strikePrice ? `₹${p.strikePrice}` : '-';
+        const stockStatus = p.stockStatus || 'in-stock';
+        const stockQuantity = p.stockQuantity || 0;
+        const mrpHtml = p.strikePrice ? `₹${p.strikePrice}` : '-';
+        
+        const stockBadge = getStockBadge(stockStatus);
+        
         html += `
-            <tr>
+            <tr id="product-row-${p.id}" data-product-id="${p.id}">
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center;">
-                    <img src="${p.image}" alt="${p.name}" style="width: 48px; height: 48px; object-fit: contain; background: var(--sand); border-radius: 8px;">
+                    <div style="position: relative; display: inline-block;">
+                        <img id="product-img-${p.id}" src="${p.image}" alt="${p.name}" style="width: 48px; height: 48px; object-fit: contain; background: var(--sand); border-radius: 8px;">
+                        <input type="file" id="product-img-input-${p.id}" accept="image/*" style="display: none;" onchange="previewProductImage('${p.id}', this)">
+                        <button onclick="document.getElementById('product-img-input-${p.id}').click()" class="image-upload-btn" style="position: absolute; bottom: -5px; right: -5px; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); border: none; color: var(--chocolate); cursor: pointer; display: none;" id="img-edit-btn-${p.id}">
+                            <i class="fa-solid fa-camera" style="font-size: 0.7rem;"></i>
+                        </button>
+                    </div>
                 </td>
-                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--chocolate);">${p.name}</td>
-                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">${p.weight}</td>
-                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--chocolate);">₹${p.price}</td>
-                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--gray-muted);"><del>${mrpHtml}</del></td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <span id="product-name-${p.id}" class="product-display">${p.name}</span>
+                    <input type="text" id="product-name-edit-${p.id}" class="inline-edit-input" value="${p.name}" style="display: none;">
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <span id="product-weight-${p.id}" class="product-display">${p.weight}</span>
+                    <input type="text" id="product-weight-edit-${p.id}" class="inline-edit-input" value="${p.weight}" style="display: none;">
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <span id="product-price-${p.id}" class="product-display" style="font-weight: 800; color: var(--chocolate);">₹${p.price}</span>
+                    <input type="number" id="product-price-edit-${p.id}" class="inline-edit-input" value="${p.price}" style="display: none;">
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <span id="product-mrp-${p.id}" class="product-display" style="color: var(--gray-muted);"><del>${mrpHtml}</del></span>
+                    <input type="number" id="product-mrp-edit-${p.id}" class="inline-edit-input" value="${p.strikePrice || ''}" placeholder="MRP" style="display: none;">
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <span id="product-stock-${p.id}" class="product-display">${stockQuantity}</span>
+                    <input type="number" id="product-stock-edit-${p.id}" class="inline-edit-input" value="${stockQuantity}" style="display: none;">
+                </td>
+                <td style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <span id="product-status-${p.id}" class="product-display">${stockBadge}</span>
+                    <select id="product-status-edit-${p.id}" class="inline-edit-select" style="display: none;">
+                        <option value="in-stock" ${stockStatus === 'in-stock' ? 'selected' : ''}>🟢 In Stock</option>
+                        <option value="low-stock" ${stockStatus === 'low-stock' ? 'selected' : ''}>🟡 Low Stock</option>
+                        <option value="out-of-stock" ${stockStatus === 'out-of-stock' ? 'selected' : ''}>🔴 Out of Stock</option>
+                    </select>
+                </td>
                 <td style="padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: center; white-space: nowrap;">
-                    <button onclick="editProduct('${p.id}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Edit Product">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button onclick="adminDeleteProduct('${p.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Product">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                    <div id="product-actions-${p.id}" class="product-actions">
+                        <button onclick="startInlineEdit('${p.id}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Edit Product">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="adminDeleteProduct('${p.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Product">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <div id="product-edit-actions-${p.id}" class="inline-edit-actions" style="display: none; gap: 0.5rem;">
+                        <button onclick="saveInlineEdit('${p.id}')" class="inline-save-btn" style="background: var(--secondary); color: white; border: none; border-radius: 6px; padding: 0.4rem 0.6rem; cursor: pointer; font-size: 0.9rem;" title="Save">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <button onclick="cancelInlineEdit('${p.id}')" class="inline-cancel-btn" style="background: #EF4444; color: white; border: none; border-radius: 6px; padding: 0.4rem 0.6rem; cursor: pointer; font-size: 0.9rem;" title="Cancel">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
     });
 
     tableBody.innerHTML = html;
+}
+
+function getStockBadge(status) {
+    switch(status) {
+        case 'in-stock':
+            return '<span class="stock-badge in-stock">🟢 In Stock</span>';
+        case 'low-stock':
+            return '<span class="stock-badge low-stock">🟡 Low Stock</span>';
+        case 'out-of-stock':
+            return '<span class="stock-badge out-of-stock">🔴 Out of Stock</span>';
+        default:
+            return '<span class="stock-badge in-stock">🟢 In Stock</span>';
+    }
+}
+
+// Start inline editing for a product
+window.startInlineEdit = function(productId) {
+    const row = document.getElementById(`product-row-${productId}`);
+    if (!row) return;
+
+    // Add editing class to row
+    row.classList.add('product-row-editing');
+
+    // Hide display elements and show edit inputs
+    const displayElements = row.querySelectorAll('.product-display');
+    const editInputs = row.querySelectorAll('.inline-edit-input, .inline-edit-select');
+    
+    displayElements.forEach(el => el.style.display = 'none');
+    editInputs.forEach(el => el.style.display = 'block');
+
+    // Show image edit button
+    const imgEditBtn = document.getElementById(`img-edit-btn-${productId}`);
+    if (imgEditBtn) imgEditBtn.style.display = 'block';
+
+    // Switch action buttons
+    document.getElementById(`product-actions-${productId}`).style.display = 'none';
+    document.getElementById(`product-edit-actions-${productId}`).style.display = 'flex';
+};
+
+// Cancel inline editing
+window.cancelInlineEdit = function(productId) {
+    const row = document.getElementById(`product-row-${productId}`);
+    if (!row) return;
+
+    // Remove editing class
+    row.classList.remove('product-row-editing');
+
+    // Reset all edit inputs to original values
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        document.getElementById(`product-name-edit-${productId}`).value = product.name;
+        document.getElementById(`product-weight-edit-${productId}`).value = product.weight;
+        document.getElementById(`product-price-edit-${productId}`).value = product.price;
+        document.getElementById(`product-mrp-edit-${productId}`).value = product.strikePrice || '';
+        document.getElementById(`product-stock-edit-${productId}`).value = product.stockQuantity || 0;
+        document.getElementById(`product-status-edit-${productId}`).value = product.stockStatus || 'in-stock';
+        
+        // Reset image if changed
+        document.getElementById(`product-img-${productId}`).src = product.image;
+    }
+
+    // Show display elements and hide edit inputs
+    const displayElements = row.querySelectorAll('.product-display');
+    const editInputs = row.querySelectorAll('.inline-edit-input, .inline-edit-select');
+    
+    displayElements.forEach(el => el.style.display = 'inline');
+    editInputs.forEach(el => el.style.display = 'none');
+
+    // Hide image edit button
+    const imgEditBtn = document.getElementById(`img-edit-btn-${productId}`);
+    if (imgEditBtn) imgEditBtn.style.display = 'none';
+
+    // Switch action buttons back
+    document.getElementById(`product-actions-${productId}`).style.display = 'block';
+    document.getElementById(`product-edit-actions-${productId}`).style.display = 'none';
+};
+
+// Preview product image
+window.previewProductImage = function(productId, input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(`product-img-${productId}`).src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+};
+
+// Save inline edit
+window.saveInlineEdit = function(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    // Get edited values
+    const newName = document.getElementById(`product-name-edit-${productId}`).value.trim();
+    const newWeight = document.getElementById(`product-weight-edit-${productId}`).value.trim();
+    const newPrice = parseInt(document.getElementById(`product-price-edit-${productId}`).value);
+    const newMrp = document.getElementById(`product-mrp-edit-${productId}`).value;
+    const newStock = parseInt(document.getElementById(`product-stock-edit-${productId}`).value);
+    const newStatus = document.getElementById(`product-status-edit-${productId}`).value;
+    const currentImg = document.getElementById(`product-img-${productId}`).src;
+
+    // Validation
+    if (!newName || !newWeight || !newPrice) {
+        alert('Please fill in all required fields (Name, Weight, Price).');
+        return;
+    }
+
+    // Update product
+    const idx = products.findIndex(p => p.id === productId);
+    if (idx > -1) {
+        products[idx].name = newName;
+        products[idx].weight = newWeight;
+        products[idx].price = newPrice;
+        products[idx].strikePrice = newMrp ? parseInt(newMrp) : null;
+        products[idx].stockQuantity = newStock;
+        products[idx].stockStatus = newStatus;
+        
+        // Update image if changed
+        if (currentImg !== product.image) {
+            products[idx].image = currentImg;
+        }
+
+        // Save to localStorage
+        localStorage.setItem('fruitingo_products', JSON.stringify(products));
+
+        // Show success toast
+        showToast('Product updated successfully!');
+
+        // Exit edit mode
+        cancelInlineEdit(productId);
+
+        // Re-render table
+        renderAdminDashboard();
+
+        // Update product displays on other pages
+        if (typeof renderProductsHome === 'function') {
+            renderProductsHome();
+        }
+    }
+};
+
+// Show toast notification
+function showToast(message) {
+    let toast = document.querySelector('.toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = `<i class="fa-solid fa-check-circle" style="margin-right: 0.5rem;"></i> ${message}`;
+        document.body.appendChild(toast);
+    } else {
+        toast.innerHTML = `<i class="fa-solid fa-check-circle" style="margin-right: 0.5rem;"></i> ${message}`;
+    }
+    
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
 // Delete Product
@@ -547,27 +759,50 @@ window.adminDeleteProduct = function(id) {
 
 // Edit Product
 window.editProduct = function(id) {
+    console.log('Edit product called with ID:', id);
     const p = products.find(prod => prod.id === id);
-    if (!p) return;
+    if (!p) {
+        console.error('Product not found with ID:', id);
+        return;
+    }
 
-    document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--secondary);"></i> Edit Package';
-    document.getElementById('edit-prod-id').value = p.id;
+    const formTitle = document.getElementById('form-title');
+    const editProdId = document.getElementById('edit-prod-id');
+    const prodName = document.getElementById('new-prod-name');
+    const prodPrice = document.getElementById('new-prod-price');
+    const prodStrikePrice = document.getElementById('new-prod-strike-price');
+    const prodWeight = document.getElementById('new-prod-weight');
+    const prodDesc = document.getElementById('new-prod-desc');
+    const prodNutrition = document.getElementById('new-prod-nutrition');
+    const prodImage = document.getElementById('new-prod-image');
+    const formSubmitBtn = document.getElementById('form-submit-btn');
+    const formCancelBtn = document.getElementById('form-cancel-btn');
+
+    if (!formTitle || !editProdId || !prodName || !prodPrice || !prodWeight) {
+        console.error('Required form elements not found');
+        return;
+    }
+
+    formTitle.innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: var(--secondary);"></i> Edit Package';
+    editProdId.value = p.id;
     
-    document.getElementById('new-prod-name').value = p.name;
-    document.getElementById('new-prod-price').value = p.price;
-    document.getElementById('new-prod-strike-price').value = p.strikePrice || '';
-    document.getElementById('new-prod-weight').value = p.weight;
-    document.getElementById('new-prod-desc').value = p.desc || '';
-    document.getElementById('new-prod-nutrition').value = p.nutrition || '';
+    prodName.value = p.name;
+    prodPrice.value = p.price;
+    prodStrikePrice.value = p.strikePrice || '';
+    prodWeight.value = p.weight;
+    prodDesc.value = p.desc || '';
+    prodNutrition.value = p.nutrition || '';
     
     // Reset file input since we can't set it programmatically
-    document.getElementById('new-prod-image').value = '';
+    prodImage.value = '';
     
-    document.getElementById('form-submit-btn').innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
-    document.getElementById('form-cancel-btn').style.display = 'flex';
+    formSubmitBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
+    formCancelBtn.style.display = 'flex';
     
     // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    console.log('Product form populated for editing:', p.name);
 };
 
 window.cancelEdit = function() {
@@ -592,46 +827,47 @@ window.adminAddProduct = function(e) {
     const nutrition = document.getElementById('new-prod-nutrition').value.trim();
     const imageInput = document.getElementById('new-prod-image');
 
-    if (!name || !price || !weight) return;
+    if (!name || !price || !weight) {
+        alert('Please fill in all required fields (Name, Price, Weight).');
+        return;
+    }
 
-    const saveOrUpdateProduct = (imgDataUrl) => {
-        if (editId) {
-            // Update existing
-            const idx = products.findIndex(p => p.id === editId);
-            if (idx > -1) {
-                products[idx].name = name;
-                products[idx].price = price;
-                products[idx].strikePrice = strikePrice;
-                products[idx].weight = weight;
-                products[idx].desc = desc;
-                products[idx].nutrition = nutrition;
-                if (imgDataUrl) {
-                    products[idx].image = imgDataUrl; // update image only if new one uploaded
-                }
-            }
-            alert('Product updated successfully!');
-        } else {
-            // Add new
-            const id = 'fruitingo-' + Date.now();
-            const newProduct = {
-                id,
-                name,
-                price,
-                strikePrice,
-                weight,
-                desc: desc || '100% pure organic Nendran banana powder.',
-                nutrition: nutrition || '',
-                image: imgDataUrl || 'assets/fruitingo_product.jpg',
-                rating: 5.0,
-                reviewsCount: 1
-            };
-            products.push(newProduct);
-            alert('Product added successfully!');
-        }
-
+    const saveProduct = (imgDataUrl) => {
+        // Add new product only (editing is now done inline)
+        const id = 'fruitingo-' + Date.now();
+        const newProduct = {
+            id,
+            name,
+            price,
+            strikePrice,
+            weight,
+            desc: desc || '100% pure organic Nendran banana powder.',
+            nutrition: nutrition || '',
+            image: imgDataUrl || 'assets/fruitingo_product.jpg',
+            rating: 5.0,
+            reviewsCount: 1,
+            stockStatus: 'in-stock',
+            stockQuantity: 50
+        };
+        products.push(newProduct);
+        
         localStorage.setItem('fruitingo_products', JSON.stringify(products));
-        cancelEdit();
-        renderAdminDashboard();
+        
+        // Reset form
+        document.getElementById('admin-add-form').reset();
+        
+        // Show success message
+        showToast('Product added successfully!');
+        
+        // Re-render dashboard
+        if (typeof renderAdminDashboard === 'function') {
+            renderAdminDashboard();
+        }
+        
+        // Update product displays on other pages
+        if (typeof renderProductsHome === 'function') {
+            renderProductsHome();
+        }
     };
 
     if (imageInput.files && imageInput.files[0]) {
@@ -653,9 +889,60 @@ if (!localStorage.getItem('fruitingo_reviews_v2')) {
 
 let reviews = JSON.parse(localStorage.getItem('fruitingo_reviews')) || [];
 
+// Contact Messages Logic — stored in local database (localStorage)
+let contactMessages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+
 function saveReviews() {
     localStorage.setItem('fruitingo_reviews', JSON.stringify(reviews));
 }
+
+function saveContactMessages() {
+    localStorage.setItem('fruitingo_contact_messages', JSON.stringify(contactMessages));
+}
+
+window.submitContactForm = function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('contact-name').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const phone = document.getElementById('contact-phone').value.trim();
+    const message = document.getElementById('contact-msg').value.trim();
+    
+    // Validation
+    if (!name || !email || !phone || !message) {
+        alert('Please fill in all fields.');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    
+    // Create message object
+    const newMessage = {
+        id: Date.now().toString(),
+        name: name,
+        email: email,
+        phone: phone,
+        message: message,
+        date: new Date().toLocaleString(),
+        status: 'New',
+        createdAt: Date.now()
+    };
+    
+    // Save to storage
+    contactMessages.push(newMessage);
+    saveContactMessages();
+    
+    // Show success message
+    alert('Thank you! Your message has been received. Our team will contact you back in 24 hours.');
+    
+    // Reset form
+    document.getElementById('contact-form').reset();
+};
 
 function escapeHtml(str) {
     return String(str)
@@ -844,5 +1131,89 @@ window.initStarRating = function() {
                 }
             });
         });
+    });
+};
+
+// Announcement Bar Animation
+function initAnnouncementBar() {
+    const announcementBar = document.querySelector('.announcement-bar');
+    if (!announcementBar) return;
+
+    const messages = document.querySelectorAll('.announcement-text');
+    if (messages.length === 0) return;
+
+    let currentIndex = 0;
+    let isPaused = false;
+    let animationTimeout;
+
+    function showNextMessage() {
+        if (isPaused) {
+            animationTimeout = setTimeout(showNextMessage, 100);
+            return;
+        }
+
+        // Hide current message
+        messages.forEach(msg => msg.classList.remove('active'));
+
+        // Show next message
+        messages[currentIndex].classList.add('active');
+
+        // Move to next index
+        currentIndex = (currentIndex + 1) % messages.length;
+
+        // Schedule next message (2.7 seconds total per message: 0.6s slide + 2.3s pause + 0.4s fade)
+        animationTimeout = setTimeout(showNextMessage, 2700);
+    }
+
+    // Start the animation
+    showNextMessage();
+
+    // Pause on hover
+    announcementBar.addEventListener('mouseenter', () => {
+        isPaused = true;
+    });
+
+    // Resume on mouse leave
+    announcementBar.addEventListener('mouseleave', () => {
+        isPaused = false;
+    });
+}
+
+// Smooth Scroll Animations
+window.initScrollAnimations = function() {
+    // Select all elements to animate
+    const animatedElements = document.querySelectorAll(
+        'section, .why-choose-card, .product-card, .testimonials-grid .review-card, .contact-box, .contact-details, .calculator-container, .admin-card, .story-block, .timeline-item, .accordion-item'
+    );
+    
+    // Add animation classes with staggered delays
+    animatedElements.forEach((element, index) => {
+        // Don't add duplicate classes
+        if (!element.classList.contains('animate-on-scroll')) {
+            element.classList.add('animate-on-scroll');
+            // Stagger delay by 100ms
+            element.style.transitionDelay = (index * 0.1) + 's';
+        }
+    });
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate');
+                observer.unobserve(entry.target); // Animate only once
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    document.querySelectorAll('.animate-on-scroll').forEach(element => {
+        observer.observe(element);
     });
 };

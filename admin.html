@@ -22,6 +22,146 @@
             gap: 3rem;
             align-items: start;
         }
+        .admin-grid-full {
+            display: block;
+        }
+        .admin-grid-full .admin-card {
+            margin-bottom: 3rem;
+        }
+        .admin-grid-full .admin-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Inline Editing Styles */
+        .inline-edit-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: #FFFFFF;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: var(--dark);
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+        }
+        .inline-edit-input:focus {
+            outline: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(212, 175, 55, 0.2);
+            border-color: #D4AF37;
+        }
+        .inline-edit-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: #FFFFFF;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: var(--dark);
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+        }
+        .inline-edit-select:focus {
+            outline: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+        .stock-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .stock-badge.in-stock {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--secondary);
+        }
+        .stock-badge.low-stock {
+            background-color: rgba(234, 179, 8, 0.1);
+            color: #ca8a04;
+        }
+        .stock-badge.out-of-stock {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .inline-edit-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .inline-save-btn {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .inline-save-btn:hover {
+            background: var(--secondary-hover);
+            transform: translateY(-1px);
+        }
+        .inline-cancel-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .inline-cancel-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+        .product-row-editing {
+            background-color: rgba(212, 175, 55, 0.05);
+            transition: background-color 0.25s ease;
+        }
+        .image-upload-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: var(--gray-muted);
+            transition: all 0.25s ease;
+        }
+        .image-upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--secondary);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            display: none;
+        }
+        .toast-notification.show {
+            display: block;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
         .admin-card {
             background-color: var(--white);
             padding: 2.5rem;
@@ -120,6 +260,15 @@
 </head>
 <body>
 
+    <!-- Premium Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-content">
+            <div class="announcement-text active" data-index="0">� 100% Raw Nendran Banana Flour — Pure Natural Goodness.</div>
+            <div class="announcement-text" data-index="1">🌿 No Preservatives • No Artificial Colours • No Added Sugar.</div>
+            <div class="announcement-text" data-index="2">❤️ Freshly Packed with Care for Every Family.</div>
+        </div>
+    </div>
+
     <!-- Header Navigation -->
     <header>
         <div class="header-container">
@@ -132,7 +281,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="product.html">Products</a></li>
                     <li><a href="about.html">About</a></li>
-                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                     <li><a href="checkout.html">Order</a></li>
                 </ul>
             </nav>
@@ -191,6 +340,9 @@
                     <button class="btn tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
                         <i class="fa-solid fa-comments"></i> Feedback
                     </button>
+                    <button class="btn tab-btn" id="tab-btn-contact" onclick="switchTab('contact')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-envelope"></i> Contact Messages
+                    </button>
                     <button class="btn" onclick="handleAdminLogout()" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; cursor: pointer;">
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
                     </button>
@@ -198,15 +350,13 @@
             </div>
 
             <!-- Tab 1: Products View -->
-            <div id="tab-products" class="admin-grid">
+            <div id="tab-products" class="admin-grid-full">
                 
                 <!-- Add Product Form Card -->
                 <div class="admin-card">
-                    <h2 id="form-title"><i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add / Edit Package</h2>
+                    <h2><i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add New Product</h2>
                     
                     <form id="admin-add-form" onsubmit="adminAddProduct(event)">
-                        <input type="hidden" id="edit-prod-id" value="">
-                        
                         <div class="form-group">
                             <label for="new-prod-name">Product / Package Name</label>
                             <input type="text" id="new-prod-name" class="form-input" placeholder="e.g. Fruitingo Gold Pack (750g)" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
@@ -244,11 +394,8 @@
                             <textarea id="new-prod-nutrition" class="form-input" rows="3" placeholder="e.g. Rich in Potassium, 0g Trans Fat, High Fiber" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
                         </div>
 
-                        <button type="submit" id="form-submit-btn" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem; justify-content: center;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem; justify-content: center;">
                             <i class="fa-solid fa-save"></i> Save & Publish Product
-                        </button>
-                        <button type="button" id="form-cancel-btn" onclick="cancelEdit()" class="btn" style="display: none; width: 100%; padding: 1rem; border-radius: 12px; margin-top: 0.5rem; justify-content: center; background: rgba(239, 68, 68, 0.1); color: #EF4444;">
-                            Cancel Edit
                         </button>
                     </form>
                 </div>
@@ -264,12 +411,14 @@
                         <table>
                             <thead>
                             <tr>
-                                <th style="text-align: center; width: 80px;">Image</th>
-                                <th>Name</th>
-                                <th>Weight</th>
-                                <th>Sale Price</th>
-                                <th>MRP</th>
-                                <th style="text-align: center; width: 120px;">Action</th>
+                                <th style="text-align: center; width: 100px;">Image</th>
+                                <th style="width: 200px;">Name</th>
+                                <th style="width: 120px;">Weight</th>
+                                <th style="width: 100px;">Sale Price</th>
+                                <th style="width: 100px;">MRP</th>
+                                <th style="width: 100px;">Stock</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="text-align: center; width: 100px;">Action</th>
                             </tr>
                         </thead>
                             <tbody id="admin-products-table">
@@ -342,6 +491,35 @@
                 </div>
             </div>
 
+            <!-- Tab 4: Contact Messages View -->
+            <div id="tab-contact" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-envelope" style="color: var(--chocolate);"></i> Contact Messages</span>
+                        <span class="stats-badge"><strong id="admin-total-contact">0</strong> messages</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">View and manage customer inquiries submitted through the contact form.</p>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Message</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 120px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-contact-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -352,9 +530,9 @@
                 <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
-                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
                 </div>
             </div>
             
@@ -417,7 +595,10 @@
     <script>
         // Check Admin Auth status
         document.addEventListener('DOMContentLoaded', () => {
-            checkAdminAuth();
+            // Wait a moment to ensure main.js is fully loaded
+            setTimeout(() => {
+                checkAdminAuth();
+            }, 100);
         });
 
         function checkAdminAuth() {
@@ -429,9 +610,18 @@
                 loginContainer.style.display = 'none';
                 dashboardContainer.style.display = 'block';
                 // Render products and orders
-                renderAdminDashboard();
-                renderAdminOrders();
-                renderAdminFeedbacks();
+                if (typeof renderAdminDashboard === 'function') {
+                    renderAdminDashboard();
+                }
+                if (typeof renderAdminOrders === 'function') {
+                    renderAdminOrders();
+                }
+                if (typeof renderAdminFeedbacks === 'function') {
+                    renderAdminFeedbacks();
+                }
+                if (typeof renderAdminContactMessages === 'function') {
+                    renderAdminContactMessages();
+                }
             } else {
                 loginContainer.style.display = 'block';
                 dashboardContainer.style.display = 'none';
@@ -465,7 +655,8 @@
             const tabs = {
                 products: { btn: document.getElementById('tab-btn-products'), panel: document.getElementById('tab-products'), display: 'grid' },
                 orders: { btn: document.getElementById('tab-btn-orders'), panel: document.getElementById('tab-orders'), display: 'block' },
-                feedback: { btn: document.getElementById('tab-btn-feedback'), panel: document.getElementById('tab-feedback'), display: 'block' }
+                feedback: { btn: document.getElementById('tab-btn-feedback'), panel: document.getElementById('tab-feedback'), display: 'block' },
+                contact: { btn: document.getElementById('tab-btn-contact'), panel: document.getElementById('tab-contact'), display: 'block' }
             };
 
             Object.keys(tabs).forEach((name) => {
@@ -487,6 +678,7 @@
 
             if (tabName === 'orders') renderAdminOrders();
             if (tabName === 'feedback') renderAdminFeedbacks();
+            if (tabName === 'contact') renderAdminContactMessages();
         };
 
         window.renderAdminOrders = function() {
@@ -583,6 +775,87 @@
             orders = orders.filter(o => o.orderId !== orderId);
             localStorage.setItem('fruitingo_orders', JSON.stringify(orders));
             renderAdminOrders();
+        };
+
+        window.renderAdminContactMessages = function() {
+            const tableBody = document.getElementById('admin-contact-table');
+            const totalContactCount = document.getElementById('admin-total-contact');
+            
+            if (!tableBody) return;
+
+            const messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            
+            if (totalContactCount) {
+                totalContactCount.textContent = messages.length;
+            }
+
+            if (messages.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No contact messages received yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            messages.slice().reverse().forEach(msg => {
+                const statusBadge = msg.status === 'New' 
+                    ? `<span style="background-color: rgba(22, 163, 74, 0.1); color: var(--secondary); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${msg.status}</span>`
+                    : `<span style="background-color: rgba(107, 114, 128, 0.1); color: #6b7280; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${msg.status}</span>`;
+
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${msg.name}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark);">${msg.email}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark);">${msg.phone || 'N/A'}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark); max-width: 200px;">${msg.message.substring(0, 40)}${msg.message.length > 40 ? '...' : ''}</td>
+                        <td style="font-size: 0.8rem; color: var(--gray-muted);">${msg.date}</td>
+                        <td>${statusBadge}</td>
+                        <td style="text-align: center;">
+                            <button onclick="viewContactMessage('${msg.id}')" style="background: transparent; border: none; color: var(--secondary); cursor: pointer; font-size: 1rem; padding: 0.5rem; transition: var(--transition-fast);" title="View Message">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="markContactAsRead('${msg.id}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Mark as Read">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button onclick="deleteContactMessage('${msg.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Message">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        };
+
+        window.viewContactMessage = function(id) {
+            const messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            const msg = messages.find(m => m.id === id);
+            if (msg) {
+                alert(`Name: ${msg.name}\nEmail: ${msg.email}\nPhone: ${msg.phone || 'N/A'}\nMessage: ${msg.message}\nDate: ${msg.date}`);
+            }
+        };
+
+        window.markContactAsRead = function(id) {
+            let messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            const idx = messages.findIndex(m => m.id === id);
+            if (idx > -1) {
+                messages[idx].status = 'Read';
+                localStorage.setItem('fruitingo_contact_messages', JSON.stringify(messages));
+                renderAdminContactMessages();
+            }
+        };
+
+        window.deleteContactMessage = function(id) {
+            if (!confirm('Are you sure you want to delete this message?')) return;
+            let messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            messages = messages.filter(m => m.id !== id);
+            localStorage.setItem('fruitingo_contact_messages', JSON.stringify(messages));
+            renderAdminContactMessages();
         };
     </script>
 </body>

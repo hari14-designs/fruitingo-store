@@ -29,6 +29,8 @@
     --font-main: 'Plus Jakarta Sans', sans-serif;
     --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-duration: 700ms;
+    --animation-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Base Styles */
@@ -55,6 +57,78 @@ button, input, select, textarea {
     font-family: inherit;
 }
 
+/* Premium Announcement Bar */
+.announcement-bar {
+    background-color: #0B5D3B;
+    color: #F8FAF8;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.announcement-content {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.announcement-text {
+    display: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    animation: slideInRight 0.6s ease-out, fadeOut 0.4s ease-in 2.3s forwards;
+}
+
+.announcement-text.active {
+    display: block;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.announcement-bar:hover .announcement-text {
+    animation-play-state: paused;
+}
+
+/* Add announcement bar to all pages */
+body > .announcement-bar + header {
+    top: 50px;
+}
+
+@media (max-width: 768px) {
+    .announcement-bar {
+        height: 45px;
+    }
+    .announcement-text {
+        font-size: 0.85rem;
+    }
+}
+
 /* Apple-style Navigation Header */
 body > header {
     background-color: var(--white); /* White background for header to show green logo */
@@ -68,7 +142,7 @@ body > header {
     display: flex;
     align-items: center;
     transition: background-color 0.5s cubic-bezier(0.28, 0.11, 0.32, 1);
-    box-shadow: var(--neu-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .header-container {
@@ -751,12 +825,33 @@ nav ul li a::after {
 }
 
 .calculator-box .form-select,
-.calculator-box .form-input,
-footer .form-select,
-footer .form-input {
+.calculator-box .form-input {
+    background-color: var(--white);
+    color: var(--dark);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+footer .form-select {
     background-color: #0B5D3B;
     color: var(--white);
     box-shadow: var(--neu-green-inset);
+}
+
+footer .form-input {
+    background-color: var(--white);
+    color: var(--dark);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--neu-light);
+}
+
+footer .form-input::placeholder {
+    color: var(--gray-muted);
+}
+
+footer .form-input:focus {
+    background-color: var(--white);
+    box-shadow: var(--neu-light-inset), 0 0 0 1px rgba(216, 194, 122, 0.4);
 }
 
 .form-select option {
@@ -771,8 +866,22 @@ footer .form-input {
 
 .calculator-box .form-select:focus,
 .calculator-box .form-input:focus {
-    background-color: #0B5D3B;
-    box-shadow: var(--neu-green-inset), 0 0 0 1px rgba(216, 194, 122, 0.35);
+    background-color: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.calculator-box .form-select option {
+    background-color: var(--white);
+    color: var(--dark);
+}
+
+.calculator-box .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23D4AF37' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5rem;
+    padding-right: 3rem;
 }
 
 .calc-result {
@@ -1442,9 +1551,8 @@ footer::before {
     pointer-events: none;
     z-index: 0;
     background:
-        radial-gradient(ellipse 80% 70% at 12% 100%, rgba(0, 0, 0, 0.16) 0%, transparent 58%),
-        radial-gradient(ellipse 80% 70% at 88% 100%, rgba(0, 0, 0, 0.16) 0%, transparent 58%),
-        radial-gradient(ellipse 90% 55% at 50% 0%, rgba(216, 194, 122, 0.07) 0%, transparent 62%);
+        radial-gradient(ellipse 80% 70% at 12% 100%, rgba(0, 0, 0, 0.12) 0%, transparent 58%),
+        radial-gradient(ellipse 80% 70% at 88% 100%, rgba(0, 0, 0, 0.12) 0%, transparent 58%);
 }
 
 footer::after {
@@ -1482,6 +1590,7 @@ footer::after {
     object-fit: contain;
     margin-bottom: 1rem;
     display: block;
+    filter: brightness(0) invert(1);
 }
 
 .footer-brand h3 {
@@ -1571,18 +1680,23 @@ footer::after {
 
 .newsletter-form input {
     flex-grow: 1;
-    background-color: #0B5D3B;
-    border: none;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
     border-radius: 12px;
     padding: 0.75rem 1rem;
-    color: var(--white);
+    color: var(--dark);
     font-size: 0.9rem;
-    box-shadow: var(--neu-green-inset);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.newsletter-form input::placeholder {
+    color: #9CA3AF;
 }
 
 .newsletter-form input:focus {
     outline: none;
-    box-shadow: var(--neu-green-inset), 0 0 0 1px rgba(216, 194, 122, 0.35);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(212, 175, 55, 0.2);
+    border-color: #D4AF37;
 }
 
 .newsletter-form button {
@@ -2002,4 +2116,18 @@ footer::after {
     }
     .slider-arrow.prev { left: 10px; }
     .slider-arrow.next { right: 10px; }
+}
+
+/* Smooth Scroll Animations */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+    transition: opacity var(--animation-duration) var(--animation-ease), 
+                transform var(--animation-duration) var(--animation-ease);
+}
+
+.animate-on-scroll.animate {
+    opacity: 1;
+    transform: translateY(0);
 }
