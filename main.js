@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initSlider();
     initWhyChooseReveal();
     initScrollAnimations();
-    initAnnouncementBar();
     
     // Dynamic Page Render Initializations
     if (document.getElementById('products-container')) {
@@ -1157,6 +1156,448 @@ function initAnnouncementBar() {
 
 
 }
+
+// Customer Authentication System
+let customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+let currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer')) || null;
+
+// Generate Customer ID
+function generateCustomerId() {
+    const maxId = customers.reduce((max, customer) => {
+        const num = parseInt(customer.customerId.replace('FR-', ''));
+        return num > max ? num : max;
+    }, 0);
+    const nextId = maxId + 1;
+    return `FR-${String(nextId).padStart(4, '0')}`;
+}
+
+// Generate User ID
+function generateUserId() {
+    const existingUserIds = customers.map(c => c.userId);
+    let userId;
+    do {
+        userId = `USER ${Math.floor(Math.random() * 900) + 10}`;
+    } while (existingUserIds.includes(userId));
+    return userId;
+}
+
+// Login Modal Functions
+window.openLoginModal = function() {
+    document.getElementById('login-modal').classList.add('active');
+};
+
+window.closeLoginModal = function() {
+    document.getElementById('login-modal').classList.remove('active');
+};
+
+window.switchLoginTab = function(tab) {
+    const tabs = document.querySelectorAll('.login-tab');
+    const forms = document.querySelectorAll('.login-form');
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    forms.forEach(f => f.classList.remove('active'));
+    
+    if (tab === 'login') {
+        tabs[0].classList.add('active');
+        document.getElementById('login-form').classList.add('active');
+    } else {
+        tabs[1].classList.add('active');
+        document.getElementById('register-form').classList.add('active');
+    }
+};
+
+// Handle Login
+window.handleLogin = function(e) {
+    e.preventDefault();
+    
+    const mobile = document.getElementById('login-mobile').value.trim();
+    
+    // Validate 10-digit mobile number
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!mobileRegex.test(mobile)) {
+        showToast('Error', 'Please enter a valid 10-digit Indian mobile number');
+        return;
+    }
+    
+    // Add +91 prefix
+    const fullMobile = '+91' + mobile;
+    
+    // Check if customer exists
+    const customer = customers.find(c => c.mobile === fullMobile);
+    
+    if (customer) {
+        if (customer.status === 'Blocked') {
+            showToast('Error', 'Your account has been blocked. Please contact support.');
+            return;
+        }
+        
+        // Login successful
+        currentCustomer = customer;
+        localStorage.setItem('fruitingo_current_customer', JSON.stringify(currentCustomer));
+        
+        closeLoginModal();
+        updateAuthUI();
+        showToast('Login Successful', 'Welcome to Fruitingo!');
+        
+        // Redirect to my account
+        window.location.href = 'my-account.html';
+    } else {
+        showToast('Error', 'Mobile number not registered. Please register first.');
+    }
+};
+
+// Handle Register
+window.handleRegister = function(e) {
+    e.preventDefault();
+    
+    const mobile = document.getElementById('register-mobile').value.trim();
+    const displayName = document.getElementById('register-name').value.trim();
+    
+    // Validate 10-digit mobile number
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!mobileRegex.test(mobile)) {
+        showToast('Error', 'Please enter a valid 10-digit Indian mobile number');
+        return;
+    }
+    
+    // Add +91 prefix
+    const fullMobile = '+91' + mobile;
+    
+    // Check if already registered
+    if (customers.find(c => c.mobile === fullMobile)) {
+        showToast('Error', 'This mobile number is already registered. Please login.');
+        return;
+    }
+    
+    // Create new customer
+    const newCustomer = {
+        customerId: generateCustomerId(),
+        userId: generateUserId(),
+        mobile: fullMobile,
+        displayName: displayName,
+        email: '',
+        gender: '',
+        dob: '',
+        joinedDate: new Date().toLocaleDateString(),
+        joinedTime: new Date().toLocaleTimeString(),
+        status: 'Active',
+        addresses: [],
+        wishlist: [],
+        orders: [],
+        notifications: []
+    };
+    
+    customers.push(newCustomer);
+    localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+    
+    // Auto login after registration
+    currentCustomer = newCustomer;
+    localStorage.setItem('fruitingo_current_customer', JSON.stringify(currentCustomer));
+    
+    closeLoginModal();
+    updateAuthUI();
+    showToast('Registration Successful', 'Welcome to Fruitingo!');
+    
+    // Redirect to my account
+    window.location.href = 'my-account.html';
+};
+
+// Update Auth UI
+function updateAuthUI() {
+    const authSection = document.getElementById('auth-section');
+    if (!authSection) return;
+    
+    if (currentCustomer) {
+        // Show user dropdown
+        authSection.innerHTML = `
+            <div class="user-dropdown-container">
+                <button class="user-dropdown-btn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar">${currentCustomer.displayName.charAt(0).toUpperCase()}</div>
+                    <div class="user-info">
+                        <span class="user-greeting">👤 HI, ${currentCustomer.displayName.toUpperCase()} ▼</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down user-dropdown-arrow"></i>
+                </button>
+                <div class="user-dropdown-menu" id="user-dropdown-menu">
+                    <a href="my-account.html" class="user-dropdown-item">
+                        <i class="fa-solid fa-user"></i> My Account
+                    </a>
+                    <a href="my-account.html#orders" class="user-dropdown-item">
+                        <i class="fa-solid fa-box"></i> My Orders
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="#" class="user-dropdown-item logout" onclick="handleLogout()">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </div>
+            </div>
+        `;
+    } else {
+        // Show login button
+        authSection.innerHTML = `
+            <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                LOGIN / REGISTER
+            </button>
+        `;
+    }
+}
+
+// Toggle User Dropdown
+window.toggleUserDropdown = function() {
+    const dropdown = document.getElementById('user-dropdown-menu');
+    const btn = document.querySelector('.user-dropdown-btn');
+    
+    if (dropdown.classList.contains('active')) {
+        dropdown.classList.remove('active');
+        btn.classList.remove('active');
+    } else {
+        dropdown.classList.add('active');
+        btn.classList.add('active');
+    }
+};
+
+// Handle Logout
+window.handleLogout = function() {
+    currentCustomer = null;
+    localStorage.removeItem('fruitingo_current_customer');
+    
+    updateAuthUI();
+    showToast('Logged Out', 'You have been logged out successfully');
+    
+    // Redirect to home
+    window.location.href = 'index.html';
+};
+
+// Show Toast
+function showToast(title, message) {
+    const toast = document.getElementById('success-toast');
+    if (!toast) return;
+    
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-message').textContent = message;
+    
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('user-dropdown-menu');
+    const btn = document.querySelector('.user-dropdown-btn');
+    
+    if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.remove('active');
+        btn.classList.remove('active');
+    }
+});
+
+// Check auth status on page load
+function checkAuthStatus() {
+    currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer')) || null;
+    updateAuthUI();
+    updateNotificationBell();
+}
+
+// Notification Bell Functions
+window.toggleNotificationDropdown = function() {
+    const dropdown = document.getElementById('notification-dropdown');
+    const bellBtn = document.querySelector('.notification-bell-btn');
+    
+    if (dropdown.classList.contains('active')) {
+        dropdown.classList.remove('active');
+        bellBtn.classList.remove('active');
+    } else {
+        dropdown.classList.add('active');
+        bellBtn.classList.add('active');
+        loadNotificationList();
+        
+        // Request browser notification permission on first click
+        requestNotificationPermission();
+    }
+};
+
+window.markAllNotificationsAsRead = function() {
+    const customer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+    if (!customer || !customer.notifications) return;
+    
+    customer.notifications.forEach(notif => {
+        notif.read = true;
+    });
+    
+    const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+    const idx = customers.findIndex(c => c.customerId === customer.customerId);
+    if (idx > -1) {
+        customers[idx] = customer;
+    }
+    
+    localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+    localStorage.setItem('fruitingo_current_customer', JSON.stringify(customer));
+    
+    updateNotificationBell();
+    loadNotificationList();
+};
+
+function updateNotificationBell() {
+    const bellContainer = document.getElementById('notification-bell');
+    const notificationCount = document.getElementById('notification-count');
+    const customer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+    
+    if (!customer || !customer.notifications || customer.notifications.length === 0) {
+        if (bellContainer) bellContainer.style.display = 'none';
+        return;
+    }
+    
+    if (bellContainer) bellContainer.style.display = 'block';
+    
+    const unreadCount = customer.notifications.filter(n => !n.read).length;
+    
+    if (notificationCount) {
+        notificationCount.textContent = unreadCount;
+        if (unreadCount > 0) {
+            notificationCount.classList.add('show');
+        } else {
+            notificationCount.classList.remove('show');
+        }
+    }
+}
+
+function loadNotificationList() {
+    const notificationList = document.getElementById('notification-list');
+    const customer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+    
+    if (!customer || !customer.notifications || customer.notifications.length === 0) {
+        notificationList.innerHTML = `
+            <div class="notification-empty">
+                <i class="fa-solid fa-bell"></i>
+                <p>No notifications yet</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    customer.notifications.forEach(notif => {
+        const icon = getNotificationIcon(notif.type);
+        html += `
+            <div class="notification-item ${notif.read ? '' : 'unread'}" onclick="markNotificationAsRead(${notif.id})">
+                <div class="notification-item-header">
+                    <span class="notification-title">${icon} ${notif.title}</span>
+                    <span class="notification-time">${formatNotificationTime(notif.createdAt)}</span>
+                </div>
+                <div class="notification-message">${notif.message}</div>
+            </div>
+        `;
+    });
+    
+    notificationList.innerHTML = html;
+}
+
+window.markNotificationAsRead = function(id) {
+    const customer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+    if (!customer || !customer.notifications) return;
+    
+    const notification = customer.notifications.find(n => n.id === id);
+    if (notification) {
+        notification.read = true;
+        
+        const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+        const idx = customers.findIndex(c => c.customerId === customer.customerId);
+        if (idx > -1) {
+            customers[idx] = customer;
+        }
+        
+        localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+        localStorage.setItem('fruitingo_current_customer', JSON.stringify(customer));
+        
+        updateNotificationBell();
+        loadNotificationList();
+    }
+};
+
+function getNotificationIcon(type) {
+    const icons = {
+        'Offer': '🎉',
+        'Order Update': '📦',
+        'Product Launch': '🚀',
+        'General Announcement': '📢',
+        'Delivery Update': '🚚'
+    };
+    return icons[type] || '🔔';
+}
+
+function formatNotificationTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    
+    return date.toLocaleDateString();
+}
+
+function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+        console.log('This browser does not support desktop notification');
+        return;
+    }
+    
+    if (Notification.permission === 'granted') {
+        return;
+    }
+    
+    if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                showToast('Notifications Enabled', '🔔 You will receive browser notifications');
+                localStorage.setItem('fruitingo_notification_permission', 'granted');
+            } else {
+                showToast('Notifications Disabled', 'You can enable notifications in browser settings');
+            }
+        });
+    }
+}
+
+function showBrowserNotification(title, body) {
+    if (Notification.permission === 'granted') {
+        new Notification(title, {
+            body: body,
+            icon: 'assets/fruitingo_logo.png',
+            badge: 'assets/fruitingo_logo.png'
+        });
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    const userDropdown = document.getElementById('user-dropdown-menu');
+    const userBtn = document.querySelector('.user-dropdown-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const bellBtn = document.querySelector('.notification-bell-btn');
+    
+    if (userDropdown && userBtn && !userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+        userDropdown.classList.remove('active');
+        userBtn.classList.remove('active');
+    }
+    
+    if (notificationDropdown && bellBtn && !notificationDropdown.contains(e.target) && !bellBtn.contains(e.target)) {
+        notificationDropdown.classList.remove('active');
+        bellBtn.classList.remove('active');
+    }
+});
+
+// Initialize auth check
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuthStatus();
+});
 
 // Smooth Scroll Animations
 window.initScrollAnimations = function() {

@@ -262,15 +262,6 @@
 
     <!-- Header Navigation -->
     <header>
-    <!-- Premium Announcement Bar -->
-    <div class="announcement-bar">
-        <div class="announcement-content">
-            <div class="announcement-text active" data-index="0">🍌 100% Raw Nendran Banana Flour — Pure Natural Goodness.</div>
-            <div class="announcement-text" data-index="1">🌿 No Preservatives • No Artificial Colours • No Added Sugar.</div>
-            <div class="announcement-text" data-index="2">❤️ Freshly Packed with Care for Every Family.</div>
-        </div>
-    </div>
-
         <div class="header-container">
             <a href="index.html" class="logo">
                 <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
@@ -287,6 +278,29 @@
             </nav>
             
             <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="cart-icon-btn" aria-label="Shopping Cart">
                     <i class="fa-solid fa-basket-shopping"></i>
                     <span class="cart-badge">0</span>
@@ -342,6 +356,12 @@
                     </button>
                     <button class="btn tab-btn" id="tab-btn-contact" onclick="switchTab('contact')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
                         <i class="fa-solid fa-envelope"></i> Contact Messages
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-customers" onclick="switchTab('customers')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-users"></i> Registered Customers
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-notifications" onclick="switchTab('notifications')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-bell"></i> Notification Center
                     </button>
                     <button class="btn" onclick="handleAdminLogout()" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; cursor: pointer;">
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -520,6 +540,129 @@
                 </div>
             </div>
 
+            <!-- Tab 5: Registered Customers View -->
+            <div id="tab-customers" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-users" style="color: var(--chocolate);"></i> Registered Customers</span>
+                        <span class="stats-badge"><strong id="admin-total-customers">0</strong> customers</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">View and manage registered customer accounts.</p>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" id="customer-search" placeholder="Search by Customer ID or Mobile Number" style="width: 100%; max-width: 400px; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--gray-light); color: var(--chocolate);" onkeyup="searchCustomers()">
+                    </div>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <th>User ID</th>
+                                    <th>Mobile Number</th>
+                                    <th>Display Name</th>
+                                    <th>Registration Date</th>
+                                    <th>Registration Time</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-customers-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 6: Notification Center -->
+            <div id="tab-notifications" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-bell" style="color: var(--chocolate);"></i> Notification Center</span>
+                        <span class="stats-badge"><strong id="admin-total-notifications">0</strong> notifications sent</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">Create and send notifications to customers.</p>
+                    
+                    <!-- Notification Composer -->
+                    <div style="background: var(--sand); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+                        <h3 style="color: var(--chocolate); margin-bottom: 1.5rem;">📝 Create New Notification</h3>
+                        <form onsubmit="sendNotification(event)">
+                            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Notification Title</label>
+                                    <input type="text" id="notif-title" class="login-input" placeholder="e.g. Festival Offer 🎉" required style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate);">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Notification Type</label>
+                                    <select id="notif-type" class="login-input" style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate);">
+                                        <option value="Offer">Offer</option>
+                                        <option value="Order Update">Order Update</option>
+                                        <option value="Product Launch">Product Launch</option>
+                                        <option value="General Announcement">General Announcement</option>
+                                        <option value="Delivery Update">Delivery Update</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Notification Message</label>
+                                <textarea id="notif-message" class="login-input" placeholder="e.g. Get Flat 15% OFF on Fruitingo Nendran Banana Flour this weekend." required style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate); min-height: 100px; resize: vertical;"></textarea>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Send To</label>
+                                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="radio" name="send-to" value="all" checked onchange="toggleRecipientSelection('all')">
+                                        <span>All Customers</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="radio" name="send-to" value="selected" onchange="toggleRecipientSelection('selected')">
+                                        <span>Selected Customer</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="radio" name="send-to" value="multiple" onchange="toggleRecipientSelection('multiple')">
+                                        <span>Multiple Customers</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="recipient-selected" style="display: none; margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Search Customer</label>
+                                <input type="text" id="customer-search-select" placeholder="Search by Customer ID, Mobile, or Name" style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate);" onkeyup="searchCustomerForNotification()">
+                                <div id="customer-search-results" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto;"></div>
+                            </div>
+                            <div id="recipient-multiple" style="display: none; margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Select Customers</label>
+                                <div id="customer-checkbox-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; background: var(--white);">
+                                    <p style="color: var(--gray-muted);">Loading customers...</p>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="background: var(--primary); color: var(--chocolate); padding: 1rem 2rem; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                                <i class="fa-solid fa-paper-plane"></i> Send Notification
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Notification History -->
+                    <h3 style="color: var(--chocolate); margin-bottom: 1rem;">📋 Notification History</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Sent To</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-notifications-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -622,6 +765,12 @@
                 if (typeof renderAdminContactMessages === 'function') {
                     renderAdminContactMessages();
                 }
+                if (typeof renderAdminCustomers === 'function') {
+                    renderAdminCustomers();
+                }
+                if (typeof renderAdminNotifications === 'function') {
+                    renderAdminNotifications();
+                }
             } else {
                 loginContainer.style.display = 'block';
                 dashboardContainer.style.display = 'none';
@@ -656,7 +805,9 @@
                 products: { btn: document.getElementById('tab-btn-products'), panel: document.getElementById('tab-products'), display: 'grid' },
                 orders: { btn: document.getElementById('tab-btn-orders'), panel: document.getElementById('tab-orders'), display: 'block' },
                 feedback: { btn: document.getElementById('tab-btn-feedback'), panel: document.getElementById('tab-feedback'), display: 'block' },
-                contact: { btn: document.getElementById('tab-btn-contact'), panel: document.getElementById('tab-contact'), display: 'block' }
+                contact: { btn: document.getElementById('tab-btn-contact'), panel: document.getElementById('tab-contact'), display: 'block' },
+                customers: { btn: document.getElementById('tab-btn-customers'), panel: document.getElementById('tab-customers'), display: 'block' },
+                notifications: { btn: document.getElementById('tab-btn-notifications'), panel: document.getElementById('tab-notifications'), display: 'block' }
             };
 
             Object.keys(tabs).forEach((name) => {
@@ -679,6 +830,11 @@
             if (tabName === 'orders') renderAdminOrders();
             if (tabName === 'feedback') renderAdminFeedbacks();
             if (tabName === 'contact') renderAdminContactMessages();
+            if (tabName === 'customers') renderAdminCustomers();
+            if (tabName === 'notifications') {
+                renderAdminNotifications();
+                loadCustomerCheckboxList();
+            }
         };
 
         window.renderAdminOrders = function() {
@@ -857,6 +1013,526 @@
             localStorage.setItem('fruitingo_contact_messages', JSON.stringify(messages));
             renderAdminContactMessages();
         };
+
+        // Render Registered Customers
+        window.renderAdminCustomers = function() {
+            const tableBody = document.getElementById('admin-customers-table');
+            const totalCustomersBadge = document.getElementById('admin-total-customers');
+            
+            if (!tableBody) return;
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            if (totalCustomersBadge) {
+                totalCustomersBadge.textContent = customers.length;
+            }
+
+            if (customers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No registered customers yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            customers.slice().reverse().forEach(customer => {
+                const statusColor = customer.status === 'Active' ? 'var(--secondary)' : '#EF4444';
+                const statusBg = customer.status === 'Active' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+                
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${customer.customerId}</td>
+                        <td style="font-weight: 600; color: var(--gray-dark);">${customer.userId}</td>
+                        <td>${customer.mobile}</td>
+                        <td style="font-weight: 600; color: var(--chocolate);">${customer.displayName}</td>
+                        <td>${customer.joinedDate}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-muted);">${customer.joinedTime}</td>
+                        <td><span style="background: ${statusBg}; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${customer.status}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="viewCustomer('${customer.customerId}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="toggleCustomerStatus('${customer.customerId}')" style="background: transparent; border: none; color: ${customer.status === 'Active' ? '#EF4444' : 'var(--secondary)'}; cursor: pointer; margin-right: 0.5rem;" title="${customer.status === 'Active' ? 'Block' : 'Unblock'}">
+                                <i class="fa-solid ${customer.status === 'Active' ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                            <button onclick="deleteCustomer('${customer.customerId}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        };
+
+        // Search Customers
+        window.searchCustomers = function() {
+            const searchTerm = document.getElementById('customer-search').value.toLowerCase();
+            const tableBody = document.getElementById('admin-customers-table');
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            const filteredCustomers = customers.filter(customer => 
+                customer.customerId.toLowerCase().includes(searchTerm) ||
+                customer.mobile.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredCustomers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No customers found matching your search.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredCustomers.slice().reverse().forEach(customer => {
+                const statusColor = customer.status === 'Active' ? 'var(--secondary)' : '#EF4444';
+                const statusBg = customer.status === 'Active' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+                
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${customer.customerId}</td>
+                        <td style="font-weight: 600; color: var(--gray-dark);">${customer.userId}</td>
+                        <td>${customer.mobile}</td>
+                        <td style="font-weight: 600; color: var(--chocolate);">${customer.displayName}</td>
+                        <td>${customer.joinedDate}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-muted);">${customer.joinedTime}</td>
+                        <td><span style="background: ${statusBg}; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${customer.status}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="viewCustomer('${customer.customerId}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="toggleCustomerStatus('${customer.customerId}')" style="background: transparent; border: none; color: ${customer.status === 'Active' ? '#EF4444' : 'var(--secondary)'}; cursor: pointer; margin-right: 0.5rem;" title="${customer.status === 'Active' ? 'Block' : 'Unblock'}">
+                                <i class="fa-solid ${customer.status === 'Active' ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                            <button onclick="deleteCustomer('${customer.customerId}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        };
+
+        // View Customer Details
+        window.viewCustomer = function(customerId) {
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const customer = customers.find(c => c.customerId === customerId);
+            
+            if (!customer) return;
+            
+            const details = `
+Customer ID: ${customer.customerId}
+User ID: ${customer.userId}
+Mobile: ${customer.mobile}
+Display Name: ${customer.displayName}
+Email: ${customer.email || 'Not provided'}
+Gender: ${customer.gender || 'Not provided'}
+Date of Birth: ${customer.dob || 'Not provided'}
+Joined Date: ${customer.joinedDate}
+Joined Time: ${customer.joinedTime}
+Status: ${customer.status}
+Total Orders: ${customer.orders ? customer.orders.length : 0}
+Wishlist Items: ${customer.wishlist ? customer.wishlist.length : 0}
+Saved Addresses: ${customer.addresses ? customer.addresses.length : 0}
+            `;
+            
+            alert(details);
+        };
+
+        // Toggle Customer Status (Block/Unblock)
+        window.toggleCustomerStatus = function(customerId) {
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const idx = customers.findIndex(c => c.customerId === customerId);
+            
+            if (idx === -1) return;
+            
+            const newStatus = customers[idx].status === 'Active' ? 'Blocked' : 'Active';
+            customers[idx].status = newStatus;
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            // Update current customer if it's the same user
+            const currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+            if (currentCustomer && currentCustomer.customerId === customerId) {
+                currentCustomer.status = newStatus;
+                localStorage.setItem('fruitingo_current_customer', JSON.stringify(currentCustomer));
+            }
+            
+            renderAdminCustomers();
+            
+            const action = newStatus === 'Blocked' ? 'blocked' : 'unblocked';
+            alert(`Customer has been ${action} successfully.`);
+        };
+
+        // Delete Customer
+        window.deleteCustomer = function(customerId) {
+            if (!confirm('Are you sure you want to delete this customer? This action cannot be undone.')) return;
+            
+            let customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            customers = customers.filter(c => c.customerId !== customerId);
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            // If the deleted customer is currently logged in, log them out
+            const currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+            if (currentCustomer && currentCustomer.customerId === customerId) {
+                localStorage.removeItem('fruitingo_current_customer');
+            }
+            
+            renderAdminCustomers();
+            alert('Customer has been deleted successfully.');
+        };
+
+        // Notification System Functions
+        let selectedRecipients = [];
+        let notificationHistory = JSON.parse(localStorage.getItem('fruitingo_notification_history')) || [];
+
+        window.toggleRecipientSelection = function(type) {
+            document.getElementById('recipient-selected').style.display = type === 'selected' ? 'block' : 'none';
+            document.getElementById('recipient-multiple').style.display = type === 'multiple' ? 'block' : 'none';
+            selectedRecipients = [];
+        };
+
+        window.searchCustomerForNotification = function() {
+            const searchTerm = document.getElementById('customer-search-select').value.toLowerCase();
+            const resultsDiv = document.getElementById('customer-search-results');
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const filteredCustomers = customers.filter(customer => 
+                customer.customerId.toLowerCase().includes(searchTerm) ||
+                customer.mobile.toLowerCase().includes(searchTerm) ||
+                customer.displayName.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredCustomers.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: var(--gray-muted); padding: 0.5rem;">No customers found.</p>';
+                return;
+            }
+            
+            let html = '';
+            filteredCustomers.forEach(customer => {
+                html += `
+                    <div style="padding: 0.5rem; border-bottom: 1px solid var(--gray-light); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="selectCustomer('${customer.customerId}')">
+                        <div>
+                            <strong>${customer.displayName}</strong><br>
+                            <small style="color: var(--gray-muted);">${customer.customerId} | ${customer.mobile}</small>
+                        </div>
+                        <i class="fa-solid fa-check" style="color: var(--secondary);"></i>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        };
+
+        window.selectCustomer = function(customerId) {
+            selectedRecipients = [customerId];
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const customer = customers.find(c => c.customerId === customerId);
+            document.getElementById('customer-search-select').value = customer ? customer.displayName : '';
+            document.getElementById('customer-search-results').innerHTML = '';
+        };
+
+        window.loadCustomerCheckboxList = function() {
+            const checkboxList = document.getElementById('customer-checkbox-list');
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            if (customers.length === 0) {
+                checkboxList.innerHTML = '<p style="color: var(--gray-muted);">No customers registered yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            customers.forEach(customer => {
+                html += `
+                    <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-bottom: 1px solid var(--gray-light); cursor: pointer;">
+                        <input type="checkbox" value="${customer.customerId}" onchange="updateSelectedRecipients()">
+                        <span>${customer.displayName} (${customer.customerId})</span>
+                    </label>
+                `;
+            });
+            
+            checkboxList.innerHTML = html;
+        };
+
+        window.updateSelectedRecipients = function() {
+            const checkboxes = document.querySelectorAll('#customer-checkbox-list input[type="checkbox"]:checked');
+            selectedRecipients = Array.from(checkboxes).map(cb => cb.value);
+        };
+
+        window.sendNotification = function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('notif-title').value.trim();
+            const type = document.getElementById('notif-type').value;
+            const message = document.getElementById('notif-message').value.trim();
+            const sendTo = document.querySelector('input[name="send-to"]:checked').value;
+            
+            if (!title || !message) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            let recipients = [];
+            
+            if (sendTo === 'all') {
+                recipients = customers.map(c => c.customerId);
+            } else if (sendTo === 'selected' && selectedRecipients.length > 0) {
+                recipients = selectedRecipients;
+            } else if (sendTo === 'multiple' && selectedRecipients.length > 0) {
+                recipients = selectedRecipients;
+            } else {
+                alert('Please select at least one recipient.');
+                return;
+            }
+            
+            if (recipients.length === 0) {
+                alert('No customers available to send notification.');
+                return;
+            }
+            
+            // Create notification object
+            const notification = {
+                id: Date.now(),
+                title,
+                message,
+                type,
+                recipients,
+                sentTo: sendTo === 'all' ? 'All Customers' : `${recipients.length} Customer(s)`,
+                status: 'Delivered',
+                createdAt: new Date().toLocaleDateString(),
+                createdTime: new Date().toLocaleTimeString()
+            };
+            
+            // Add to notification history
+            notificationHistory.push(notification);
+            localStorage.setItem('fruitingo_notification_history', JSON.stringify(notificationHistory));
+            
+            // Send to each customer
+            customers.forEach(customer => {
+                if (recipients.includes(customer.customerId)) {
+                    if (!customer.notifications) customer.notifications = [];
+                    customer.notifications.unshift({
+                        id: notification.id,
+                        title,
+                        message,
+                        type,
+                        read: false,
+                        createdAt: `${notification.createdAt} ${notification.createdTime}`
+                    });
+                }
+            });
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            // Trigger browser notifications for current logged-in customer
+            const currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+            if (currentCustomer && recipients.includes(currentCustomer.customerId)) {
+                if (typeof showBrowserNotification === 'function') {
+                    showBrowserNotification('Fruitingo', `${title} — ${message}`);
+                }
+            }
+            
+            // Reset form
+            document.getElementById('notif-title').value = '';
+            document.getElementById('notif-message').value = '';
+            selectedRecipients = [];
+            
+            // Update UI
+            renderAdminNotifications();
+            showToast('Notification Sent Successfully');
+            
+            alert(`Notification sent to ${recipients.length} customer(s).`);
+        };
+
+        window.renderAdminNotifications = function() {
+            const tableBody = document.getElementById('admin-notifications-table');
+            const totalBadge = document.getElementById('admin-total-notifications');
+            
+            if (!tableBody) return;
+            
+            if (totalBadge) {
+                totalBadge.textContent = notificationHistory.length;
+            }
+            
+            if (notificationHistory.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No notifications sent yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            notificationHistory.slice().reverse().forEach(notif => {
+                const typeColors = {
+                    'Offer': 'rgba(212, 175, 55, 0.1)',
+                    'Order Update': 'rgba(14, 165, 233, 0.1)',
+                    'Product Launch': 'rgba(168, 85, 247, 0.1)',
+                    'General Announcement': 'rgba(22, 163, 74, 0.1)',
+                    'Delivery Update': 'rgba(234, 179, 8, 0.1)'
+                };
+                
+                html += `
+                    <tr>
+                        <td>${notif.createdAt}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-muted);">${notif.createdTime}</td>
+                        <td style="font-weight: 700; color: var(--chocolate);">${notif.title}</td>
+                        <td><span style="background: ${typeColors[notif.type] || 'rgba(108, 117, 125, 0.1)'}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${notif.type}</span></td>
+                        <td>${notif.sentTo}</td>
+                        <td><span style="color: var(--secondary); font-weight: 700;">${notif.status}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="viewNotificationDetails(${notif.id})" style="background: transparent; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="resendNotification(${notif.id})" style="background: transparent; border: none; color: var(--secondary); cursor: pointer; margin-right: 0.5rem;" title="Resend">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                            <button onclick="deleteNotificationHistory(${notif.id})" style="background: transparent; border: none; color: #EF4444; cursor: pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        };
+
+        window.viewNotificationDetails = function(id) {
+            const notification = notificationHistory.find(n => n.id === id);
+            if (!notification) return;
+            
+            const details = `
+Title: ${notification.title}
+Message: ${notification.message}
+Type: ${notification.type}
+Sent To: ${notification.sentTo}
+Recipients: ${notification.recipients.length}
+Status: ${notification.status}
+Created: ${notification.createdAt} ${notification.createdTime}
+            `;
+            
+            alert(details);
+        };
+
+        window.resendNotification = function(id) {
+            const notification = notificationHistory.find(n => n.id === id);
+            if (!notification) return;
+            
+            if (!confirm('Are you sure you want to resend this notification?')) return;
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            customers.forEach(customer => {
+                if (notification.recipients.includes(customer.customerId)) {
+                    if (!customer.notifications) customer.notifications = [];
+                    customer.notifications.unshift({
+                        id: Date.now(),
+                        title: notification.title,
+                        message: notification.message,
+                        type: notification.type,
+                        read: false,
+                        createdAt: `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+                    });
+                }
+            });
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            alert('Notification resent successfully.');
+        };
+
+        window.deleteNotificationHistory = function(id) {
+            if (!confirm('Are you sure you want to delete this notification from history?')) return;
+            
+            notificationHistory = notificationHistory.filter(n => n.id !== id);
+            localStorage.setItem('fruitingo_notification_history', JSON.stringify(notificationHistory));
+            
+            renderAdminNotifications();
+            alert('Notification deleted from history.');
+        };
+
+        function showBrowserNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'assets/fruitingo_logo.png',
+                    badge: 'assets/fruitingo_logo.png'
+                });
+            }
+        }
     </script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
 </body>
 </html>
