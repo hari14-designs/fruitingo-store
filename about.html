@@ -95,6 +95,170 @@
                 padding: 1.5rem;
             }
         }
+        
+        /* Digital Journey Section */
+        .digital-journey-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        .digital-journey-card {
+            background-color: #FFFDF8;
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 36px 42px;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .digital-journey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        .digital-journey-icon-container {
+            flex-shrink: 0;
+        }
+        
+        .digital-journey-icon {
+            width: 100px;
+            height: 100px;
+            background-color: #EEF8F1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #184C3A;
+            position: relative;
+        }
+        
+        .digital-journey-content {
+            flex: 1;
+        }
+        
+        .digital-journey-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #D4AF37;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .digital-journey-heading {
+            font-size: 2.25rem;
+            color: #184C3A;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .digital-journey-description {
+            color: var(--gray-dark);
+            line-height: 1.7;
+            font-size: 1.05rem;
+            max-width: 600px;
+        }
+        
+        .digital-journey-decoration {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            text-align: right;
+        }
+        
+        .digital-journey-leaf {
+            font-size: 2rem;
+            color: rgba(212, 175, 55, 0.15);
+            margin-bottom: 0.5rem;
+        }
+        
+        .digital-journey-quote {
+            font-style: italic;
+            color: rgba(24, 76, 58, 0.6);
+            font-size: 0.9rem;
+            margin: 0;
+            font-family: 'Georgia', serif;
+        }
+        
+        .digital-journey-card.animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .digital-journey-card.animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 992px) {
+            .digital-journey-card {
+                padding: 28px 32px;
+                gap: 2rem;
+            }
+            
+            .digital-journey-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .digital-journey-heading {
+                font-size: 1.75rem;
+            }
+            
+            .digital-journey-description {
+                font-size: 0.95rem;
+            }
+            
+            .digital-journey-decoration {
+                right: 20px;
+            }
+            
+            .digital-journey-leaf {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .digital-journey-section {
+                padding: 3rem 1.5rem;
+            }
+            
+            .digital-journey-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+                gap: 2rem;
+            }
+            
+            .digital-journey-icon-container {
+                margin: 0 auto;
+            }
+            
+            .digital-journey-heading {
+                font-size: 1.5rem;
+            }
+            
+            .digital-journey-description {
+                max-width: 100%;
+                font-size: 0.9rem;
+            }
+            
+            .digital-journey-decoration {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -102,6 +266,9 @@
     <!-- Header Navigation -->
     <header>
         <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <a href="index.html" class="logo">
                 <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
@@ -143,9 +310,6 @@
                 <button class="cart-icon-btn" aria-label="Shopping Cart">
                     <i class="fa-solid fa-basket-shopping"></i>
                     <span class="cart-badge">0</span>
-                </button>
-                <button class="menu-toggle" aria-label="Toggle menu">
-                    <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
@@ -219,6 +383,27 @@
                             <h3>Fine Milling & Sealing</h3>
                             <p>Dried banana chips are milled into a silky soft flour, double tested for impurities, and sealed immediately in food-safe bags.</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Digital Journey Section -->
+        <section class="digital-journey-section">
+            <div class="digital-journey-card">
+                <div class="digital-journey-icon-container">
+                    <div class="digital-journey-icon">
+                        <i class="fa-solid fa-laptop-code"></i>
+                        <i class="fa-solid fa-leaf" style="position: absolute; bottom: 5px; right: 5px; font-size: 1.2rem; color: #184C3A;"></i>
+                    </div>
+                </div>
+                <div class="digital-journey-content">
+                    <div class="digital-journey-label">OUR DIGITAL JOURNEY</div>
+                    <h2 class="digital-journey-heading">Website Launch</h2>
+                    <p class="digital-journey-description">While pursuing his degree in Artificial Intelligence and Data Science, Hari Haran built Fruitingo as his first real-world web development project. Created from scratch as a learning journey, the website reflects his passion for building modern, user-friendly e-commerce experiences while gaining practical industry experience.</p>
+                    <div class="digital-journey-decoration">
+                        <i class="fa-solid fa-leaf digital-journey-leaf"></i>
+                        <p class="digital-journey-quote">"A small step towards a bigger future."</p>
                     </div>
                 </div>
             </div>
@@ -369,6 +554,28 @@
             </a>
         </div>
     </div>
+
+    <script>
+        // Digital Journey Card Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const digitalJourneyCard = document.querySelector('.digital-journey-card');
+            if (digitalJourneyCard) {
+                digitalJourneyCard.classList.add('animate');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show');
+                        }
+                    });
+                }, {
+                    threshold: 0.1
+                });
+                
+                observer.observe(digitalJourneyCard);
+            }
+        });
+    </script>
 
     <script src="main.js"></script>
     

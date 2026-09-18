@@ -180,11 +180,21 @@ nav ul li a::after {
 
 .menu-toggle {
     display: none;
-    font-size: 14px;
+    font-size: 24px;
     background: transparent;
     border: none;
     cursor: pointer;
-    color: var(--dark);
+    color: #184C3A;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.menu-toggle:hover {
+    background: rgba(212, 175, 55, 0.1);
 }
 
 /* Hero Section */
@@ -1791,9 +1801,19 @@ footer::after {
     }
     .header-container {
         padding: 0 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
     .menu-toggle {
-        display: block;
+        display: flex;
+        order: 1;
+    }
+    .logo {
+        order: 2;
+    }
+    .nav-actions {
+        order: 3;
     }
     nav {
         position: fixed;
@@ -2287,15 +2307,28 @@ footer::after {
 .notification-bell-btn {
     background: transparent;
     border: none;
-    font-size: 1.25rem;
-    color: var(--chocolate);
+    font-size: 22px;
+    color: #D4AF37;
     cursor: pointer;
     position: relative;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 .notification-bell-btn:hover {
-    color: var(--primary);
+    background: rgba(212, 175, 55, 0.1);
+    color: #B8860B;
+}
+
+@media (max-width: 768px) {
+    .notification-bell-btn {
+        font-size: 20px;
+    }
 }
 
 .notification-badge {

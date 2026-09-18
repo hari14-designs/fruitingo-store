@@ -13,7 +13,20 @@ const defaultProducts = [
         reviewsCount: 142,
         tag: 'Best Seller',
         stockStatus: 'in-stock',
-        stockQuantity: 50
+        stockQuantity: 50,
+        nutritionDetails: {
+            calories: 357,
+            protein: 3.5,
+            carbohydrates: 82,
+            dietaryFibre: 8.2,
+            potassium: 450,
+            iron: 1.2,
+            calcium: 15,
+            fat: 0.5
+        },
+        ingredients: '100% Raw Sun-Dried Nendran Banana. No preservatives. No artificial colours. No added sugar.',
+        storageInstructions: 'Store in a cool and dry place. Reseal after opening. Keep away from moisture.',
+        healthBenefits: ['Rich in Resistant Starch', 'Supports Gut Health', 'High Dietary Fibre', 'Natural Energy Source', 'Gluten-Free Alternative']
     },
     {
         id: 'fruitingo-500',
@@ -26,7 +39,20 @@ const defaultProducts = [
         reviewsCount: 88,
         tag: 'Popular',
         stockStatus: 'in-stock',
-        stockQuantity: 35
+        stockQuantity: 35,
+        nutritionDetails: {
+            calories: 357,
+            protein: 3.5,
+            carbohydrates: 82,
+            dietaryFibre: 8.2,
+            potassium: 450,
+            iron: 1.2,
+            calcium: 15,
+            fat: 0.5
+        },
+        ingredients: '100% Raw Sun-Dried Nendran Banana. No preservatives. No artificial colours. No added sugar.',
+        storageInstructions: 'Store in a cool and dry place. Reseal after opening. Keep away from moisture.',
+        healthBenefits: ['Rich in Resistant Starch', 'Supports Gut Health', 'High Dietary Fibre', 'Natural Energy Source', 'Gluten-Free Alternative']
     },
     {
         id: 'fruitingo-1000',
@@ -39,7 +65,20 @@ const defaultProducts = [
         reviewsCount: 64,
         tag: 'Super Saver',
         stockStatus: 'low-stock',
-        stockQuantity: 8
+        stockQuantity: 8,
+        nutritionDetails: {
+            calories: 357,
+            protein: 3.5,
+            carbohydrates: 82,
+            dietaryFibre: 8.2,
+            potassium: 450,
+            iron: 1.2,
+            calcium: 15,
+            fat: 0.5
+        },
+        ingredients: '100% Raw Sun-Dried Nendran Banana. No preservatives. No artificial colours. No added sugar.',
+        storageInstructions: 'Store in a cool and dry place. Reseal after opening. Keep away from moisture.',
+        healthBenefits: ['Rich in Resistant Starch', 'Supports Gut Health', 'High Dietary Fibre', 'Natural Energy Source', 'Gluten-Free Alternative']
     }
 ];
 
@@ -834,6 +873,25 @@ window.adminAddProduct = function(e) {
     const saveProduct = (imgDataUrl) => {
         // Add new product only (editing is now done inline)
         const id = 'fruitingo-' + Date.now();
+        
+        // Get nutrition details
+        const calories = document.getElementById('new-prod-calories').value;
+        const protein = document.getElementById('new-prod-protein').value;
+        const carbs = document.getElementById('new-prod-carbs').value;
+        const fibre = document.getElementById('new-prod-fibre').value;
+        const potassium = document.getElementById('new-prod-potassium').value;
+        const iron = document.getElementById('new-prod-iron').value;
+        const calcium = document.getElementById('new-prod-calcium').value;
+        const fat = document.getElementById('new-prod-fat').value;
+        
+        // Get additional details
+        const ingredients = document.getElementById('new-prod-ingredients').value.trim();
+        const storage = document.getElementById('new-prod-storage').value.trim();
+        const benefits = document.getElementById('new-prod-benefits').value.trim();
+        const rating = parseFloat(document.getElementById('new-prod-rating').value) || 5.0;
+        const reviewsCount = parseInt(document.getElementById('new-prod-reviews').value) || 1;
+        const stockStatus = document.getElementById('new-prod-stock-status').value;
+        
         const newProduct = {
             id,
             name,
@@ -843,10 +901,25 @@ window.adminAddProduct = function(e) {
             desc: desc || '100% pure organic Nendran banana powder.',
             nutrition: nutrition || '',
             image: imgDataUrl || 'assets/fruitingo_product.jpg',
-            rating: 5.0,
-            reviewsCount: 1,
-            stockStatus: 'in-stock',
-            stockQuantity: 50
+            rating,
+            reviewsCount,
+            stockStatus,
+            stockQuantity: 50,
+            // Nutrition details
+            nutritionDetails: {
+                calories: calories ? parseFloat(calories) : null,
+                protein: protein ? parseFloat(protein) : null,
+                carbohydrates: carbs ? parseFloat(carbs) : null,
+                dietaryFibre: fibre ? parseFloat(fibre) : null,
+                potassium: potassium ? parseFloat(potassium) : null,
+                iron: iron ? parseFloat(iron) : null,
+                calcium: calcium ? parseFloat(calcium) : null,
+                fat: fat ? parseFloat(fat) : null
+            },
+            // Additional details
+            ingredients: ingredients || '',
+            storageInstructions: storage || '',
+            healthBenefits: benefits ? benefits.split(',').map(b => b.trim()) : []
         };
         products.push(newProduct);
         
@@ -869,14 +942,19 @@ window.adminAddProduct = function(e) {
         }
     };
 
+    // Handle case where saveOrUpdateProduct was called but function was renamed
+    window.saveOrUpdateProduct = function(imgDataUrl) {
+        saveProduct(imgDataUrl);
+    };
+
     if (imageInput.files && imageInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-            saveOrUpdateProduct(evt.target.result);
+            saveProduct(evt.target.result);
         };
         reader.readAsDataURL(imageInput.files[0]);
     } else {
-        saveOrUpdateProduct(null);
+        saveProduct(null);
     }
 }
 

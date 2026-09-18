@@ -1,0 +1,2946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Admin Portal | Product Management</title>
+    <meta name="description" content="Manage Fruitingo products database. Add, delete, and monitor packaging configs.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            min-height: calc(100vh - 400px);
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        .admin-grid-full {
+            display: block;
+        }
+        .admin-grid-full .admin-card {
+            margin-bottom: 3rem;
+        }
+        .admin-grid-full .admin-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Inline Editing Styles */
+        .inline-edit-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: #FFFFFF;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: var(--dark);
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+        }
+        .inline-edit-input:focus {
+            outline: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(212, 175, 55, 0.2);
+            border-color: #D4AF37;
+        }
+        .inline-edit-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: #FFFFFF;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: var(--dark);
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+        }
+        .inline-edit-select:focus {
+            outline: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+        .stock-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .stock-badge.in-stock {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--secondary);
+        }
+        .stock-badge.low-stock {
+            background-color: rgba(234, 179, 8, 0.1);
+            color: #ca8a04;
+        }
+        .stock-badge.out-of-stock {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .inline-edit-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .inline-save-btn {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .inline-save-btn:hover {
+            background: var(--secondary-hover);
+            transform: translateY(-1px);
+        }
+        .inline-cancel-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .inline-cancel-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+        .product-row-editing {
+            background-color: rgba(212, 175, 55, 0.05);
+            transition: background-color 0.25s ease;
+        }
+        .image-upload-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: var(--gray-muted);
+            transition: all 0.25s ease;
+        }
+        .image-upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--secondary);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            display: none;
+        }
+        .toast-notification.show {
+            display: block;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Customer Details Modal Styles */
+        .customer-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease-out;
+        }
+        .customer-modal-backdrop.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .customer-modal {
+            background: var(--white);
+            border-radius: 28px;
+            border: 1px solid #D4AF37;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 540px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            animation: modalScaleIn 0.25s ease-out;
+        }
+        @keyframes modalScaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .customer-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .customer-modal-decoration {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            font-size: 1.5rem;
+        }
+        .customer-modal-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto;
+            position: relative;
+        }
+        .customer-modal-avatar .verified-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            font-size: 0.7rem;
+        }
+        .customer-modal-title {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .customer-modal-title h2 {
+            font-size: 1.5rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+        .customer-modal-title p {
+            color: var(--gray-muted);
+            font-size: 0.9rem;
+        }
+        .customer-modal-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .customer-modal-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .customer-info-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        .customer-info-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--sand);
+            border-radius: 12px;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+        }
+        .customer-info-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--chocolate);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .customer-info-content {
+            flex: 1;
+        }
+        .customer-info-label {
+            font-size: 0.75rem;
+            color: var(--gray-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        .customer-info-value {
+            font-size: 0.95rem;
+            color: var(--chocolate);
+            font-weight: 600;
+        }
+        .customer-status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .customer-status-badge.active {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--secondary);
+        }
+        .customer-status-badge.blocked {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .customer-modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .customer-modal-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .customer-modal-brand img {
+            height: 30px;
+        }
+        .customer-modal-brand span {
+            font-size: 0.85rem;
+            color: var(--gray-muted);
+            font-weight: 600;
+        }
+        .customer-modal-ok-btn {
+            background: linear-gradient(135deg, #D4AF37, #C4A030);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .customer-modal-ok-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        @media (max-width: 768px) {
+            .customer-modal {
+                max-width: 460px;
+                padding: 1.5rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .customer-modal {
+                max-width: 92%;
+                padding: 1.25rem;
+            }
+            .customer-info-row {
+                padding: 0.75rem;
+            }
+        }
+        .admin-card {
+            background-color: var(--white);
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            box-shadow: var(--neu-light);
+        }
+        .admin-card h2 {
+            font-size: 1.5rem;
+            color: var(--chocolate);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stats-badge {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--secondary);
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+        .dashboard-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: var(--chocolate);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-header p {
+            color: var(--gray-muted);
+            font-size: 1.05rem;
+        }
+        
+        /* Table styles */
+        .table-wrap {
+            overflow-x: auto;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: var(--sand);
+            color: var(--chocolate);
+            padding: 1rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+        }
+        td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--gray-dark);
+        }
+        tr:hover td {
+            background-color: var(--gray-light);
+        }
+        
+        .tab-btn {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: var(--primary) !important;
+            color: var(--white) !important;
+            border: none !important;
+        }
+        
+        .order-items-list {
+            margin: 0;
+            padding-left: 1.2rem;
+            font-size: 0.85rem;
+            color: var(--gray-dark);
+        }
+        .order-customer-info {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 992px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Password Settings Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .password-modal.active {
+            display: flex;
+            animation: fadeIn 0.25s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .password-modal-content {
+            background-color: var(--white);
+            border-radius: 28px;
+            max-width: 500px;
+            width: 90%;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+        
+        .password-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-muted);
+            transition: color 0.2s ease;
+        }
+        
+        .password-modal-close:hover {
+            color: var(--chocolate);
+        }
+        
+        .password-modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .password-modal-header h2 {
+            font-size: 1.75rem;
+            color: var(--secondary);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .password-modal-header p {
+            color: var(--gray-muted);
+            font-size: 0.9rem;
+        }
+        
+        .password-form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .password-form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--chocolate);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 0.85rem 3rem 0.85rem 1rem;
+            background-color: var(--gray-light);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--dark);
+            font-size: 1rem;
+            box-shadow: var(--neu-light-inset);
+            transition: all 0.2s ease;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            box-shadow: var(--neu-light-inset), 0 0 0 2px rgba(212, 175, 55, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--gray-muted);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .otp-section {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--sand);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .otp-section h3 {
+            font-size: 1rem;
+            color: var(--chocolate);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .send-otp-btn {
+            background: var(--primary);
+            color: var(--chocolate);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+        }
+        
+        .send-otp-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        .send-otp-btn:disabled {
+            background: var(--gray-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .otp-countdown {
+            font-size: 0.85rem;
+            color: var(--gray-muted);
+            margin-top: 0.5rem;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+        
+        .strength-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            color: var(--gray-muted);
+        }
+        
+        .strength-item.valid {
+            color: var(--secondary);
+        }
+        
+        .strength-item i {
+            width: 16px;
+        }
+        
+        .password-submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+        
+        .password-submit-btn:hover {
+            background: #0a3d25;
+            transform: translateY(-2px);
+        }
+        
+        /* Security Cards */
+        .security-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .security-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--neu-light);
+            border: 1px solid var(--border-color);
+        }
+        
+        .security-card h3 {
+            font-size: 1.25rem;
+            color: var(--chocolate);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .security-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .security-info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+        }
+        
+        .security-info-item .label {
+            color: var(--gray-muted);
+        }
+        
+        .security-info-item .value {
+            font-weight: 600;
+            color: var(--chocolate);
+        }
+        
+        /* Login History Table */
+        .login-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .login-history-table th {
+            background: var(--sand);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--chocolate);
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .login-history-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-light);
+            font-size: 0.9rem;
+        }
+        
+        .status-success {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .status-failed {
+            color: #EF4444;
+            font-weight: 700;
+        }
+        
+        .password-change-link {
+            color: #D4AF37;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .password-change-link:hover {
+            color: #B8860B;
+            text-decoration: underline;
+        }
+        
+        .recovery-email-btn {
+            margin-top: 1rem;
+            background: var(--primary);
+            color: var(--chocolate);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .recovery-email-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="index.html" class="logo">
+                <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="checkout.html">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Login Screen -->
+    <div id="admin-login-container" class="admin-container" style="display: none; max-width: 450px; margin: 6rem auto;">
+        <div class="admin-card" style="text-align: center;">
+            <h2 style="justify-content: center;"><i class="fa-solid fa-lock" style="color: var(--secondary); margin-right: 0.5rem;"></i> Admin Login</h2>
+            <p style="color: var(--gray-muted); margin-bottom: 2rem; font-size: 0.9rem;">Sign in to manage Fruitingo products, orders, and feedback</p>
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label for="admin-user">Username</label>
+                    <input type="text" id="admin-user" class="form-input" required placeholder="Enter username" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                </div>
+                <div class="form-group" style="text-align: left; margin-top: 1.25rem;">
+                    <label for="admin-pass">Password</label>
+                    <input type="password" id="admin-pass" class="form-input" required placeholder="Enter password" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                </div>
+                <div id="login-error-msg" style="color: #EF4444; font-size: 0.85rem; margin-top: 1rem; display: none; font-weight: 600;">
+                    <i class="fa-solid fa-circle-exclamation"></i> Invalid username or password.
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 2rem; justify-content: center;">
+                    Login to Dashboard
+                </button>
+                <div style="text-align: right; margin-top: 1rem;">
+                    <a href="#" onclick="openPasswordSettingsModal()" class="password-change-link">🔒 Change Password</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Settings Modal -->
+    <div class="password-modal" id="password-modal">
+        <div class="password-modal-content">
+            <button class="password-modal-close" onclick="closePasswordSettingsModal()">&times;</button>
+            <div class="password-modal-header">
+                <h2>Admin Password Settings</h2>
+                <p>Secure your Fruitingo Admin account before updating the password.</p>
+            </div>
+            
+            <form id="password-settings-form" onsubmit="handlePasswordChange(event)">
+                <!-- Step 1: Verify Current Password -->
+                <div class="password-form-group">
+                    <label for="current-password">Current Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="current-password" class="password-input" required placeholder="Enter current password">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('current-password')">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Email OTP Verification -->
+                <div class="otp-section">
+                    <h3>📧 Email Verification</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 1rem;">
+                        Verify your identity using Email OTP before changing password.
+                    </p>
+                    <button type="button" class="send-otp-btn" id="send-otp-btn" onclick="sendAdminOTP()">
+                        <i class="fa-solid fa-paper-plane"></i> Send Verification Code
+                    </button>
+                    <div id="otp-countdown" class="otp-countdown" style="display: none;"></div>
+                    
+                    <div id="otp-input-section" style="display: none; margin-top: 1rem;">
+                        <label for="otp-code" style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem; font-size: 0.9rem;">Enter Verification Code</label>
+                        <div class="password-input-wrapper">
+                            <input type="text" id="otp-code" class="password-input" required placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
+                            Code expires in 5 minutes. Maximum 5 attempts.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Create New Password -->
+                <div id="new-password-section" style="display: none;">
+                    <div class="password-form-group">
+                        <label for="new-password">New Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="new-password" class="password-input" required placeholder="Enter new password" onkeyup="validatePasswordStrength()">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new-password')">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="password-strength">
+                            <div class="strength-item" id="strength-length">
+                                <i class="fa-regular fa-circle"></i> Minimum 8 characters
+                            </div>
+                            <div class="strength-item" id="strength-uppercase">
+                                <i class="fa-regular fa-circle"></i> Uppercase letter
+                            </div>
+                            <div class="strength-item" id="strength-lowercase">
+                                <i class="fa-regular fa-circle"></i> Lowercase letter
+                            </div>
+                            <div class="strength-item" id="strength-number">
+                                <i class="fa-regular fa-circle"></i> Number
+                            </div>
+                            <div class="strength-item" id="strength-special">
+                                <i class="fa-regular fa-circle"></i> Special character
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="password-form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="confirm-password" class="password-input" required placeholder="Confirm new password" onkeyup="validatePasswordStrength()">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirm-password')">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="password-submit-btn" id="password-submit-btn" disabled>
+                    Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recovery Email Modal -->
+    <div class="password-modal" id="recovery-email-modal">
+        <div class="password-modal-content">
+            <button class="password-modal-close" onclick="closeRecoveryEmailModal()">&times;</button>
+            <div class="password-modal-header">
+                <h2>Update Recovery Email</h2>
+                <p>Change your Admin recovery email for password reset OTP verification.</p>
+            </div>
+            
+            <form id="recovery-email-form" onsubmit="handleRecoveryEmailUpdate(event)">
+                <!-- Verify Current Password -->
+                <div class="password-form-group">
+                    <label for="recovery-current-password">Current Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="recovery-current-password" class="password-input" required placeholder="Enter current password">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('recovery-current-password')">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- New Recovery Email -->
+                <div class="password-form-group">
+                    <label for="new-recovery-email">New Recovery Email</label>
+                    <div class="password-input-wrapper">
+                        <input type="email" id="new-recovery-email" class="password-input" required placeholder="Enter new recovery email">
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
+                        This email will receive OTP codes for password reset requests.
+                    </p>
+                </div>
+                
+                <!-- Confirm Recovery Email -->
+                <div class="password-form-group">
+                    <label for="confirm-recovery-email">Confirm Recovery Email</label>
+                    <div class="password-input-wrapper">
+                        <input type="email" id="confirm-recovery-email" class="password-input" required placeholder="Confirm new recovery email">
+                    </div>
+                </div>
+                
+                <button type="submit" class="password-submit-btn">
+                    Update Recovery Email
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Container -->
+    <div id="admin-dashboard-container" style="display: none;">
+        <div class="admin-container">
+            
+            <div class="dashboard-header">
+                <h1>Fruitingo Admin Dashboard</h1>
+                <p>Manage products, customer orders, and submitted feedback.</p>
+                
+                <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn tab-btn active" id="tab-btn-products" onclick="switchTab('products')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700;">
+                        <i class="fa-solid fa-box"></i> Products
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-orders" onclick="switchTab('orders')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-receipt"></i> Orders
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-comments"></i> Feedback
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-contact" onclick="switchTab('contact')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-envelope"></i> Contact Messages
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-customers" onclick="switchTab('customers')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-users"></i> Registered Customers
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-notifications" onclick="switchTab('notifications')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-bell"></i> Notification Center
+                    </button>
+                    <button class="btn tab-btn" id="tab-btn-security" onclick="switchTab('security')" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: var(--gray-light); border: 1px solid var(--border-color); color: var(--chocolate);">
+                        <i class="fa-solid fa-shield"></i> Security Settings
+                    </button>
+                    <button class="btn" onclick="handleAdminLogout()" style="border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 700; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; cursor: pointer;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Products View -->
+            <div id="tab-products" class="admin-grid-full">
+                
+                <!-- Add Product Form Card -->
+                <div class="admin-card">
+                    <h2><i class="fa-solid fa-circle-plus" style="color: var(--secondary);"></i> Add New Product</h2>
+                    
+                    <form id="admin-add-form" onsubmit="adminAddProduct(event)">
+                        <div class="form-group">
+                            <label for="new-prod-name">Product / Package Name</label>
+                            <input type="text" id="new-prod-name" class="form-input" placeholder="e.g. Fruitingo Gold Pack (750g)" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-price">Sale Price (₹ INR)</label>
+                                <input type="number" id="new-prod-price" class="form-input" placeholder="Sale Price e.g. 599" min="1" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-strike-price">Original/Strike Price (₹ INR)</label>
+                                <input type="number" id="new-prod-strike-price" class="form-input" placeholder="MRP e.g. 899" min="1" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-weight">Weight Description</label>
+                                <input type="text" id="new-prod-weight" class="form-input" placeholder="e.g. 750g" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-image">Upload Product Image</label>
+                                <input type="file" id="new-prod-image" accept="image/*" class="form-input" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); padding: 0.6rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-prod-desc">Product Description</label>
+                            <textarea id="new-prod-desc" class="form-input" rows="3" placeholder="Brief details about the packaging, usage etc." style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new-prod-nutrition">Manual Nutritional Details</label>
+                            <textarea id="new-prod-nutrition" class="form-input" rows="3" placeholder="e.g. Rich in Potassium, 0g Trans Fat, High Fiber" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-calories">Calories (kcal)</label>
+                                <input type="number" id="new-prod-calories" class="form-input" placeholder="e.g. 357" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-protein">Protein (g)</label>
+                                <input type="number" id="new-prod-protein" class="form-input" placeholder="e.g. 3.5" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-carbs">Carbohydrates (g)</label>
+                                <input type="number" id="new-prod-carbs" class="form-input" placeholder="e.g. 82" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-fibre">Dietary Fibre (g)</label>
+                                <input type="number" id="new-prod-fibre" class="form-input" placeholder="e.g. 8.2" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-potassium">Potassium (mg)</label>
+                                <input type="number" id="new-prod-potassium" class="form-input" placeholder="e.g. 450" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-iron">Iron (mg)</label>
+                                <input type="number" id="new-prod-iron" class="form-input" placeholder="e.g. 1.2" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-calcium">Calcium (mg)</label>
+                                <input type="number" id="new-prod-calcium" class="form-input" placeholder="e.g. 15" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-fat">Fat (g)</label>
+                                <input type="number" id="new-prod-fat" class="form-input" placeholder="e.g. 0.5" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-prod-ingredients">Ingredients</label>
+                            <textarea id="new-prod-ingredients" class="form-input" rows="2" placeholder="e.g. 100% Raw Sun-Dried Nendran Banana. No preservatives. No artificial colours. No added sugar." style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-prod-storage">Storage Instructions</label>
+                            <textarea id="new-prod-storage" class="form-input" rows="2" placeholder="e.g. Store in a cool and dry place. Reseal after opening. Keep away from moisture." style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-prod-benefits">Health Benefits (comma separated)</label>
+                            <textarea id="new-prod-benefits" class="form-input" rows="2" placeholder="e.g. Rich in Resistant Starch, Supports Gut Health, High Dietary Fibre, Natural Energy Source, Gluten-Free Alternative" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-prod-rating">Rating (0-5)</label>
+                                <input type="number" id="new-prod-rating" class="form-input" placeholder="e.g. 4.9" min="0" max="5" step="0.1" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-prod-reviews">Review Count</label>
+                                <input type="number" id="new-prod-reviews" class="form-input" placeholder="e.g. 294" min="0" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-prod-stock-status">Stock Status</label>
+                            <select id="new-prod-stock-status" class="form-input" style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                                <option value="in-stock">🟢 In Stock</option>
+                                <option value="low-stock">🟡 Low Stock</option>
+                                <option value="out-of-stock">🔴 Out of Stock</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem; justify-content: center;">
+                            <i class="fa-solid fa-save"></i> Save & Publish Product
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Current Products List Card -->
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-list-check" style="color: var(--chocolate);"></i> Published Products</span>
+                        <span class="stats-badge"><strong id="admin-total-products">0</strong> active</span>
+                    </h2>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th style="text-align: center; width: 100px;">Image</th>
+                                <th style="width: 200px;">Name</th>
+                                <th style="width: 120px;">Weight</th>
+                                <th style="width: 100px;">Sale Price</th>
+                                <th style="width: 100px;">MRP</th>
+                                <th style="width: 100px;">Stock</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="text-align: center; width: 100px;">Action</th>
+                            </tr>
+                        </thead>
+                            <tbody id="admin-products-table">
+                                <!-- Populated dynamically via main.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab 2: Orders View -->
+            <div id="tab-orders" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-receipt" style="color: var(--chocolate);"></i> Customer Orders</span>
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <span class="stats-badge" style="background-color: rgba(14, 165, 233, 0.1); color: #0284c7;"><strong id="admin-total-orders">0</strong> active orders</span>
+                            <span class="stats-badge" style="background-color: rgba(22, 163, 74, 0.1); color: var(--secondary);">Total Revenue: <strong id="admin-total-revenue">₹0</strong></span>
+                        </div>
+                    </h2>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer Info</th>
+                                    <th>Items Ordered</th>
+                                    <th>Total Amount</th>
+                                    <th>Payment Mode</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-orders-table">
+                                <!-- Populated dynamically via javascript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Feedback View -->
+            <div id="tab-feedback" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-comments" style="color: var(--chocolate);"></i> Customer Feedback</span>
+                        <span class="stats-badge"><strong id="admin-total-feedback">0</strong> submitted</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">Pin reviews to keep them at the top of the homepage. Delete any entry to remove it from the public feedback section.</p>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Customer</th>
+                                    <th>Rating</th>
+                                    <th>Feedback</th>
+                                    <th>Submitted</th>
+                                    <th style="text-align: center; width: 120px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-feedback-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Contact Messages View -->
+            <div id="tab-contact" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-envelope" style="color: var(--chocolate);"></i> Contact Messages</span>
+                        <span class="stats-badge"><strong id="admin-total-contact">0</strong> messages</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">View and manage customer inquiries submitted through the contact form.</p>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Message</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 120px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-contact-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Registered Customers View -->
+            <div id="tab-customers" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-users" style="color: var(--chocolate);"></i> Registered Customers</span>
+                        <span class="stats-badge"><strong id="admin-total-customers">0</strong> customers</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">View and manage registered customer accounts.</p>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" id="customer-search" placeholder="Search by Customer ID or Mobile Number" style="width: 100%; max-width: 400px; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--gray-light); color: var(--chocolate);" onkeyup="searchCustomers()">
+                    </div>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <th>User ID</th>
+                                    <th>Mobile Number</th>
+                                    <th>Display Name</th>
+                                    <th>Registration Date</th>
+                                    <th>Registration Time</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-customers-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 6: Notification Center -->
+            <div id="tab-notifications" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-bell" style="color: var(--chocolate);"></i> Notification Center</span>
+                        <span class="stats-badge"><strong id="admin-total-notifications">0</strong> notifications sent</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">Create and send notifications to customers.</p>
+                    
+                    <!-- Notification Composer -->
+                    <div style="background: var(--sand); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+                        <h3 style="color: var(--chocolate); margin-bottom: 1.5rem;">📝 Create New Notification</h3>
+                        <form onsubmit="sendNotification(event)">
+                            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Notification Title</label>
+                                    <input type="text" id="notif-title" class="login-input" placeholder="e.g. Festival Offer 🎉" required style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate);">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Notification Type</label>
+                                    <select id="notif-type" class="login-input" style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate);">
+                                        <option value="Offer">Offer</option>
+                                        <option value="Order Update">Order Update</option>
+                                        <option value="Product Launch">Product Launch</option>
+                                        <option value="General Announcement">General Announcement</option>
+                                        <option value="Delivery Update">Delivery Update</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Notification Message</label>
+                                <textarea id="notif-message" class="login-input" placeholder="e.g. Get Flat 15% OFF on Fruitingo Nendran Banana Flour this weekend." required style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate); min-height: 100px; resize: vertical;"></textarea>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Send To</label>
+                                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="radio" name="send-to" value="all" checked onchange="toggleRecipientSelection('all')">
+                                        <span>All Customers</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="radio" name="send-to" value="selected" onchange="toggleRecipientSelection('selected')">
+                                        <span>Selected Customer</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="radio" name="send-to" value="multiple" onchange="toggleRecipientSelection('multiple')">
+                                        <span>Multiple Customers</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="recipient-selected" style="display: none; margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Search Customer</label>
+                                <input type="text" id="customer-search-select" placeholder="Search by Customer ID, Mobile, or Name" style="width: 100%; padding: 0.85rem 1rem; background: var(--gray-light); border: 1px solid var(--border-color); border-radius: 12px; color: var(--chocolate);" onkeyup="searchCustomerForNotification()">
+                                <div id="customer-search-results" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto;"></div>
+                            </div>
+                            <div id="recipient-multiple" style="display: none; margin-bottom: 1.5rem;">
+                                <label style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem;">Select Customers</label>
+                                <div id="customer-checkbox-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; background: var(--white);">
+                                    <p style="color: var(--gray-muted);">Loading customers...</p>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="background: var(--primary); color: var(--chocolate); padding: 1rem 2rem; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                                <i class="fa-solid fa-paper-plane"></i> Send Notification
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Notification History -->
+                    <h3 style="color: var(--chocolate); margin-bottom: 1rem;">📋 Notification History</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Sent To</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center; width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-notifications-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 7: Security Settings View -->
+            <div id="tab-security" style="display: none;">
+                <div class="admin-card">
+                    <h2>
+                        <span><i class="fa-solid fa-shield" style="color: var(--chocolate);"></i> Security Settings</span>
+                    </h2>
+                    <p style="color: var(--gray-muted); margin: -0.75rem 0 1.5rem;">Manage your Admin account security and monitor login activity.</p>
+                    
+                    <div class="security-cards">
+                        <!-- Last Password Updated Card -->
+                        <div class="security-card">
+                            <h3><i class="fa-solid fa-key"></i> Last Password Updated</h3>
+                            <div class="security-info">
+                                <div class="security-info-item">
+                                    <span class="label">Date:</span>
+                                    <span class="value" id="security-last-password-date">Not changed yet</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">Time:</span>
+                                    <span class="value" id="security-last-password-time">--:--</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Security Stats Card -->
+                        <div class="security-card">
+                            <h3><i class="fa-solid fa-chart-line"></i> Security Statistics</h3>
+                            <div class="security-info">
+                                <div class="security-info-item">
+                                    <span class="label">Password Changes:</span>
+                                    <span class="value" id="security-password-changes">0</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">Failed Login Attempts:</span>
+                                    <span class="value" id="security-failed-logins">0</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">Last Successful Login:</span>
+                                    <span class="value" id="security-last-login">Never</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- OTP Status Card -->
+                        <div class="security-card">
+                            <h3><i class="fa-solid fa-envelope"></i> Email OTP Status</h3>
+                            <div class="security-info">
+                                <div class="security-info-item">
+                                    <span class="label">Admin Recovery Email:</span>
+                                    <span class="value" id="security-recovery-email">Not configured</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">OTP Enabled:</span>
+                                    <span class="value" id="security-otp-enabled">No</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">OTP Expiry:</span>
+                                    <span class="value">5 minutes</span>
+                                </div>
+                            </div>
+                            <button onclick="openRecoveryEmailModal()" style="margin-top: 1rem; background: var(--primary); color: var(--chocolate); border: none; border-radius: 12px; padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                                <i class="fa-solid fa-pen"></i> Update Recovery Email
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Security Activity -->
+                    <h3 style="color: var(--chocolate); margin-bottom: 1rem; margin-top: 2rem;">🛡️ Admin Security Activity</h3>
+                    <div class="table-wrap">
+                        <table class="login-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="security-activity-table">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                                        No security activity recorded yet.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="product.html">Nutritional Details</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-backdrop"></div>
+    <div class="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Basket</h3>
+            <button class="cart-close-btn" aria-label="Close Basket">&times;</button>
+        </div>
+        <div class="cart-body">
+            <!-- Populated dynamically via main.js -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-value">₹0</span>
+            </div>
+            <a href="checkout.html" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1rem;">
+                <i class="fa-solid fa-basket-shopping"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        // Check Admin Auth status
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait a moment to ensure main.js is fully loaded
+            setTimeout(() => {
+                checkAdminAuth();
+            }, 100);
+        });
+
+        function checkAdminAuth() {
+            const loggedIn = sessionStorage.getItem('fruitingo_admin_logged_in');
+            const loginContainer = document.getElementById('admin-login-container');
+            const dashboardContainer = document.getElementById('admin-dashboard-container');
+            
+            if (loggedIn === 'true') {
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                // Render products and orders
+                if (typeof renderAdminDashboard === 'function') {
+                    renderAdminDashboard();
+                }
+                if (typeof renderAdminOrders === 'function') {
+                    renderAdminOrders();
+                }
+                if (typeof renderAdminFeedbacks === 'function') {
+                    renderAdminFeedbacks();
+                }
+                if (typeof renderAdminContactMessages === 'function') {
+                    renderAdminContactMessages();
+                }
+                if (typeof renderAdminCustomers === 'function') {
+                    renderAdminCustomers();
+                }
+                if (typeof renderAdminNotifications === 'function') {
+                    renderAdminNotifications();
+                }
+                if (typeof renderAdminSecurity === 'function') {
+                    renderAdminSecurity();
+                }
+            } else {
+                loginContainer.style.display = 'block';
+                dashboardContainer.style.display = 'none';
+            }
+        }
+
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            const errorMsg = document.getElementById('login-error-msg');
+            
+            if (user === 'admin' && pass === 'admin123') {
+                sessionStorage.setItem('fruitingo_admin_logged_in', 'true');
+                errorMsg.style.display = 'none';
+                checkAdminAuth();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        };
+
+        window.handleAdminLogout = function() {
+            sessionStorage.removeItem('fruitingo_admin_logged_in');
+            // Clear input fields
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
+            checkAdminAuth();
+        };
+
+        window.switchTab = function(tabName) {
+            const tabs = {
+                products: { btn: document.getElementById('tab-btn-products'), panel: document.getElementById('tab-products'), display: 'grid' },
+                orders: { btn: document.getElementById('tab-btn-orders'), panel: document.getElementById('tab-orders'), display: 'block' },
+                feedback: { btn: document.getElementById('tab-btn-feedback'), panel: document.getElementById('tab-feedback'), display: 'block' },
+                contact: { btn: document.getElementById('tab-btn-contact'), panel: document.getElementById('tab-contact'), display: 'block' },
+                customers: { btn: document.getElementById('tab-btn-customers'), panel: document.getElementById('tab-customers'), display: 'block' },
+                notifications: { btn: document.getElementById('tab-btn-notifications'), panel: document.getElementById('tab-notifications'), display: 'block' },
+                security: { btn: document.getElementById('tab-btn-security'), panel: document.getElementById('tab-security'), display: 'block' }
+            };
+
+            Object.keys(tabs).forEach((name) => {
+                const { btn, panel, display } = tabs[name];
+                const isActive = name === tabName;
+                btn.classList.toggle('active', isActive);
+                if (isActive) {
+                    btn.style.background = '';
+                    btn.style.border = '';
+                    btn.style.color = '';
+                    panel.style.display = display;
+                } else {
+                    btn.style.background = 'var(--gray-light)';
+                    btn.style.border = '1px solid var(--border-color)';
+                    btn.style.color = 'var(--chocolate)';
+                    panel.style.display = 'none';
+                }
+            });
+
+            if (tabName === 'orders') renderAdminOrders();
+            if (tabName === 'feedback') renderAdminFeedbacks();
+            if (tabName === 'contact') renderAdminContactMessages();
+            if (tabName === 'customers') renderAdminCustomers();
+            if (tabName === 'notifications') {
+                renderAdminNotifications();
+                loadCustomerCheckboxList();
+            }
+            if (tabName === 'security') renderAdminSecurity();
+        };
+
+        // Security-aware admin login function
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            const errorMsg = document.getElementById('login-error-msg');
+            
+            const adminAuth = getAdminAuth();
+            
+            if (user === adminAuth.username && pass === adminAuth.password) {
+                sessionStorage.setItem('fruitingo_admin_logged_in', 'true');
+                
+                // Update security data
+                const adminSecurity = getAdminSecurity();
+                adminSecurity.lastSuccessfulLogin = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+                addSecurityActivity('Admin Login', 'Success');
+                saveAdminSecurity(adminSecurity);
+                
+                document.getElementById('admin-user').value = '';
+                document.getElementById('admin-pass').value = '';
+                checkAdminAuth();
+            } else {
+                errorMsg.style.display = 'block';
+                
+                // Track failed login
+                const adminSecurity = getAdminSecurity();
+                adminSecurity.failedLoginCount = (adminSecurity.failedLoginCount || 0) + 1;
+                addSecurityActivity('Failed Login Attempt', 'Failed');
+                saveAdminSecurity(adminSecurity);
+            }
+        };
+
+        // Security-aware admin logout function
+        window.handleAdminLogout = function() {
+            addSecurityActivity('Admin Logout', 'Success');
+            sessionStorage.removeItem('fruitingo_admin_logged_in');
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
+            checkAdminAuth();
+        };
+
+        window.renderAdminOrders = function() {
+            const tableBody = document.getElementById('admin-orders-table');
+            const totalOrdersCount = document.getElementById('admin-total-orders');
+            const totalRevenueAmount = document.getElementById('admin-total-revenue');
+            
+            if (!tableBody) return;
+
+            const orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            
+            if (totalOrdersCount) {
+                totalOrdersCount.textContent = orders.length;
+            }
+
+            let revenue = 0;
+            orders.forEach(o => {
+                revenue += o.total;
+            });
+            if (totalRevenueAmount) {
+                totalRevenueAmount.textContent = '₹' + revenue;
+            }
+
+            if (orders.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No orders received yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            orders.slice().reverse().forEach(o => {
+                let itemsList = '<ul class="order-items-list">';
+                o.items.forEach(item => {
+                    itemsList += `<li>${item.name} (${item.weight}) x ${item.qty}</li>`;
+                });
+                itemsList += '</ul>';
+
+                const customerInfo = `
+                    <div class="order-customer-info">
+                        <strong>${o.customer.name}</strong><br>
+                        <i class="fa-solid fa-phone" style="font-size:0.75rem;"></i> ${o.customer.phone}<br>
+                        <i class="fa-solid fa-location-dot" style="font-size:0.75rem;"></i> ${o.customer.address}
+                    </div>
+                `;
+
+                const statusOptions = ['Paid (UPI)', 'Paid (Card)', 'Pending (COD)', 'Shipped', 'Completed', 'Cancelled'];
+                let statusSelect = `<select onchange="updateOrderStatus('${o.orderId}', this)" class="form-select" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; width: auto; border-radius: 6px; color: var(--chocolate); background: var(--gray-light); border: 1px solid var(--border-color); cursor: pointer;">`;
+                statusOptions.forEach(opt => {
+                    const selected = o.status === opt ? 'selected' : '';
+                    statusSelect += `<option value="${opt}" ${selected}>${opt}</option>`;
+                });
+                statusSelect += '</select>';
+
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${o.orderId}</td>
+                        <td style="font-size: 0.8rem; color: var(--gray-muted);">${o.date}</td>
+                        <td>${customerInfo}</td>
+                        <td>${itemsList}</td>
+                        <td style="font-weight: 800; color: var(--chocolate);">₹${o.total}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark);">${o.paymentMethod}</td>
+                        <td>${statusSelect}</td>
+                        <td style="text-align: center;">
+                            <button onclick="deleteOrder('${o.orderId}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Order">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        };
+
+        window.updateOrderStatus = function(orderId, selectEl) {
+            const newStatus = selectEl.value;
+            let orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            const idx = orders.findIndex(o => o.orderId === orderId);
+            if (idx > -1) {
+                orders[idx].status = newStatus;
+                localStorage.setItem('fruitingo_orders', JSON.stringify(orders));
+                renderAdminOrders();
+            }
+        };
+
+        window.deleteOrder = function(orderId) {
+            if (!confirm('Are you sure you want to delete this order?')) return;
+            let orders = JSON.parse(localStorage.getItem('fruitingo_orders')) || [];
+            orders = orders.filter(o => o.orderId !== orderId);
+            localStorage.setItem('fruitingo_orders', JSON.stringify(orders));
+            renderAdminOrders();
+        };
+
+        window.renderAdminContactMessages = function() {
+            const tableBody = document.getElementById('admin-contact-table');
+            const totalContactCount = document.getElementById('admin-total-contact');
+            
+            if (!tableBody) return;
+
+            const messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            
+            if (totalContactCount) {
+                totalContactCount.textContent = messages.length;
+            }
+
+            if (messages.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No contact messages received yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            messages.slice().reverse().forEach(msg => {
+                const statusBadge = msg.status === 'New' 
+                    ? `<span style="background-color: rgba(22, 163, 74, 0.1); color: var(--secondary); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${msg.status}</span>`
+                    : `<span style="background-color: rgba(107, 114, 128, 0.1); color: #6b7280; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${msg.status}</span>`;
+
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${msg.name}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark);">${msg.email}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark);">${msg.phone || 'N/A'}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-dark); max-width: 200px;">${msg.message.substring(0, 40)}${msg.message.length > 40 ? '...' : ''}</td>
+                        <td style="font-size: 0.8rem; color: var(--gray-muted);">${msg.date}</td>
+                        <td>${statusBadge}</td>
+                        <td style="text-align: center;">
+                            <button onclick="viewContactMessage('${msg.id}')" style="background: transparent; border: none; color: var(--secondary); cursor: pointer; font-size: 1rem; padding: 0.5rem; transition: var(--transition-fast);" title="View Message">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="markContactAsRead('${msg.id}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; font-size: 1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Mark as Read">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button onclick="deleteContactMessage('${msg.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; font-size: 1rem; padding: 0.5rem; transition: var(--transition-fast);" title="Delete Message">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        };
+
+        window.viewContactMessage = function(id) {
+            const messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            const msg = messages.find(m => m.id === id);
+            if (msg) {
+                alert(`Name: ${msg.name}\nEmail: ${msg.email}\nPhone: ${msg.phone || 'N/A'}\nMessage: ${msg.message}\nDate: ${msg.date}`);
+            }
+        };
+
+        window.markContactAsRead = function(id) {
+            let messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            const idx = messages.findIndex(m => m.id === id);
+            if (idx > -1) {
+                messages[idx].status = 'Read';
+                localStorage.setItem('fruitingo_contact_messages', JSON.stringify(messages));
+                renderAdminContactMessages();
+            }
+        };
+
+        window.deleteContactMessage = function(id) {
+            if (!confirm('Are you sure you want to delete this message?')) return;
+            let messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
+            messages = messages.filter(m => m.id !== id);
+            localStorage.setItem('fruitingo_contact_messages', JSON.stringify(messages));
+            renderAdminContactMessages();
+        };
+
+        // Render Registered Customers
+        window.renderAdminCustomers = function() {
+            const tableBody = document.getElementById('admin-customers-table');
+            const totalCustomersBadge = document.getElementById('admin-total-customers');
+            
+            if (!tableBody) return;
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            if (totalCustomersBadge) {
+                totalCustomersBadge.textContent = customers.length;
+            }
+
+            if (customers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No registered customers yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            customers.slice().reverse().forEach(customer => {
+                const statusColor = customer.status === 'Active' ? 'var(--secondary)' : '#EF4444';
+                const statusBg = customer.status === 'Active' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+                
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${customer.customerId}</td>
+                        <td style="font-weight: 600; color: var(--gray-dark);">${customer.userId}</td>
+                        <td>${customer.mobile}</td>
+                        <td style="font-weight: 600; color: var(--chocolate);">${customer.displayName}</td>
+                        <td>${customer.joinedDate}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-muted);">${customer.joinedTime}</td>
+                        <td><span style="background: ${statusBg}; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${customer.status}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="viewCustomer('${customer.customerId}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="toggleCustomerStatus('${customer.customerId}')" style="background: transparent; border: none; color: ${customer.status === 'Active' ? '#EF4444' : 'var(--secondary)'}; cursor: pointer; margin-right: 0.5rem;" title="${customer.status === 'Active' ? 'Block' : 'Unblock'}">
+                                <i class="fa-solid ${customer.status === 'Active' ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                            <button onclick="deleteCustomer('${customer.customerId}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        };
+
+        // Search Customers
+        window.searchCustomers = function() {
+            const searchTerm = document.getElementById('customer-search').value.toLowerCase();
+            const tableBody = document.getElementById('admin-customers-table');
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            const filteredCustomers = customers.filter(customer => 
+                customer.customerId.toLowerCase().includes(searchTerm) ||
+                customer.mobile.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredCustomers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No customers found matching your search.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredCustomers.slice().reverse().forEach(customer => {
+                const statusColor = customer.status === 'Active' ? 'var(--secondary)' : '#EF4444';
+                const statusBg = customer.status === 'Active' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+                
+                html += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--chocolate);">${customer.customerId}</td>
+                        <td style="font-weight: 600; color: var(--gray-dark);">${customer.userId}</td>
+                        <td>${customer.mobile}</td>
+                        <td style="font-weight: 600; color: var(--chocolate);">${customer.displayName}</td>
+                        <td>${customer.joinedDate}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-muted);">${customer.joinedTime}</td>
+                        <td><span style="background: ${statusBg}; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${customer.status}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="viewCustomer('${customer.customerId}')" style="background: transparent; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="toggleCustomerStatus('${customer.customerId}')" style="background: transparent; border: none; color: ${customer.status === 'Active' ? '#EF4444' : 'var(--secondary)'}; cursor: pointer; margin-right: 0.5rem;" title="${customer.status === 'Active' ? 'Block' : 'Unblock'}">
+                                <i class="fa-solid ${customer.status === 'Active' ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                            <button onclick="deleteCustomer('${customer.customerId}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        };
+
+        // View Customer Details
+        window.viewCustomer = function(customerId) {
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const customer = customers.find(c => c.customerId === customerId);
+            
+            if (!customer) return;
+            
+            // Populate modal with customer data
+            const modalBackdrop = document.getElementById('customer-modal-backdrop');
+            const modal = document.getElementById('customer-modal');
+            const initial = document.getElementById('modal-customer-initial');
+            const infoGrid = document.getElementById('customer-info-grid');
+            
+            // Set customer initial
+            initial.textContent = customer.displayName.charAt(0).toUpperCase();
+            
+            // Build customer info rows
+            const customerInfo = [
+                { icon: 'fa-id-card', label: 'Customer ID', value: customer.customerId },
+                { icon: 'fa-user', label: 'User ID', value: customer.userId },
+                { icon: 'fa-phone', label: 'Mobile Number', value: customer.mobile },
+                { icon: 'fa-user-circle', label: 'Display Name', value: customer.displayName },
+                { icon: 'fa-envelope', label: 'Email', value: customer.email || 'Not provided' },
+                { icon: 'fa-venus-mars', label: 'Gender', value: customer.gender || 'Not provided' },
+                { icon: 'fa-calendar', label: 'Date of Birth', value: customer.dob || 'Not provided' },
+                { icon: 'fa-calendar-day', label: 'Joined Date', value: customer.joinedDate },
+                { icon: 'fa-clock', label: 'Joined Time', value: customer.joinedTime },
+                { icon: 'fa-signal', label: 'Status', value: customer.status, isStatus: true },
+                { icon: 'fa-shopping-cart', label: 'Total Orders', value: customer.orders ? customer.orders.length : 0 },
+                { icon: 'fa-heart', label: 'Wishlist Items', value: customer.wishlist ? customer.wishlist.length : 0 },
+                { icon: 'fa-map-marker-alt', label: 'Saved Addresses', value: customer.addresses ? customer.addresses.length : 0 }
+            ];
+            
+            let gridHTML = '';
+            customerInfo.forEach(info => {
+                const valueHTML = info.isStatus 
+                    ? `<span class="customer-status-badge ${customer.status.toLowerCase()}">${info.value}</span>`
+                    : info.value;
+                
+                gridHTML += `
+                    <div class="customer-info-row">
+                        <div class="customer-info-icon">
+                            <i class="fa-solid ${info.icon}"></i>
+                        </div>
+                        <div class="customer-info-content">
+                            <div class="customer-info-label">${info.label}</div>
+                            <div class="customer-info-value">${valueHTML}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            infoGrid.innerHTML = gridHTML;
+            
+            // Show modal
+            modalBackdrop.classList.add('active');
+        };
+        
+        // Close Customer Modal
+        window.closeCustomerModal = function() {
+            const modalBackdrop = document.getElementById('customer-modal-backdrop');
+            modalBackdrop.classList.remove('active');
+        };
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modalBackdrop = document.getElementById('customer-modal-backdrop');
+            const modal = document.getElementById('customer-modal');
+            
+            if (modalBackdrop && modal && 
+                modalBackdrop.classList.contains('active') && 
+                !modal.contains(e.target) && 
+                e.target === modalBackdrop) {
+                closeCustomerModal();
+            }
+        });
+
+        // Toggle Customer Status (Block/Unblock)
+        window.toggleCustomerStatus = function(customerId) {
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const idx = customers.findIndex(c => c.customerId === customerId);
+            
+            if (idx === -1) return;
+            
+            const newStatus = customers[idx].status === 'Active' ? 'Blocked' : 'Active';
+            customers[idx].status = newStatus;
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            // Update current customer if it's the same user
+            const currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+            if (currentCustomer && currentCustomer.customerId === customerId) {
+                currentCustomer.status = newStatus;
+                localStorage.setItem('fruitingo_current_customer', JSON.stringify(currentCustomer));
+            }
+            
+            renderAdminCustomers();
+            
+            const action = newStatus === 'Blocked' ? 'blocked' : 'unblocked';
+            alert(`Customer has been ${action} successfully.`);
+        };
+
+        // Delete Customer
+        window.deleteCustomer = function(customerId) {
+            if (!confirm('Are you sure you want to delete this customer? This action cannot be undone.')) return;
+            
+            let customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            customers = customers.filter(c => c.customerId !== customerId);
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            // If the deleted customer is currently logged in, log them out
+            const currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+            if (currentCustomer && currentCustomer.customerId === customerId) {
+                localStorage.removeItem('fruitingo_current_customer');
+            }
+            
+            renderAdminCustomers();
+            alert('Customer has been deleted successfully.');
+        };
+
+        // Notification System Functions
+        let selectedRecipients = [];
+        let notificationHistory = JSON.parse(localStorage.getItem('fruitingo_notification_history')) || [];
+
+        window.toggleRecipientSelection = function(type) {
+            document.getElementById('recipient-selected').style.display = type === 'selected' ? 'block' : 'none';
+            document.getElementById('recipient-multiple').style.display = type === 'multiple' ? 'block' : 'none';
+            selectedRecipients = [];
+        };
+
+        window.searchCustomerForNotification = function() {
+            const searchTerm = document.getElementById('customer-search-select').value.toLowerCase();
+            const resultsDiv = document.getElementById('customer-search-results');
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const filteredCustomers = customers.filter(customer => 
+                customer.customerId.toLowerCase().includes(searchTerm) ||
+                customer.mobile.toLowerCase().includes(searchTerm) ||
+                customer.displayName.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredCustomers.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: var(--gray-muted); padding: 0.5rem;">No customers found.</p>';
+                return;
+            }
+            
+            let html = '';
+            filteredCustomers.forEach(customer => {
+                html += `
+                    <div style="padding: 0.5rem; border-bottom: 1px solid var(--gray-light); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="selectCustomer('${customer.customerId}')">
+                        <div>
+                            <strong>${customer.displayName}</strong><br>
+                            <small style="color: var(--gray-muted);">${customer.customerId} | ${customer.mobile}</small>
+                        </div>
+                        <i class="fa-solid fa-check" style="color: var(--secondary);"></i>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        };
+
+        window.selectCustomer = function(customerId) {
+            selectedRecipients = [customerId];
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            const customer = customers.find(c => c.customerId === customerId);
+            document.getElementById('customer-search-select').value = customer ? customer.displayName : '';
+            document.getElementById('customer-search-results').innerHTML = '';
+        };
+
+        window.loadCustomerCheckboxList = function() {
+            const checkboxList = document.getElementById('customer-checkbox-list');
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            if (customers.length === 0) {
+                checkboxList.innerHTML = '<p style="color: var(--gray-muted);">No customers registered yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            customers.forEach(customer => {
+                html += `
+                    <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-bottom: 1px solid var(--gray-light); cursor: pointer;">
+                        <input type="checkbox" value="${customer.customerId}" onchange="updateSelectedRecipients()">
+                        <span>${customer.displayName} (${customer.customerId})</span>
+                    </label>
+                `;
+            });
+            
+            checkboxList.innerHTML = html;
+        };
+
+        window.updateSelectedRecipients = function() {
+            const checkboxes = document.querySelectorAll('#customer-checkbox-list input[type="checkbox"]:checked');
+            selectedRecipients = Array.from(checkboxes).map(cb => cb.value);
+        };
+
+        window.sendNotification = function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('notif-title').value.trim();
+            const type = document.getElementById('notif-type').value;
+            const message = document.getElementById('notif-message').value.trim();
+            const sendTo = document.querySelector('input[name="send-to"]:checked').value;
+            
+            if (!title || !message) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            let recipients = [];
+            
+            if (sendTo === 'all') {
+                recipients = customers.map(c => c.customerId);
+            } else if (sendTo === 'selected' && selectedRecipients.length > 0) {
+                recipients = selectedRecipients;
+            } else if (sendTo === 'multiple' && selectedRecipients.length > 0) {
+                recipients = selectedRecipients;
+            } else {
+                alert('Please select at least one recipient.');
+                return;
+            }
+            
+            if (recipients.length === 0) {
+                alert('No customers available to send notification.');
+                return;
+            }
+            
+            // Create notification object
+            const notification = {
+                id: Date.now(),
+                title,
+                message,
+                type,
+                recipients,
+                sentTo: sendTo === 'all' ? 'All Customers' : `${recipients.length} Customer(s)`,
+                status: 'Delivered',
+                createdAt: new Date().toLocaleDateString(),
+                createdTime: new Date().toLocaleTimeString()
+            };
+            
+            // Add to notification history
+            notificationHistory.push(notification);
+            localStorage.setItem('fruitingo_notification_history', JSON.stringify(notificationHistory));
+            
+            // Send to each customer
+            customers.forEach(customer => {
+                if (recipients.includes(customer.customerId)) {
+                    if (!customer.notifications) customer.notifications = [];
+                    customer.notifications.unshift({
+                        id: notification.id,
+                        title,
+                        message,
+                        type,
+                        read: false,
+                        createdAt: `${notification.createdAt} ${notification.createdTime}`
+                    });
+                }
+            });
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            // Update current customer's notification bell
+            const currentCustomer = JSON.parse(localStorage.getItem('fruitingo_current_customer'));
+            if (currentCustomer && recipients.includes(currentCustomer.customerId)) {
+                // Update current customer with new notification
+                const newNotification = {
+                    id: notification.id,
+                    title,
+                    message,
+                    type,
+                    read: false,
+                    createdAt: `${notification.createdAt} ${notification.createdTime}`
+                };
+                
+                if (!currentCustomer.notifications) currentCustomer.notifications = [];
+                currentCustomer.notifications.unshift(newNotification);
+                
+                localStorage.setItem('fruitingo_current_customer', JSON.stringify(currentCustomer));
+                
+                // Trigger browser notification
+                if (typeof showBrowserNotification === 'function') {
+                    showBrowserNotification('Fruitingo', `${title} — ${message}`);
+                }
+            }
+            
+            // Reset form
+            document.getElementById('notif-title').value = '';
+            document.getElementById('notif-message').value = '';
+            selectedRecipients = [];
+            
+            // Update UI
+            renderAdminNotifications();
+            showToast('Notification Sent Successfully');
+            
+            alert(`Notification sent to ${recipients.length} customer(s).`);
+        };
+
+        window.renderAdminNotifications = function() {
+            const tableBody = document.getElementById('admin-notifications-table');
+            const totalBadge = document.getElementById('admin-total-notifications');
+            
+            if (!tableBody) return;
+            
+            if (totalBadge) {
+                totalBadge.textContent = notificationHistory.length;
+            }
+            
+            if (notificationHistory.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No notifications sent yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            notificationHistory.slice().reverse().forEach(notif => {
+                const typeColors = {
+                    'Offer': 'rgba(212, 175, 55, 0.1)',
+                    'Order Update': 'rgba(14, 165, 233, 0.1)',
+                    'Product Launch': 'rgba(168, 85, 247, 0.1)',
+                    'General Announcement': 'rgba(22, 163, 74, 0.1)',
+                    'Delivery Update': 'rgba(234, 179, 8, 0.1)'
+                };
+                
+                html += `
+                    <tr>
+                        <td>${notif.createdAt}</td>
+                        <td style="font-size: 0.85rem; color: var(--gray-muted);">${notif.createdTime}</td>
+                        <td style="font-weight: 700; color: var(--chocolate);">${notif.title}</td>
+                        <td><span style="background: ${typeColors[notif.type] || 'rgba(108, 117, 125, 0.1)'}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">${notif.type}</span></td>
+                        <td>${notif.sentTo}</td>
+                        <td><span style="color: var(--secondary); font-weight: 700;">${notif.status}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="viewNotificationDetails(${notif.id})" style="background: transparent; border: none; color: var(--primary); cursor: pointer; margin-right: 0.5rem;" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="resendNotification(${notif.id})" style="background: transparent; border: none; color: var(--secondary); cursor: pointer; margin-right: 0.5rem;" title="Resend">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                            <button onclick="deleteNotificationHistory(${notif.id})" style="background: transparent; border: none; color: #EF4444; cursor: pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        };
+
+        window.viewNotificationDetails = function(id) {
+            const notification = notificationHistory.find(n => n.id === id);
+            if (!notification) return;
+            
+            const details = `
+Title: ${notification.title}
+Message: ${notification.message}
+Type: ${notification.type}
+Sent To: ${notification.sentTo}
+Recipients: ${notification.recipients.length}
+Status: ${notification.status}
+Created: ${notification.createdAt} ${notification.createdTime}
+            `;
+            
+            alert(details);
+        };
+
+        window.resendNotification = function(id) {
+            const notification = notificationHistory.find(n => n.id === id);
+            if (!notification) return;
+            
+            if (!confirm('Are you sure you want to resend this notification?')) return;
+            
+            const customers = JSON.parse(localStorage.getItem('fruitingo_customers')) || [];
+            
+            customers.forEach(customer => {
+                if (notification.recipients.includes(customer.customerId)) {
+                    if (!customer.notifications) customer.notifications = [];
+                    customer.notifications.unshift({
+                        id: Date.now(),
+                        title: notification.title,
+                        message: notification.message,
+                        type: notification.type,
+                        read: false,
+                        createdAt: `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+                    });
+                }
+            });
+            
+            localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
+            
+            alert('Notification resent successfully.');
+        };
+
+        window.deleteNotificationHistory = function(id) {
+            if (!confirm('Are you sure you want to delete this notification from history?')) return;
+            
+            notificationHistory = notificationHistory.filter(n => n.id !== id);
+            localStorage.setItem('fruitingo_notification_history', JSON.stringify(notificationHistory));
+            
+            renderAdminNotifications();
+            alert('Notification deleted from history.');
+        };
+
+        function showBrowserNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'assets/fruitingo_logo.png',
+                    badge: 'assets/fruitingo_logo.png'
+                });
+            }
+        }
+
+        // Admin Security Functions
+        let currentOTP = null;
+        let otpExpiryTime = null;
+        let otpAttemptCount = 0;
+        let resendCount = 0;
+        let resendStartTime = null;
+
+        function openPasswordSettingsModal() {
+            document.getElementById('password-modal').classList.add('active');
+            document.getElementById('password-settings-form').reset();
+            document.getElementById('otp-input-section').style.display = 'none';
+            document.getElementById('new-password-section').style.display = 'none';
+            document.getElementById('password-submit-btn').disabled = true;
+            resetPasswordStrength();
+        }
+
+        function closePasswordSettingsModal() {
+            document.getElementById('password-modal').classList.remove('active');
+            document.getElementById('password-settings-form').reset();
+            document.getElementById('otp-input-section').style.display = 'none';
+            document.getElementById('new-password-section').style.display = 'none';
+            document.getElementById('password-submit-btn').disabled = true;
+            resetPasswordStrength();
+            currentOTP = null;
+            otpExpiryTime = null;
+            otpAttemptCount = 0;
+        }
+
+        function openRecoveryEmailModal() {
+            document.getElementById('recovery-email-modal').classList.add('active');
+            document.getElementById('recovery-email-form').reset();
+        }
+
+        function closeRecoveryEmailModal() {
+            document.getElementById('recovery-email-modal').classList.remove('active');
+            document.getElementById('recovery-email-form').reset();
+        }
+
+        function handleRecoveryEmailUpdate(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('recovery-current-password').value;
+            const newEmail = document.getElementById('new-recovery-email').value;
+            const confirmEmail = document.getElementById('confirm-recovery-email').value;
+
+            // Verify current password
+            const adminAuth = getAdminAuth();
+            if (currentPassword !== adminAuth.password) {
+                showToast('error', 'Current password is incorrect.');
+                addSecurityActivity('Recovery Email Update Failed', 'Failed - Wrong current password');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail)) {
+                showToast('error', 'Please enter a valid email address.');
+                addSecurityActivity('Recovery Email Update Failed', 'Failed - Invalid email format');
+                return;
+            }
+
+            // Verify email confirmation
+            if (newEmail !== confirmEmail) {
+                showToast('error', 'Email addresses do not match.');
+                addSecurityActivity('Recovery Email Update Failed', 'Failed - Email mismatch');
+                return;
+            }
+
+            // Update recovery email
+            const adminSecurity = getAdminSecurity();
+            adminSecurity.recoveryEmail = newEmail;
+            saveAdminSecurity(adminSecurity);
+
+            // Log to security activity
+            addSecurityActivity('Recovery Email Updated', 'Success');
+
+            showToast('success', 'Recovery email updated successfully\nYour password reset OTPs will now be sent to this email.');
+            
+            closeRecoveryEmailModal();
+            
+            // Refresh security data
+            if (typeof renderAdminSecurity === 'function') {
+                renderAdminSecurity();
+            }
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const toggle = input.nextElementSibling;
+            const icon = toggle.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function sendAdminOTP() {
+            const adminSecurity = getAdminSecurity();
+            
+            if (!adminSecurity.recoveryEmail) {
+                showToast('error', 'Recovery email not configured. Please set up recovery email first.');
+                return;
+            }
+
+            // Check resend limits
+            if (resendCount >= 3) {
+                const timeSinceFirstResend = Date.now() - resendStartTime;
+                if (timeSinceFirstResend < 10 * 60 * 1000) { // 10 minutes
+                    showToast('error', 'Maximum resend attempts reached. Please try again later.');
+                    return;
+                } else {
+                    resendCount = 0;
+                    resendStartTime = null;
+                }
+            }
+
+            // Generate 6-digit OTP
+            currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            otpExpiryTime = Date.now() + 5 * 60 * 1000; // 5 minutes
+            otpAttemptCount = 0;
+
+            // Disable button and start countdown
+            const sendBtn = document.getElementById('send-otp-btn');
+            sendBtn.disabled = true;
+            let countdown = 60;
+            
+            const countdownInterval = setInterval(() => {
+                document.getElementById('otp-countdown').textContent = `Resend available in ${countdown}s`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Resend OTP';
+                    document.getElementById('otp-countdown').style.display = 'none';
+                    resendCount++;
+                    if (!resendStartTime) resendStartTime = Date.now();
+                }
+            }, 1000);
+
+            document.getElementById('otp-countdown').style.display = 'block';
+            document.getElementById('otp-input-section').style.display = 'block';
+
+            // Log OTP send to security activity
+            addSecurityActivity('OTP Sent', 'Success');
+
+            // In production, this would send email via Brevo API
+            console.log('OTP sent to:', adminSecurity.recoveryEmail);
+            console.log('OTP:', currentOTP);
+            
+            showToast('success', 'Verification code sent to your recovery email.');
+        }
+
+        function validatePasswordStrength() {
+            const password = document.getElementById('new-password').value;
+            const checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            Object.keys(checks).forEach(key => {
+                const element = document.getElementById(`strength-${key}`);
+                const icon = element.querySelector('i');
+                
+                if (checks[key]) {
+                    element.classList.add('valid');
+                    icon.classList.remove('fa-regular', 'fa-circle');
+                    icon.classList.add('fa-solid', 'fa-circle-check');
+                } else {
+                    element.classList.remove('valid');
+                    icon.classList.remove('fa-solid', 'fa-circle-check');
+                    icon.classList.add('fa-regular', 'fa-circle');
+                }
+            });
+
+            const allValid = Object.values(checks).every(check => check);
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const passwordsMatch = password === confirmPassword && password.length > 0;
+
+            document.getElementById('password-submit-btn').disabled = !(allValid && passwordsMatch);
+        }
+
+        function resetPasswordStrength() {
+            const checks = ['length', 'uppercase', 'lowercase', 'number', 'special'];
+            checks.forEach(key => {
+                const element = document.getElementById(`strength-${key}`);
+                element.classList.remove('valid');
+                const icon = element.querySelector('i');
+                icon.classList.remove('fa-solid', 'fa-circle-check');
+                icon.classList.add('fa-regular', 'fa-circle');
+            });
+        }
+
+        function handlePasswordChange(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const otpCode = document.getElementById('otp-code').value;
+
+            // Step 1: Verify current password
+            const adminAuth = getAdminAuth();
+            if (currentPassword !== adminAuth.password) {
+                showToast('error', 'Current password is incorrect.');
+                addSecurityActivity('Password Change Failed', 'Failed - Wrong current password');
+                return;
+            }
+
+            // Step 2: Verify OTP
+            if (!currentOTP || Date.now() > otpExpiryTime) {
+                showToast('error', 'OTP has expired. Please request a new code.');
+                addSecurityActivity('Password Change Failed', 'Failed - OTP expired');
+                return;
+            }
+
+            if (otpCode !== currentOTP) {
+                otpAttemptCount++;
+                if (otpAttemptCount >= 5) {
+                    showToast('error', 'Maximum attempts reached. Request a new OTP.');
+                    addSecurityActivity('Password Change Failed', 'Failed - Max OTP attempts');
+                    closePasswordSettingsModal();
+                    return;
+                }
+                showToast('error', 'Invalid verification code.');
+                addSecurityActivity('Password Change Failed', 'Failed - Invalid OTP');
+                return;
+            }
+
+            // Step 3: Validate new password
+            if (newPassword !== confirmPassword) {
+                showToast('error', 'Passwords do not match.');
+                addSecurityActivity('Password Change Failed', 'Failed - Passwords mismatch');
+                return;
+            }
+
+            // Step 4: Update password
+            adminAuth.password = newPassword;
+            saveAdminAuth(adminAuth);
+
+            // Update security data
+            const adminSecurity = getAdminSecurity();
+            adminSecurity.lastPasswordChanged = {
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+            adminSecurity.passwordChangeCount = (adminSecurity.passwordChangeCount || 0) + 1;
+            saveAdminSecurity(adminSecurity);
+
+            // Log to security activity
+            addSecurityActivity('Password Changed', 'Success');
+
+            showToast('success', 'Password Updated Successfully\nYour Fruitingo Admin password has been updated securely.');
+            
+            closePasswordSettingsModal();
+            
+            // Refresh security data
+            if (typeof renderAdminSecurity === 'function') {
+                renderAdminSecurity();
+            }
+        }
+
+        function getAdminAuth() {
+            const stored = localStorage.getItem('fruitingo_admin_auth');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            // Default admin credentials
+            return {
+                username: 'admin',
+                password: 'admin123'
+            };
+        }
+
+        function saveAdminAuth(auth) {
+            localStorage.setItem('fruitingo_admin_auth', JSON.stringify(auth));
+        }
+
+        function getAdminSecurity() {
+            const stored = localStorage.getItem('fruitingo_admin_security');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            // Default security configuration
+            return {
+                username: 'admin',
+                recoveryEmail: 'admin@fruitingo.in',
+                otpEnabled: false,
+                lastPasswordChanged: null,
+                passwordChangeCount: 0,
+                lastSuccessfulLogin: null,
+                failedLoginCount: 0,
+                loginHistory: [],
+                otpConfig: {
+                    expiryMinutes: 5,
+                    maxAttempts: 5,
+                    maxResend: 3,
+                    resendCooldownSeconds: 60
+                }
+            };
+        }
+
+        function saveAdminSecurity(security) {
+            localStorage.setItem('fruitingo_admin_security', JSON.stringify(security));
+        }
+
+        function addSecurityActivity(action, status) {
+            const adminSecurity = getAdminSecurity();
+            
+            if (!adminSecurity.loginHistory) {
+                adminSecurity.loginHistory = [];
+            }
+
+            adminSecurity.loginHistory.unshift({
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                action: action,
+                status: status
+            });
+
+            // Keep only last 50 entries
+            if (adminSecurity.loginHistory.length > 50) {
+                adminSecurity.loginHistory = adminSecurity.loginHistory.slice(0, 50);
+            }
+
+            saveAdminSecurity(adminSecurity);
+        }
+
+        window.renderAdminSecurity = function() {
+            const adminSecurity = getAdminSecurity();
+
+            // Update Last Password Updated card
+            if (adminSecurity.lastPasswordChanged) {
+                document.getElementById('security-last-password-date').textContent = adminSecurity.lastPasswordChanged.date;
+                document.getElementById('security-last-password-time').textContent = adminSecurity.lastPasswordChanged.time;
+            }
+
+            // Update Security Statistics
+            document.getElementById('security-password-changes').textContent = adminSecurity.passwordChangeCount || 0;
+            document.getElementById('security-failed-logins').textContent = adminSecurity.failedLoginCount || 0;
+            document.getElementById('security-last-login').textContent = adminSecurity.lastSuccessfulLogin || 'Never';
+
+            // Update OTP Status
+            document.getElementById('security-recovery-email').textContent = adminSecurity.recoveryEmail || 'Not configured';
+            document.getElementById('security-otp-enabled').textContent = adminSecurity.otpEnabled ? 'Yes' : 'No';
+
+            // Update Security Activity table
+            const tableBody = document.getElementById('security-activity-table');
+            if (adminSecurity.loginHistory && adminSecurity.loginHistory.length > 0) {
+                tableBody.innerHTML = adminSecurity.loginHistory.map(activity => `
+                    <tr>
+                        <td>${activity.date}</td>
+                        <td>${activity.time}</td>
+                        <td>${activity.action}</td>
+                        <td class="${activity.status === 'Success' ? 'status-success' : 'status-failed'}">${activity.status}</td>
+                    </tr>
+                `).join('');
+            } else {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem; color: var(--gray-muted);">
+                            No security activity recorded yet.
+                        </td>
+                    </tr>
+                `;
+            }
+        };
+
+        // Initialize admin security on first load
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminAuth = getAdminAuth();
+            if (!localStorage.getItem('fruitingo_admin_auth')) {
+                saveAdminAuth(adminAuth);
+            }
+            
+            const adminSecurity = getAdminSecurity();
+            if (!localStorage.getItem('fruitingo_admin_security')) {
+                saveAdminSecurity(adminSecurity);
+            }
+            
+            // Add event listener for confirm password validation
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            if (confirmPasswordInput) {
+                confirmPasswordInput.addEventListener('keyup', validatePasswordStrength);
+            }
+        });
+    </script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
+    
+    <!-- Customer Details Modal -->
+    <div class="customer-modal-backdrop" id="customer-modal-backdrop">
+        <div class="customer-modal" id="customer-modal">
+            <div class="customer-modal-header">
+                <div class="customer-modal-decoration">🍃</div>
+                <button class="customer-modal-close" onclick="closeCustomerModal()">&times;</button>
+            </div>
+            
+            <div class="customer-modal-avatar">
+                <span id="modal-customer-initial">U</span>
+                <div class="verified-badge">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+            
+            <div class="customer-modal-title">
+                <h2>Customer Details</h2>
+                <p>Here is the complete information for this customer.</p>
+            </div>
+            
+            <div class="customer-info-grid" id="customer-info-grid">
+                <!-- Populated dynamically -->
+            </div>
+            
+            <div class="customer-modal-footer">
+                <div class="customer-modal-brand">
+                    <img src="assets/fruitingo_logo.png" alt="Fruitingo">
+                    <span>Pure Goodness. Happier Lives.</span>
+                </div>
+                <button class="customer-modal-ok-btn" onclick="closeCustomerModal()">OK</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

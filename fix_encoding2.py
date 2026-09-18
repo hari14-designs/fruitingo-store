@@ -1,6 +1,6 @@
 ﻿import os
 
-filepath = 'admin.html'
+filepath = 'AdminHomepage.html'
 with open(filepath, 'r', encoding='utf-8') as f:
     content = f.read()
 
@@ -11,4 +11,4 @@ content = content.replace('ðŸ”´', '🔴')
 
 with open(filepath, 'w', encoding='utf-8') as f:
     f.write(content)
-print('Fixed admin.html encoding')
+print('Fixed AdminHomepage.html encoding')
