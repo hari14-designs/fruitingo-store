@@ -3105,7 +3105,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
         }
 
         function sendForgotPasswordOTP() {
-            const enteredEmail = document.getElementById('forgot-recovery-email').value;
+            const enteredEmail = document.getElementById('forgot-recovery-email').value.trim();
             const adminSecurity = getAdminSecurity();
             const storedEmail = adminSecurity.adminEmail || adminSecurity.recoveryEmail;
             
