@@ -886,7 +886,7 @@
                     Login to Dashboard
                 </button>
                 <div style="text-align: right; margin-top: 1rem;">
-                    <a href="#" onclick="openPasswordSettingsModal()" class="password-change-link">🔒 Change Password</a>
+                    <a href="#" onclick="openForgotPasswordModal()" class="password-change-link">Forgot Password?</a>
                 </div>
             </form>
         </div>
@@ -1024,6 +1024,96 @@
                 
                 <button type="submit" class="password-submit-btn">
                     Update Recovery Email
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="password-modal" id="forgot-password-modal">
+        <div class="password-modal-content">
+            <button class="password-modal-close" onclick="closeForgotPasswordModal()">&times;</button>
+            <div class="password-modal-header">
+                <h2>Admin Password Reset</h2>
+                <p>Reset your Fruitingo Admin password using Email OTP verification.</p>
+            </div>
+            
+            <form id="forgot-password-form" onsubmit="handleForgotPassword(event)">
+                <!-- Recovery Email Display -->
+                <div class="password-form-group">
+                    <label>Recovery Email</label>
+                    <div class="password-input-wrapper">
+                        <input type="email" id="forgot-recovery-email" class="password-input" readonly value="fruitingonaturals@gmail.com" style="background: var(--gray-light); opacity: 0.7;">
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
+                        OTP codes will be sent to this email for password reset.
+                    </p>
+                </div>
+                
+                <!-- Email OTP Verification -->
+                <div class="otp-section">
+                    <h3>📧 Email Verification</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 1rem;">
+                        Verify your identity using Email OTP before resetting password.
+                    </p>
+                    <button type="button" class="send-otp-btn" id="forgot-send-otp-btn" onclick="sendForgotPasswordOTP()">
+                        <i class="fa-solid fa-paper-plane"></i> Send Verification Code
+                    </button>
+                    <div id="forgot-otp-countdown" class="otp-countdown" style="display: none;"></div>
+                    
+                    <div id="forgot-otp-input-section" style="display: none; margin-top: 1rem;">
+                        <label for="forgot-otp-code" style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem; font-size: 0.9rem;">Enter Verification Code</label>
+                        <div class="password-input-wrapper">
+                            <input type="text" id="forgot-otp-code" class="password-input" required placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
+                            Code expires in 5 minutes. Maximum 5 attempts.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Reset Password Form -->
+                <div id="forgot-new-password-section" style="display: none;">
+                    <div class="password-form-group">
+                        <label for="forgot-new-password">New Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="forgot-new-password" class="password-input" required placeholder="Enter new password" onkeyup="validateForgotPasswordStrength()">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('forgot-new-password')">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="forgot-password-strength">
+                            <div class="strength-item" id="forgot-strength-length">
+                                <i class="fa-regular fa-circle"></i> Minimum 8 characters
+                            </div>
+                            <div class="strength-item" id="forgot-strength-uppercase">
+                                <i class="fa-regular fa-circle"></i> Uppercase letter
+                            </div>
+                            <div class="strength-item" id="forgot-strength-lowercase">
+                                <i class="fa-regular fa-circle"></i> Lowercase letter
+                            </div>
+                            <div class="strength-item" id="forgot-strength-number">
+                                <i class="fa-regular fa-circle"></i> Number
+                            </div>
+                            <div class="strength-item" id="forgot-strength-special">
+                                <i class="fa-regular fa-circle"></i> Special character
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="password-form-group">
+                        <label for="forgot-confirm-password">Confirm New Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="forgot-confirm-password" class="password-input" required placeholder="Confirm new password" onkeyup="validateForgotPasswordStrength()">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('forgot-confirm-password')">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="password-submit-btn" id="forgot-password-submit-btn" disabled>
+                    Reset Password
                 </button>
             </form>
         </div>
@@ -1469,6 +1559,10 @@
                                 <div class="security-info-item">
                                     <span class="label">Password Changes:</span>
                                     <span class="value" id="security-password-changes">0</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">Password Resets:</span>
+                                    <span class="value" id="security-password-resets">0</span>
                                 </div>
                                 <div class="security-info-item">
                                     <span class="label">Failed Login Attempts:</span>
@@ -2543,6 +2637,194 @@ Created: ${notification.createdAt} ${notification.createdTime}
             }
         }
 
+        // Forgot Password Functions
+        let forgotPasswordOTP = null;
+        let forgotPasswordOTPExpiry = null;
+        let forgotPasswordAttemptCount = 0;
+        let forgotPasswordResendCount = 0;
+        let forgotPasswordResendStartTime = null;
+
+        function openForgotPasswordModal() {
+            document.getElementById('forgot-password-modal').classList.add('active');
+            document.getElementById('forgot-password-form').reset();
+            document.getElementById('forgot-otp-input-section').style.display = 'none';
+            document.getElementById('forgot-new-password-section').style.display = 'none';
+            document.getElementById('forgot-password-submit-btn').disabled = true;
+            resetForgotPasswordStrength();
+            forgotPasswordOTP = null;
+            forgotPasswordOTPExpiry = null;
+            forgotPasswordAttemptCount = 0;
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgot-password-modal').classList.remove('active');
+            document.getElementById('forgot-password-form').reset();
+            document.getElementById('forgot-otp-input-section').style.display = 'none';
+            document.getElementById('forgot-new-password-section').style.display = 'none';
+            document.getElementById('forgot-password-submit-btn').disabled = true;
+            resetForgotPasswordStrength();
+            forgotPasswordOTP = null;
+            forgotPasswordOTPExpiry = null;
+            forgotPasswordAttemptCount = 0;
+        }
+
+        function sendForgotPasswordOTP() {
+            const adminSecurity = getAdminSecurity();
+            const recoveryEmail = 'fruitingonaturals@gmail.com';
+
+            // Check resend limits
+            if (forgotPasswordResendCount >= 3) {
+                const timeSinceFirstResend = Date.now() - forgotPasswordResendStartTime;
+                if (timeSinceFirstResend < 10 * 60 * 1000) { // 10 minutes
+                    showToast('error', 'Maximum resend attempts reached. Please try again later.');
+                    return;
+                } else {
+                    forgotPasswordResendCount = 0;
+                    forgotPasswordResendStartTime = null;
+                }
+            }
+
+            // Generate 6-digit OTP
+            forgotPasswordOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            forgotPasswordOTPExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+            forgotPasswordAttemptCount = 0;
+
+            // Disable button and start countdown
+            const sendBtn = document.getElementById('forgot-send-otp-btn');
+            sendBtn.disabled = true;
+            let countdown = 60;
+            
+            const countdownInterval = setInterval(() => {
+                document.getElementById('forgot-otp-countdown').textContent = `Resend available in ${countdown}s`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Resend OTP';
+                    document.getElementById('forgot-otp-countdown').style.display = 'none';
+                    forgotPasswordResendCount++;
+                    if (!forgotPasswordResendStartTime) forgotPasswordResendStartTime = Date.now();
+                }
+            }, 1000);
+
+            document.getElementById('forgot-otp-countdown').style.display = 'block';
+            document.getElementById('forgot-otp-input-section').style.display = 'block';
+
+            // Log OTP send to security activity
+            addSecurityActivity('Password Reset OTP Sent', 'Success');
+
+            // In production, this would send email via Brevo API
+            console.log('Password Reset OTP sent to:', recoveryEmail);
+            console.log('OTP:', forgotPasswordOTP);
+            
+            showToast('success', 'Verification code sent to your recovery email.');
+        }
+
+        function validateForgotPasswordStrength() {
+            const password = document.getElementById('forgot-new-password').value;
+            const checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            Object.keys(checks).forEach(key => {
+                const element = document.getElementById(`forgot-strength-${key}`);
+                const icon = element.querySelector('i');
+                
+                if (checks[key]) {
+                    element.classList.add('valid');
+                    icon.classList.remove('fa-regular', 'fa-circle');
+                    icon.classList.add('fa-solid', 'fa-circle-check');
+                } else {
+                    element.classList.remove('valid');
+                    icon.classList.remove('fa-solid', 'fa-circle-check');
+                    icon.classList.add('fa-regular', 'fa-circle');
+                }
+            });
+
+            const allValid = Object.values(checks).every(check => check);
+            const confirmPassword = document.getElementById('forgot-confirm-password').value;
+            const passwordsMatch = password === confirmPassword && password.length > 0;
+
+            document.getElementById('forgot-password-submit-btn').disabled = !(allValid && passwordsMatch);
+        }
+
+        function resetForgotPasswordStrength() {
+            const checks = ['length', 'uppercase', 'lowercase', 'number', 'special'];
+            checks.forEach(key => {
+                const element = document.getElementById(`forgot-strength-${key}`);
+                element.classList.remove('valid');
+                const icon = element.querySelector('i');
+                icon.classList.remove('fa-solid', 'fa-circle-check');
+                icon.classList.add('fa-regular', 'fa-circle');
+            });
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            
+            const otpCode = document.getElementById('forgot-otp-code').value;
+            const newPassword = document.getElementById('forgot-new-password').value;
+            const confirmPassword = document.getElementById('forgot-confirm-password').value;
+
+            // Verify OTP
+            if (!forgotPasswordOTP || Date.now() > forgotPasswordOTPExpiry) {
+                showToast('error', 'OTP has expired. Please request a new code.');
+                addSecurityActivity('Password Reset Failed', 'Failed - OTP expired');
+                return;
+            }
+
+            if (otpCode !== forgotPasswordOTP) {
+                forgotPasswordAttemptCount++;
+                if (forgotPasswordAttemptCount >= 5) {
+                    showToast('error', 'Maximum attempts reached. Request a new OTP.');
+                    addSecurityActivity('Password Reset Failed', 'Failed - Max OTP attempts');
+                    closeForgotPasswordModal();
+                    return;
+                }
+                showToast('error', 'Invalid verification code.');
+                addSecurityActivity('Password Reset Failed', 'Failed - Invalid OTP');
+                return;
+            }
+
+            // Validate password confirmation
+            if (newPassword !== confirmPassword) {
+                showToast('error', 'Passwords do not match.');
+                addSecurityActivity('Password Reset Failed', 'Failed - Passwords mismatch');
+                return;
+            }
+
+            // Update password
+            const adminAuth = getAdminAuth();
+            adminAuth.password = newPassword;
+            saveAdminAuth(adminAuth);
+
+            // Update security data
+            const adminSecurity = getAdminSecurity();
+            adminSecurity.lastPasswordChanged = {
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+            adminSecurity.passwordResetCount = (adminSecurity.passwordResetCount || 0) + 1;
+            saveAdminSecurity(adminSecurity);
+
+            // Log to security activity
+            addSecurityActivity('Password Reset', 'Success');
+
+            showToast('success', 'Password Reset Successfully\nYour Fruitingo Admin password has been updated securely.');
+            
+            closeForgotPasswordModal();
+            
+            // Refresh security data
+            if (typeof renderAdminSecurity === 'function') {
+                renderAdminSecurity();
+            }
+        }
+
         function togglePasswordVisibility(inputId) {
             const input = document.getElementById(inputId);
             const toggle = input.nextElementSibling;
@@ -2560,13 +2842,8 @@ Created: ${notification.createdAt} ${notification.createdTime}
         }
 
         function sendAdminOTP() {
-            const adminSecurity = getAdminSecurity();
+            const recoveryEmail = 'fruitingonaturals@gmail.com';
             
-            if (!adminSecurity.recoveryEmail) {
-                showToast('error', 'Recovery email not configured. Please set up recovery email first.');
-                return;
-            }
-
             // Check resend limits
             if (resendCount >= 3) {
                 const timeSinceFirstResend = Date.now() - resendStartTime;
@@ -2610,7 +2887,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
             addSecurityActivity('OTP Sent', 'Success');
 
             // In production, this would send email via Brevo API
-            console.log('OTP sent to:', adminSecurity.recoveryEmail);
+            console.log('OTP sent to:', recoveryEmail);
             console.log('OTP:', currentOTP);
             
             showToast('success', 'Verification code sent to your recovery email.');
@@ -2752,10 +3029,11 @@ Created: ${notification.createdAt} ${notification.createdTime}
             // Default security configuration
             return {
                 username: 'admin',
-                recoveryEmail: 'admin@fruitingo.in',
+                recoveryEmail: 'fruitingonaturals@gmail.com',
                 otpEnabled: false,
                 lastPasswordChanged: null,
                 passwordChangeCount: 0,
+                passwordResetCount: 0,
                 lastSuccessfulLogin: null,
                 failedLoginCount: 0,
                 loginHistory: [],
@@ -2805,6 +3083,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
 
             // Update Security Statistics
             document.getElementById('security-password-changes').textContent = adminSecurity.passwordChangeCount || 0;
+            document.getElementById('security-password-resets').textContent = adminSecurity.passwordResetCount || 0;
             document.getElementById('security-failed-logins').textContent = adminSecurity.failedLoginCount || 0;
             document.getElementById('security-last-login').textContent = adminSecurity.lastSuccessfulLogin || 'Never';
 
