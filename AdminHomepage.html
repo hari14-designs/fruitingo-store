@@ -994,7 +994,7 @@
             <form id="recovery-email-form" onsubmit="handleRecoveryEmailUpdate(event)">
                 <!-- Verify Current Password -->
                 <div class="password-form-group">
-                    <label for="recovery-current-password">Current Password</label>
+                    <label for="recovery-current-password">Current Admin Password</label>
                     <div class="password-input-wrapper">
                         <input type="password" id="recovery-current-password" class="password-input" required placeholder="Enter current password">
                         <button type="button" class="password-toggle" onclick="togglePasswordVisibility('recovery-current-password')">
@@ -1010,7 +1010,7 @@
                         <input type="email" id="new-recovery-email" class="password-input" required placeholder="Enter new recovery email">
                     </div>
                     <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
-                        This email will receive OTP codes for password reset requests.
+                        OTP will be sent to this email for verification.
                     </p>
                 </div>
                 
@@ -1022,7 +1022,29 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="password-submit-btn">
+                <!-- Email OTP Verification -->
+                <div class="otp-section">
+                    <h3>📧 Verify New Email</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 1rem;">
+                        Verify the new recovery email using OTP before updating.
+                    </p>
+                    <button type="button" class="send-otp-btn" id="email-change-otp-btn" onclick="sendEmailChangeOTP()">
+                        <i class="fa-solid fa-paper-plane"></i> Send Verification Code
+                    </button>
+                    <div id="email-change-otp-countdown" class="otp-countdown" style="display: none;"></div>
+                    
+                    <div id="email-change-otp-input-section" style="display: none; margin-top: 1rem;">
+                        <label for="email-change-otp-code" style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem; font-size: 0.9rem;">Enter Verification Code</label>
+                        <div class="password-input-wrapper">
+                            <input type="text" id="email-change-otp-code" class="password-input" required placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" onkeyup="checkEmailChangeOTP()">
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
+                            Code expires in 5 minutes. Maximum 5 attempts.
+                        </p>
+                    </div>
+                </div>
+                
+                <button type="submit" class="password-submit-btn" id="email-change-submit-btn" disabled>
                     Update Recovery Email
                 </button>
             </form>
@@ -1584,6 +1606,10 @@
                                     <span class="value" id="security-recovery-email">Not configured</span>
                                 </div>
                                 <div class="security-info-item">
+                                    <span class="label">Last Email Updated:</span>
+                                    <span class="value" id="security-last-email-updated">Never</span>
+                                </div>
+                                <div class="security-info-item">
                                     <span class="label">OTP Enabled:</span>
                                     <span class="value" id="security-otp-enabled">No</span>
                                 </div>
@@ -1594,6 +1620,23 @@
                             </div>
                             <button onclick="openRecoveryEmailModal()" style="margin-top: 1rem; background: var(--primary); color: var(--chocolate); border: none; border-radius: 12px; padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
                                 <i class="fa-solid fa-pen"></i> Update Recovery Email
+                            </button>
+                        </div>
+                        
+                        <!-- Recovery Email Settings Card -->
+                        <div class="security-card">
+                            <h3><i class="fa-solid fa-at"></i> Recovery Email Settings</h3>
+                            <div class="security-info">
+                                <div class="security-info-item">
+                                    <span class="label">Current Email:</span>
+                                    <span class="value" id="security-current-email">Not configured</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--gray-muted); margin-top: 0.75rem; margin-bottom: 1rem;">
+                                This email receives OTP verification codes for Admin password recovery.
+                            </p>
+                            <button onclick="openRecoveryEmailModal()" style="background: var(--primary); color: var(--chocolate); border: none; border-radius: 12px; padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                                <i class="fa-solid fa-pen"></i> Change Email
                             </button>
                         </div>
                     </div>
@@ -2557,6 +2600,14 @@ Created: ${notification.createdAt} ${notification.createdTime}
         let otpAttemptCount = 0;
         let resendCount = 0;
         let resendStartTime = null;
+        
+        // Email Change OTP Variables
+        let emailChangeOTP = null;
+        let emailChangeOTPExpiry = null;
+        let emailChangeAttemptCount = 0;
+        let emailChangeResendCount = 0;
+        let emailChangeResendStartTime = null;
+        let emailChangeNewEmail = null;
 
         function openPasswordSettingsModal() {
             document.getElementById('password-modal').classList.add('active');
@@ -2582,11 +2633,104 @@ Created: ${notification.createdAt} ${notification.createdTime}
         function openRecoveryEmailModal() {
             document.getElementById('recovery-email-modal').classList.add('active');
             document.getElementById('recovery-email-form').reset();
+            document.getElementById('email-change-otp-input-section').style.display = 'none';
+            document.getElementById('email-change-submit-btn').disabled = true;
+            emailChangeOTP = null;
+            emailChangeOTPExpiry = null;
+            emailChangeAttemptCount = 0;
+            emailChangeNewEmail = null;
         }
 
         function closeRecoveryEmailModal() {
             document.getElementById('recovery-email-modal').classList.remove('active');
             document.getElementById('recovery-email-form').reset();
+            document.getElementById('email-change-otp-input-section').style.display = 'none';
+            document.getElementById('email-change-submit-btn').disabled = true;
+            emailChangeOTP = null;
+            emailChangeOTPExpiry = null;
+            emailChangeAttemptCount = 0;
+            emailChangeNewEmail = null;
+        }
+
+        function sendEmailChangeOTP() {
+            const newEmail = document.getElementById('new-recovery-email').value;
+            const confirmEmail = document.getElementById('confirm-recovery-email').value;
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail)) {
+                showToast('error', 'Please enter a valid email address.');
+                return;
+            }
+
+            // Verify email confirmation
+            if (newEmail !== confirmEmail) {
+                showToast('error', 'Email addresses do not match.');
+                return;
+            }
+
+            // Check resend limits
+            if (emailChangeResendCount >= 3) {
+                const timeSinceFirstResend = Date.now() - emailChangeResendStartTime;
+                if (timeSinceFirstResend < 10 * 60 * 1000) { // 10 minutes
+                    showToast('error', 'Maximum resend attempts reached. Please try again later.');
+                    return;
+                } else {
+                    emailChangeResendCount = 0;
+                    emailChangeResendStartTime = null;
+                }
+            }
+
+            // Generate 6-digit OTP
+            emailChangeOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            emailChangeOTPExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+            emailChangeAttemptCount = 0;
+            emailChangeNewEmail = newEmail;
+
+            // Disable button and start countdown
+            const sendBtn = document.getElementById('email-change-otp-btn');
+            sendBtn.disabled = true;
+            let countdown = 60;
+            
+            const countdownInterval = setInterval(() => {
+                document.getElementById('email-change-otp-countdown').textContent = `Resend available in ${countdown}s`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Resend OTP';
+                    document.getElementById('email-change-otp-countdown').style.display = 'none';
+                    emailChangeResendCount++;
+                    if (!emailChangeResendStartTime) emailChangeResendStartTime = Date.now();
+                }
+            }, 1000);
+
+            document.getElementById('email-change-otp-countdown').style.display = 'block';
+            document.getElementById('email-change-otp-input-section').style.display = 'block';
+
+            // Log OTP send to security activity
+            addSecurityActivity('Email Change OTP Sent', 'Success');
+
+            // In production, this would send email via Brevo API
+            console.log('Email Change OTP sent to:', newEmail);
+            console.log('OTP:', emailChangeOTP);
+            console.log('Subject: Fruitingo Admin Email Verification');
+            console.log('Body: Use the verification code below to confirm your new recovery email for Fruitingo Admin password recovery.');
+            
+            showToast('success', 'Verification code sent to your new recovery email.');
+        }
+
+        function checkEmailChangeOTP() {
+            const otpCode = document.getElementById('email-change-otp-code').value;
+            const submitBtn = document.getElementById('email-change-submit-btn');
+            
+            // Enable submit button when OTP is entered (6 digits)
+            if (otpCode.length === 6) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
         }
 
         function handleRecoveryEmailUpdate(e) {
@@ -2595,6 +2739,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
             const currentPassword = document.getElementById('recovery-current-password').value;
             const newEmail = document.getElementById('new-recovery-email').value;
             const confirmEmail = document.getElementById('confirm-recovery-email').value;
+            const otpCode = document.getElementById('email-change-otp-code').value;
 
             // Verify current password
             const adminAuth = getAdminAuth();
@@ -2619,15 +2764,38 @@ Created: ${notification.createdAt} ${notification.createdTime}
                 return;
             }
 
+            // Verify OTP
+            if (!emailChangeOTP || Date.now() > emailChangeOTPExpiry) {
+                showToast('error', 'Verification code expired. Please request a new OTP.');
+                addSecurityActivity('Recovery Email Update Failed', 'Failed - OTP expired');
+                return;
+            }
+
+            if (otpCode !== emailChangeOTP) {
+                emailChangeAttemptCount++;
+                if (emailChangeAttemptCount >= 5) {
+                    showToast('error', 'Maximum attempts reached. Request a new OTP.');
+                    addSecurityActivity('Recovery Email Update Failed', 'Failed - Max OTP attempts');
+                    closeRecoveryEmailModal();
+                    return;
+                }
+                showToast('error', 'Invalid verification code.');
+                addSecurityActivity('Recovery Email Update Failed', 'Failed - Invalid OTP');
+                return;
+            }
+            
+            // OTP verified, now update email
             // Update recovery email
             const adminSecurity = getAdminSecurity();
             adminSecurity.recoveryEmail = newEmail;
+            adminSecurity.lastEmailUpdated = `${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()}`;
+            adminSecurity.otpEnabled = true;
             saveAdminSecurity(adminSecurity);
 
             // Log to security activity
-            addSecurityActivity('Recovery Email Updated', 'Success');
+            addSecurityActivity('Recovery Email Changed', 'Success');
 
-            showToast('success', 'Recovery email updated successfully\nYour password reset OTPs will now be sent to this email.');
+            showToast('success', 'Recovery Email Updated Successfully\nThe new recovery email is now active for Admin password recovery.');
             
             closeRecoveryEmailModal();
             
@@ -3030,6 +3198,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
             return {
                 username: 'admin',
                 recoveryEmail: 'fruitingonaturals@gmail.com',
+                lastEmailUpdated: null,
                 otpEnabled: false,
                 lastPasswordChanged: null,
                 passwordChangeCount: 0,
@@ -3089,6 +3258,8 @@ Created: ${notification.createdAt} ${notification.createdTime}
 
             // Update OTP Status
             document.getElementById('security-recovery-email').textContent = adminSecurity.recoveryEmail || 'Not configured';
+            document.getElementById('security-last-email-updated').textContent = adminSecurity.lastEmailUpdated || 'Never';
+            document.getElementById('security-current-email').textContent = adminSecurity.recoveryEmail || 'Not configured';
             document.getElementById('security-otp-enabled').textContent = adminSecurity.otpEnabled ? 'Yes' : 'No';
 
             // Update Security Activity table
