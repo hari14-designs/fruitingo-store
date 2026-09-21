@@ -1061,14 +1061,14 @@
             </div>
             
             <form id="forgot-password-form" onsubmit="handleForgotPassword(event)">
-                <!-- Recovery Email Display -->
+                <!-- Email Input -->
                 <div class="password-form-group">
-                    <label>Recovery Email</label>
+                    <label>Email</label>
                     <div class="password-input-wrapper">
-                        <input type="email" id="forgot-recovery-email" class="password-input" readonly value="fruitingonaturals@gmail.com" style="background: var(--gray-light); opacity: 0.7;">
+                        <input type="email" id="forgot-recovery-email" class="password-input" placeholder="Enter Admin Email" required>
                     </div>
                     <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
-                        OTP codes will be sent to this email for password reset.
+                        Enter your registered admin email to receive OTP.
                     </p>
                 </div>
                 
@@ -1574,6 +1574,57 @@
                             </div>
                         </div>
                         
+                        <!-- Admin Email Settings Card -->
+                        <div class="security-card">
+                            <h3><i class="fa-solid fa-envelope"></i> Admin Email Settings</h3>
+                            <div class="security-info">
+                                <div class="security-info-item">
+                                    <span class="label">Current Email:</span>
+                                    <span class="value" id="security-admin-email">Not configured</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <label for="new-admin-email" style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem; font-size: 0.9rem;">New Admin Email</label>
+                                <div class="password-input-wrapper">
+                                    <input type="email" id="new-admin-email" class="password-input" placeholder="Enter New Admin Email">
+                                </div>
+                            </div>
+                            <div class="otp-section" style="margin-top: 1rem;">
+                                <button type="button" class="send-otp-btn" id="admin-email-otp-btn" onclick="sendAdminEmailOTP()">
+                                    <i class="fa-solid fa-paper-plane"></i> Send Verification OTP
+                                </button>
+                                <div id="admin-email-otp-countdown" class="otp-countdown" style="display: none;"></div>
+                                
+                                <div id="admin-email-otp-input-section" style="display: none; margin-top: 1rem;">
+                                    <label for="admin-email-otp-code" style="display: block; font-weight: 600; color: var(--chocolate); margin-bottom: 0.5rem; font-size: 0.9rem;">Enter Verification Code</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="text" id="admin-email-otp-code" class="password-input" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" onkeyup="checkAdminEmailOTP()">
+                                    </div>
+                                    <p style="font-size: 0.8rem; color: var(--gray-muted); margin-top: 0.5rem;">
+                                        Code expires in 5 minutes. Maximum 5 attempts.
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" class="password-submit-btn" id="admin-email-submit-btn" disabled onclick="updateAdminEmail()">
+                                Update Admin Email
+                            </button>
+                        </div>
+                        
+                        <!-- Last Email Updated Card -->
+                        <div class="security-card">
+                            <h3><i class="fa-solid fa-clock"></i> Last Email Updated</h3>
+                            <div class="security-info">
+                                <div class="security-info-item">
+                                    <span class="label">Date:</span>
+                                    <span class="value" id="security-last-email-updated-date">Not changed yet</span>
+                                </div>
+                                <div class="security-info-item">
+                                    <span class="label">Time:</span>
+                                    <span class="value" id="security-last-email-updated-time">--:--</span>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Security Stats Card -->
                         <div class="security-card">
                             <h3><i class="fa-solid fa-chart-line"></i> Security Statistics</h3>
@@ -1702,7 +1753,7 @@
             <div class="footer-newsletter">
                 <h4>Stay Healthy</h4>
                 <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
-                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('success', 'Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
                     <input type="email" placeholder="Enter email" required>
                     <button type="submit">Join</button>
                 </form>
@@ -1736,6 +1787,11 @@
         </div>
     </div>
 
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="email-config.js"></script>
+    <script src="security-utils.js"></script>
+    <script src="email-service.js"></script>
     <script src="main.js"></script>
     <script>
         // Check Admin Auth status
@@ -2040,7 +2096,7 @@
             const messages = JSON.parse(localStorage.getItem('fruitingo_contact_messages')) || [];
             const msg = messages.find(m => m.id === id);
             if (msg) {
-                alert(`Name: ${msg.name}\nEmail: ${msg.email}\nPhone: ${msg.phone || 'N/A'}\nMessage: ${msg.message}\nDate: ${msg.date}`);
+                showToast('success', `Name: ${msg.name}\nEmail: ${msg.email}\nPhone: ${msg.phone || 'N/A'}\nMessage: ${msg.message}\nDate: ${msg.date}`);
             }
         };
 
@@ -2272,7 +2328,7 @@
             renderAdminCustomers();
             
             const action = newStatus === 'Blocked' ? 'blocked' : 'unblocked';
-            alert(`Customer has been ${action} successfully.`);
+            showToast('success', `Customer has been ${action} successfully.`);
         };
 
         // Delete Customer
@@ -2291,7 +2347,7 @@
             }
             
             renderAdminCustomers();
-            alert('Customer has been deleted successfully.');
+            showToast('success', 'Customer has been deleted successfully.');
         };
 
         // Notification System Functions
@@ -2380,7 +2436,7 @@
             const sendTo = document.querySelector('input[name="send-to"]:checked').value;
             
             if (!title || !message) {
-                alert('Please fill in all required fields.');
+                showToast('error', 'Please fill in all required fields.');
                 return;
             }
             
@@ -2394,12 +2450,12 @@
             } else if (sendTo === 'multiple' && selectedRecipients.length > 0) {
                 recipients = selectedRecipients;
             } else {
-                alert('Please select at least one recipient.');
+                showToast('error', 'Please select at least one recipient.');
                 return;
             }
             
             if (recipients.length === 0) {
-                alert('No customers available to send notification.');
+                showToast('error', 'No customers available to send notification.');
                 return;
             }
             
@@ -2470,7 +2526,7 @@
             renderAdminNotifications();
             showToast('Notification Sent Successfully');
             
-            alert(`Notification sent to ${recipients.length} customer(s).`);
+            showToast('success', `Notification sent to ${recipients.length} customer(s).`);
         };
 
         window.renderAdminNotifications = function() {
@@ -2544,7 +2600,7 @@ Status: ${notification.status}
 Created: ${notification.createdAt} ${notification.createdTime}
             `;
             
-            alert(details);
+            showToast('success', details);
         };
 
         window.resendNotification = function(id) {
@@ -2571,7 +2627,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
             
             localStorage.setItem('fruitingo_customers', JSON.stringify(customers));
             
-            alert('Notification resent successfully.');
+            showToast('success', 'Notification resent successfully.');
         };
 
         window.deleteNotificationHistory = function(id) {
@@ -2581,7 +2637,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
             localStorage.setItem('fruitingo_notification_history', JSON.stringify(notificationHistory));
             
             renderAdminNotifications();
-            alert('Notification deleted from history.');
+            showToast('success', 'Notification deleted from history.');
         };
 
         function showBrowserNotification(title, body) {
@@ -2608,6 +2664,14 @@ Created: ${notification.createdAt} ${notification.createdTime}
         let emailChangeResendCount = 0;
         let emailChangeResendStartTime = null;
         let emailChangeNewEmail = null;
+        
+        // Admin Email OTP Variables
+        let adminEmailOTP = null;
+        let adminEmailOTPExpiry = null;
+        let adminEmailAttemptCount = 0;
+        let adminEmailResendCount = 0;
+        let adminEmailResendStartTime = null;
+        let adminEmailNewEmail = null;
 
         function openPasswordSettingsModal() {
             document.getElementById('password-modal').classList.add('active');
@@ -2681,8 +2745,8 @@ Created: ${notification.createdAt} ${notification.createdTime}
                 }
             }
 
-            // Generate 6-digit OTP
-            emailChangeOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            // Generate 6-digit OTP using secure random
+            emailChangeOTP = window.SecurityUtils ? SecurityUtils.generateOTP() : Math.floor(100000 + Math.random() * 900000).toString();
             emailChangeOTPExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
             emailChangeAttemptCount = 0;
             emailChangeNewEmail = newEmail;
@@ -2712,13 +2776,23 @@ Created: ${notification.createdAt} ${notification.createdTime}
             // Log OTP send to security activity
             addSecurityActivity('Email Change OTP Sent', 'Success');
 
-            // In production, this would send email via Brevo API
-            console.log('Email Change OTP sent to:', newEmail);
-            console.log('OTP:', emailChangeOTP);
-            console.log('Subject: Fruitingo Admin Email Verification');
-            console.log('Body: Use the verification code below to confirm your new recovery email for Fruitingo Admin password recovery.');
+            // Use EmailService for real email sending
+            console.log('📧 Email Change OTP sent to:', newEmail);
+            console.log('🔢 OTP:', emailChangeOTP);
             
-            showToast('success', 'Verification code sent to your new recovery email.');
+            if (window.EmailService) {
+                window.EmailService.sendAdminEmailOTP(newEmail, emailChangeOTP).then(result => {
+                    if (result.success) {
+                        console.log('✅ Email sent successfully');
+                    } else {
+                        console.error('❌ Email sending failed:', result.error);
+                        showToast('error', `Email service unavailable: ${result.details}`);
+                    }
+                });
+            } else {
+                console.log('❌ EmailService not available. Console logging only.');
+                showToast('error', 'Email service not initialized. Please try again later.');
+            }
         }
 
         function checkEmailChangeOTP() {
@@ -2730,6 +2804,167 @@ Created: ${notification.createdAt} ${notification.createdTime}
                 submitBtn.disabled = false;
             } else {
                 submitBtn.disabled = true;
+            }
+        }
+
+        // Admin Email OTP Functions
+        function sendAdminEmailOTP() {
+            const newEmail = document.getElementById('new-admin-email').value;
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail)) {
+                showToast('error', 'Email format is invalid.');
+                return;
+            }
+
+            // Check resend limits
+            if (adminEmailResendCount >= 3) {
+                const timeSinceFirstResend = Date.now() - adminEmailResendStartTime;
+                if (timeSinceFirstResend < 10 * 60 * 1000) { // 10 minutes
+                    showToast('error', 'Maximum resend attempts reached. Please try again later.');
+                    return;
+                } else {
+                    adminEmailResendCount = 0;
+                    adminEmailResendStartTime = null;
+                }
+            }
+
+            // Generate 6-digit OTP using secure random
+            adminEmailOTP = window.SecurityUtils ? SecurityUtils.generateOTP() : Math.floor(100000 + Math.random() * 900000).toString();
+            adminEmailOTPExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+            adminEmailAttemptCount = 0;
+            adminEmailNewEmail = newEmail;
+
+            // Disable button and start countdown
+            const sendBtn = document.getElementById('admin-email-otp-btn');
+            sendBtn.disabled = true;
+            let countdown = 60;
+            
+            const countdownInterval = setInterval(() => {
+                document.getElementById('admin-email-otp-countdown').textContent = `Resend available in ${countdown}s`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Resend OTP';
+                    document.getElementById('admin-email-otp-countdown').style.display = 'none';
+                    adminEmailResendCount++;
+                    if (!adminEmailResendStartTime) adminEmailResendStartTime = Date.now();
+                }
+            }, 1000);
+
+            document.getElementById('admin-email-otp-countdown').style.display = 'block';
+            document.getElementById('admin-email-otp-input-section').style.display = 'block';
+
+            // Log OTP send to security activity
+            addSecurityActivity('Admin Email OTP Sent', 'Success');
+
+            // Use EmailService for real email sending
+            console.log('📧 Admin Email OTP sent to:', newEmail);
+            console.log('🔢 OTP:', adminEmailOTP);
+            
+            if (window.EmailService) {
+                window.EmailService.sendAdminEmailOTP(newEmail, adminEmailOTP).then(result => {
+                    if (result.success) {
+                        console.log('✅ Email sent successfully');
+                    } else {
+                        console.error('❌ Email sending failed:', result.error);
+                        showToast('error', `Email service unavailable: ${result.details}`);
+                    }
+                });
+            } else {
+                console.log('❌ EmailService not available. Console logging only.');
+                showToast('error', 'Email service not initialized. Please try again later.');
+            }
+        }
+
+        function checkAdminEmailOTP() {
+            const otpCode = document.getElementById('admin-email-otp-code').value;
+            const submitBtn = document.getElementById('admin-email-submit-btn');
+            
+            // Enable submit button when OTP is entered (6 digits)
+            if (otpCode.length === 6) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function updateAdminEmail() {
+            const otpCode = document.getElementById('admin-email-otp-code').value;
+            const newEmail = document.getElementById('new-admin-email').value;
+
+            // Verify OTP
+            if (!adminEmailOTP || Date.now() > adminEmailOTPExpiry) {
+                showToast('error', 'OTP expired. Please resend OTP.');
+                addSecurityActivity('Admin Email Update Failed', 'Failed - OTP expired');
+                return;
+            }
+
+            if (otpCode !== adminEmailOTP) {
+                adminEmailAttemptCount++;
+                if (adminEmailAttemptCount >= 5) {
+                    showToast('error', 'Maximum attempts reached. Request a new OTP.');
+                    addSecurityActivity('Admin Email Update Failed', 'Failed - Max OTP attempts');
+                    // Reset the form
+                    document.getElementById('new-admin-email').value = '';
+                    document.getElementById('admin-email-otp-code').value = '';
+                    document.getElementById('admin-email-otp-input-section').style.display = 'none';
+                    document.getElementById('admin-email-submit-btn').disabled = true;
+                    return;
+                }
+                showToast('error', 'Invalid verification code.');
+                addSecurityActivity('Admin Email Update Failed', 'Failed - Invalid OTP');
+                return;
+            }
+
+            // Update admin email in storage
+            const adminSecurity = getAdminSecurity();
+            adminSecurity.adminEmail = newEmail;
+            adminSecurity.recoveryEmail = newEmail; // Update recovery email as well
+            adminSecurity.lastEmailUpdated = `${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()}`;
+            saveAdminSecurity(adminSecurity);
+
+            // Log to security activity
+            addSecurityActivity('Admin Email Changed', 'Success');
+
+            showToast('success', 'Admin email updated successfully');
+
+            // Reset the form
+            document.getElementById('new-admin-email').value = '';
+            document.getElementById('admin-email-otp-code').value = '';
+            document.getElementById('admin-email-otp-input-section').style.display = 'none';
+            document.getElementById('admin-email-submit-btn').disabled = true;
+            adminEmailOTP = null;
+            adminEmailOTPExpiry = null;
+            adminEmailAttemptCount = 0;
+
+            // Refresh security data
+            if (typeof renderAdminSecurity === 'function') {
+                renderAdminSecurity();
+            }
+        }
+
+        function sendEmailJSOTP(email, otp, purpose) {
+            // Use EmailService for sending OTP
+            if (window.EmailService) {
+                window.EmailService.sendOTP(email, otp, purpose).then(result => {
+                    if (result.success) {
+                        console.log('✅ Email sent successfully');
+                    } else {
+                        console.error('❌ Email sending failed:', result.error);
+                        showToast('error', `Email service unavailable: ${result.details}`);
+                    }
+                });
+            } else {
+                // Fallback to console logging if EmailService not loaded
+                console.log(`❌ EmailService not available. Console logging only.`);
+                console.log(`EmailJS OTP sent to: ${email}`);
+                console.log(`OTP: ${otp}`);
+                console.log(`Purpose: ${purpose}`);
+                showToast('error', 'Email service not initialized. Please try again later.');
             }
         }
 
@@ -2822,6 +3057,9 @@ Created: ${notification.createdAt} ${notification.createdTime}
             forgotPasswordOTP = null;
             forgotPasswordOTPExpiry = null;
             forgotPasswordAttemptCount = 0;
+            
+            // Don't pre-fill the email - let admin enter it
+            document.getElementById('forgot-recovery-email').value = '';
         }
 
         function closeForgotPasswordModal() {
@@ -2837,8 +3075,25 @@ Created: ${notification.createdAt} ${notification.createdTime}
         }
 
         function sendForgotPasswordOTP() {
+            const enteredEmail = document.getElementById('forgot-recovery-email').value;
             const adminSecurity = getAdminSecurity();
-            const recoveryEmail = 'fruitingonaturals@gmail.com';
+            const storedEmail = adminSecurity.adminEmail || adminSecurity.recoveryEmail;
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(enteredEmail)) {
+                showToast('error', 'Please enter a valid email address.');
+                return;
+            }
+            
+            // Verify email matches stored admin email
+            if (enteredEmail !== storedEmail) {
+                showToast('error', 'Email not recognized. Please use your registered admin email.');
+                addSecurityActivity('Password Reset OTP Failed', 'Failed - Email mismatch');
+                return;
+            }
+            
+            const recoveryEmail = storedEmail;
 
             // Check resend limits
             if (forgotPasswordResendCount >= 3) {
@@ -2852,8 +3107,8 @@ Created: ${notification.createdAt} ${notification.createdTime}
                 }
             }
 
-            // Generate 6-digit OTP
-            forgotPasswordOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            // Generate 6-digit OTP using secure random
+            forgotPasswordOTP = window.SecurityUtils ? SecurityUtils.generateOTP() : Math.floor(100000 + Math.random() * 900000).toString();
             forgotPasswordOTPExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
             forgotPasswordAttemptCount = 0;
 
@@ -2882,11 +3137,23 @@ Created: ${notification.createdAt} ${notification.createdTime}
             // Log OTP send to security activity
             addSecurityActivity('Password Reset OTP Sent', 'Success');
 
-            // In production, this would send email via Brevo API
-            console.log('Password Reset OTP sent to:', recoveryEmail);
-            console.log('OTP:', forgotPasswordOTP);
+            // Use EmailService for real email sending
+            console.log('📧 Password Reset OTP sent to:', recoveryEmail);
+            console.log('🔢 OTP:', forgotPasswordOTP);
             
-            showToast('success', 'Verification code sent to your recovery email.');
+            if (window.EmailService) {
+                window.EmailService.sendPasswordResetOTP(recoveryEmail, forgotPasswordOTP).then(result => {
+                    if (result.success) {
+                        console.log('✅ Email sent successfully');
+                    } else {
+                        console.error('❌ Email sending failed:', result.error);
+                        showToast('error', `Email service unavailable: ${result.details}`);
+                    }
+                });
+            } else {
+                console.log('❌ EmailService not available. Console logging only.');
+                showToast('error', 'Email service not initialized. Please try again later.');
+            }
         }
 
         function validateForgotPasswordStrength() {
@@ -3010,7 +3277,8 @@ Created: ${notification.createdAt} ${notification.createdTime}
         }
 
         function sendAdminOTP() {
-            const recoveryEmail = 'fruitingonaturals@gmail.com';
+            const adminSecurity = getAdminSecurity();
+            const recoveryEmail = adminSecurity.adminEmail || adminSecurity.recoveryEmail;
             
             // Check resend limits
             if (resendCount >= 3) {
@@ -3024,8 +3292,8 @@ Created: ${notification.createdAt} ${notification.createdTime}
                 }
             }
 
-            // Generate 6-digit OTP
-            currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            // Generate 6-digit OTP using secure random
+            currentOTP = window.SecurityUtils ? SecurityUtils.generateOTP() : Math.floor(100000 + Math.random() * 900000).toString();
             otpExpiryTime = Date.now() + 5 * 60 * 1000; // 5 minutes
             otpAttemptCount = 0;
 
@@ -3054,11 +3322,23 @@ Created: ${notification.createdAt} ${notification.createdTime}
             // Log OTP send to security activity
             addSecurityActivity('OTP Sent', 'Success');
 
-            // In production, this would send email via Brevo API
-            console.log('OTP sent to:', recoveryEmail);
-            console.log('OTP:', currentOTP);
+            // Use EmailService for real email sending
+            console.log('📧 Sending OTP to:', recoveryEmail);
+            console.log('🔢 OTP:', currentOTP);
             
-            showToast('success', 'Verification code sent to your recovery email.');
+            if (window.EmailService) {
+                window.EmailService.sendPasswordResetOTP(recoveryEmail, currentOTP).then(result => {
+                    if (result.success) {
+                        console.log('✅ Email sent successfully');
+                    } else {
+                        console.error('❌ Email sending failed:', result.error);
+                        showToast('error', `Email service unavailable: ${result.details}`);
+                    }
+                });
+            } else {
+                console.log('❌ EmailService not available. Console logging only.');
+                showToast('error', 'Email service not initialized. Please try again later.');
+            }
         }
 
         function validatePasswordStrength() {
@@ -3178,10 +3458,10 @@ Created: ${notification.createdAt} ${notification.createdTime}
             if (stored) {
                 return JSON.parse(stored);
             }
-            // Default admin credentials
+            // Default admin credentials (in production, use hashed password)
             return {
                 username: 'admin',
-                password: 'admin123'
+                password: 'admin123' // Store hashed password in production
             };
         }
 
@@ -3197,6 +3477,7 @@ Created: ${notification.createdAt} ${notification.createdTime}
             // Default security configuration
             return {
                 username: 'admin',
+                adminEmail: 'fruitingonaturals@gmail.com',
                 recoveryEmail: 'fruitingonaturals@gmail.com',
                 lastEmailUpdated: null,
                 otpEnabled: false,
@@ -3257,10 +3538,19 @@ Created: ${notification.createdAt} ${notification.createdTime}
             document.getElementById('security-last-login').textContent = adminSecurity.lastSuccessfulLogin || 'Never';
 
             // Update OTP Status
+            const adminEmail = adminSecurity.adminEmail || adminSecurity.recoveryEmail || 'Not configured';
             document.getElementById('security-recovery-email').textContent = adminSecurity.recoveryEmail || 'Not configured';
             document.getElementById('security-last-email-updated').textContent = adminSecurity.lastEmailUpdated || 'Never';
             document.getElementById('security-current-email').textContent = adminSecurity.recoveryEmail || 'Not configured';
+            document.getElementById('security-admin-email').textContent = adminEmail;
             document.getElementById('security-otp-enabled').textContent = adminSecurity.otpEnabled ? 'Yes' : 'No';
+            
+            // Update Last Email Updated card
+            if (adminSecurity.lastEmailUpdated) {
+                const [date, time] = adminSecurity.lastEmailUpdated.split(', ');
+                document.getElementById('security-last-email-updated-date').textContent = date || 'Not changed yet';
+                document.getElementById('security-last-email-updated-time').textContent = time || '--:--';
+            }
 
             // Update Security Activity table
             const tableBody = document.getElementById('security-activity-table');
