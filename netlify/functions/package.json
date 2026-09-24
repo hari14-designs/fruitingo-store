@@ -1,0 +1,8 @@
+{
+  "name": "fruitingo-otp-function",
+  "version": "1.0.0",
+  "description": "Netlify function for Fruitingo OTP email service",
+  "main": "send-otp.js",
+  "dependencies": {},
+  "devDependencies": {}
+}
