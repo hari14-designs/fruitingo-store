@@ -31,12 +31,17 @@
             align-items: center;
             border: 1px solid rgba(69, 26, 3, 0.05);
             box-shadow: var(--neu-light);
+            position: relative;
         }
         .product-gallery img {
             max-width: 90%;
             height: auto;
             border-radius: 20px;
             filter: drop-shadow(0 15px 25px rgba(0,0,0,0.08));
+            transition: opacity 0.3s ease;
+        }
+        .product-gallery img.fade-out {
+            opacity: 0;
         }
         .purchase-card {
             background-color: var(--white);
@@ -50,11 +55,13 @@
             color: var(--chocolate);
             font-weight: 800;
             margin-bottom: 0.5rem;
+            transition: opacity 0.3s ease;
         }
         .purchase-card .tagline {
             color: var(--gray-muted);
             margin-bottom: 1.5rem;
             font-size: 1.05rem;
+            transition: opacity 0.3s ease;
         }
         .pack-selector-label {
             font-weight: 700;
@@ -101,6 +108,102 @@
             font-weight: 800;
             color: var(--chocolate);
         }
+        
+        /* Nutrition Section Styles */
+        .nutrition-section {
+            margin-top: 2rem;
+        }
+        .nutrition-header {
+            margin-bottom: 1.5rem;
+        }
+        .nutrition-header h3 {
+            font-size: 1.5rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .nutrition-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .nutrition-card-item {
+            background-color: var(--white);
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            box-shadow: var(--neu-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .nutrition-icon {
+            width: 36px;
+            height: 36px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--chocolate);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .nutrition-value {
+            flex: 1;
+        }
+        .nutrition-label {
+            font-size: 0.75rem;
+            color: var(--gray-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .nutrition-amount {
+            font-size: 1.1rem;
+            color: var(--chocolate);
+            font-weight: 800;
+        }
+        
+        /* Info Cards Styles */
+        .info-card {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(69, 26, 3, 0.05);
+            box-shadow: var(--neu-light);
+            margin-bottom: 1rem;
+        }
+        .info-card h4 {
+            font-size: 1.1rem;
+            color: var(--chocolate);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .info-card p {
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Health Benefits Chips */
+        .benefits-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .benefit-chip {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
         .nutrition-header-text {
             margin-bottom: 2rem;
         }
@@ -141,6 +244,9 @@
                 grid-template-columns: 1fr;
                 gap: 3rem;
             }
+            .nutrition-cards-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -149,6 +255,9 @@
     <!-- Header Navigation -->
     <header>
         <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <a href="index.html" class="logo">
                 <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
@@ -158,18 +267,38 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="product.html" class="active">Products</a></li>
                     <li><a href="about.html">About</a></li>
-                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                     <li><a href="checkout.html">Order</a></li>
                 </ul>
             </nav>
             
             <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="cart-icon-btn" aria-label="Shopping Cart">
                     <i class="fa-solid fa-basket-shopping"></i>
                     <span class="cart-badge">0</span>
-                </button>
-                <button class="menu-toggle" aria-label="Toggle menu">
-                    <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
@@ -183,8 +312,8 @@
             </div>
             
             <div class="purchase-card">
-                <h1>Fruitingo Nendran Powder</h1>
-                <div class="product-rating" style="margin-bottom: 0.5rem;">
+                <h1 id="product-name">Fruitingo Nendran Powder</h1>
+                <div class="product-rating" id="product-rating" style="margin-bottom: 0.5rem;">
                     <i class="fa-solid fa-star"></i>
                     <i class="fa-solid fa-star"></i>
                     <i class="fa-solid fa-star"></i>
@@ -192,7 +321,7 @@
                     <i class="fa-solid fa-star-half-stroke"></i>
                     <span>4.9 (294 Total Ratings)</span>
                 </div>
-                <p class="tagline">100% natural raw banana supplement sourced directly from sustainable South Indian orchards.</p>
+                <p class="tagline" id="product-tagline">100% natural raw banana supplement sourced directly from sustainable South Indian orchards.</p>
                 
                 <!-- Package Selector -->
                 <span class="pack-selector-label"><i class="fa-solid fa-box-open"></i> Select Weight & Quantity</span>
@@ -202,12 +331,44 @@
 
                 <!-- Add to Cart & Buy Buttons -->
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button class="btn btn-primary" id="btn-add-main" style="flex-grow: 1; padding: 1.1rem; border-radius: 14px;">
+                    <button class="btn btn-primary" id="btn-add-main" onclick="addToCartFromProductPage()" style="flex-grow: 1; padding: 1.1rem; border-radius: 14px;">
                         <i class="fa-solid fa-cart-plus"></i> Add to Cart
                     </button>
                     <a href="checkout.html" class="btn btn-secondary" id="btn-buy-instant" style="flex-grow: 1; padding: 1.1rem; border-radius: 14px; text-align: center;">
                         Buy Now
                     </a>
+                </div>
+                
+                <!-- Nutrition Facts Section -->
+                <div class="nutrition-section" id="nutrition-section">
+                    <div class="nutrition-header">
+                        <h3>🥗 Nutritional Facts & Ingredients</h3>
+                    </div>
+                    
+                    <!-- Nutrition Cards Grid -->
+                    <div class="nutrition-cards-grid" id="nutrition-cards">
+                        <!-- Populated dynamically -->
+                    </div>
+                    
+                    <!-- Ingredients Card -->
+                    <div class="info-card" id="ingredients-card">
+                        <h4>🌿 Ingredients</h4>
+                        <p id="ingredients-text">100% Raw Sun-Dried Nendran Banana. No preservatives. No artificial colours. No added sugar.</p>
+                    </div>
+                    
+                    <!-- Storage Instructions Card -->
+                    <div class="info-card" id="storage-card">
+                        <h4>📦 Storage Instructions</h4>
+                        <p id="storage-text">Store in a cool and dry place. Reseal after opening. Keep away from moisture.</p>
+                    </div>
+                    
+                    <!-- Health Benefits Card -->
+                    <div class="info-card" id="benefits-card">
+                        <h4>💚 Health Benefits</h4>
+                        <div class="benefits-chips" id="benefits-chips">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -336,9 +497,9 @@
                 <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
-                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
                 </div>
             </div>
             
@@ -439,12 +600,163 @@
                     packItems.forEach(pi => pi.classList.remove('active'));
                     item.classList.add('active');
                     selectedProductId = item.getAttribute('data-id');
+                    updateProductDisplay(selectedProductId);
                 });
             });
+            
+            // Initial product display
+            if (products.length > 0) {
+                updateProductDisplay(products[0].id);
+            }
+        }
+
+        function updateProductDisplay(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            // Fade out
+            const productImage = document.querySelector('.product-gallery img');
+            const productName = document.getElementById('product-name');
+            const productTagline = document.getElementById('product-tagline');
+            
+            if (productImage) {
+                productImage.classList.add('fade-out');
+            }
+            
+            setTimeout(() => {
+                // Update image
+                if (productImage) {
+                    productImage.src = product.image;
+                    productImage.classList.remove('fade-out');
+                }
+                
+                // Update text content with fade effect
+                if (productName) {
+                    productName.style.opacity = '0';
+                    setTimeout(() => {
+                        productName.textContent = product.name;
+                        productName.style.opacity = '1';
+                    }, 150);
+                }
+                
+                if (productTagline) {
+                    productTagline.style.opacity = '0';
+                    setTimeout(() => {
+                        productTagline.textContent = product.desc;
+                        productTagline.style.opacity = '1';
+                    }, 150);
+                }
+                
+                // Update rating
+                updateProductRating(product);
+                
+                // Update nutrition section
+                updateNutritionSection(product);
+                
+            }, 300);
+        }
+
+        function updateProductRating(product) {
+            const ratingContainer = document.getElementById('product-rating');
+            if (!ratingContainer) return;
+            
+            if (product.rating && product.reviewsCount) {
+                let starsHTML = '';
+                const fullStars = Math.floor(product.rating);
+                const hasHalf = product.rating % 1 >= 0.4;
+                
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= fullStars) {
+                        starsHTML += '<i class="fa-solid fa-star"></i>';
+                    } else if (i === fullStars + 1 && hasHalf) {
+                        starsHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
+                    } else {
+                        starsHTML += '<i class="fa-regular fa-star"></i>';
+                    }
+                }
+                
+                ratingContainer.innerHTML = `
+                    ${starsHTML}
+                    <span>${product.rating} (${product.reviewsCount} Ratings)</span>
+                `;
+                ratingContainer.style.display = 'block';
+            } else {
+                ratingContainer.style.display = 'none';
+            }
+        }
+
+        function updateNutritionSection(product) {
+            const nutritionCards = document.getElementById('nutrition-cards');
+            const ingredientsText = document.getElementById('ingredients-text');
+            const storageText = document.getElementById('storage-text');
+            const benefitsChips = document.getElementById('benefits-chips');
+            
+            // Update nutrition cards
+            if (nutritionCards && product.nutritionDetails) {
+                const nutrition = product.nutritionDetails;
+                let cardsHTML = '';
+                
+                const nutritionItems = [
+                    { label: 'Calories', value: nutrition.calories, unit: 'kcal', icon: '🔥' },
+                    { label: 'Protein', value: nutrition.protein, unit: 'g', icon: '💪' },
+                    { label: 'Carbs', value: nutrition.carbohydrates, unit: 'g', icon: '🍞' },
+                    { label: 'Fibre', value: nutrition.dietaryFibre, unit: 'g', icon: '🌾' },
+                    { label: 'Potassium', value: nutrition.potassium, unit: 'mg', icon: '🍌' },
+                    { label: 'Iron', value: nutrition.iron, unit: 'mg', icon: '🩸' },
+                    { label: 'Calcium', value: nutrition.calcium, unit: 'mg', icon: '🦴' },
+                    { label: 'Fat', value: nutrition.fat, unit: 'g', icon: '🥑' }
+                ];
+                
+                nutritionItems.forEach(item => {
+                    if (item.value !== null && item.value !== undefined) {
+                        cardsHTML += `
+                            <div class="nutrition-card-item">
+                                <div class="nutrition-icon">${item.icon}</div>
+                                <div class="nutrition-value">
+                                    <div class="nutrition-label">${item.label}</div>
+                                    <div class="nutrition-amount">${item.value} ${item.unit}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                nutritionCards.innerHTML = cardsHTML;
+            }
+            
+            // Update ingredients
+            if (ingredientsText && product.ingredients) {
+                ingredientsText.textContent = product.ingredients;
+            }
+            
+            // Update storage instructions
+            if (storageText && product.storageInstructions) {
+                storageText.textContent = product.storageInstructions;
+            }
+            
+            // Update health benefits
+            if (benefitsChips && product.healthBenefits && product.healthBenefits.length > 0) {
+                let chipsHTML = '';
+                product.healthBenefits.forEach(benefit => {
+                    chipsHTML += `<span class="benefit-chip">${benefit}</span>`;
+                });
+                benefitsChips.innerHTML = chipsHTML;
+            }
+        }
+
+        function addToCartFromProductPage() {
+            if (selectedProductId) {
+                addToCart(selectedProductId, 1);
+            }
         }
 
         // Initialize rendering
-        renderProductOptions();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for products to be loaded from main.js
+            setTimeout(() => {
+                renderProductOptions();
+            }, 100);
+        });
 
         const addToCartBtn = document.getElementById('btn-add-main');
         const buyInstantBtn = document.getElementById('btn-buy-instant');
@@ -471,5 +783,60 @@
             });
         }
     </script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
 </body>
 </html>

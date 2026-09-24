@@ -15,6 +15,9 @@
     <!-- Header Navigation -->
     <header>
         <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <a href="index.html" class="logo">
                 <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
@@ -24,18 +27,38 @@
                     <li><a href="index.html" class="active">Home</a></li>
                     <li><a href="product.html">Products</a></li>
                     <li><a href="about.html">About</a></li>
-                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                     <li><a href="checkout.html">Order</a></li>
                 </ul>
             </nav>
             
             <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="cart-icon-btn" aria-label="Shopping Cart">
                     <i class="fa-solid fa-basket-shopping"></i>
                     <span class="cart-badge">0</span>
-                </button>
-                <button class="menu-toggle" aria-label="Toggle menu">
-                    <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
@@ -293,9 +316,9 @@
                 <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
-                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
                 </div>
             </div>
             
@@ -355,5 +378,60 @@
     </div>
 
     <script src="main.js"></script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
 </body>
 </html>

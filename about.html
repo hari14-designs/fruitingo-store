@@ -95,6 +95,218 @@
                 padding: 1.5rem;
             }
         }
+        
+        /* Digital Journey Section */
+        .digital-journey-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        .digital-journey-card {
+            background-color: #FFFDF8;
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 36px 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .digital-journey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        .digital-journey-content {
+            position: relative;
+        }
+        
+        .digital-journey-label {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            color: #D4AF37;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .digital-journey-heading {
+            font-size: 38px;
+            color: #184C3A;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .digital-journey-description {
+            color: var(--gray-dark);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            max-width: 100%;
+        }
+        
+        .founder-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0B5D3B;
+            position: relative;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+        
+        .founder-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+        }
+        
+        .digital-journey-signature {
+            margin-top: 2rem;
+        }
+        
+        .signature-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+            margin-bottom: 1rem;
+        }
+        
+        .signature-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .signature-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #184C3A;
+            margin: 0;
+        }
+        
+        .signature-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6B7280;
+            margin: 0;
+        }
+        
+        .digital-journey-decoration-top {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+        }
+        
+        .digital-journey-decoration-bottom {
+            position: absolute;
+            bottom: 40px;
+            left: 20px;
+        }
+        
+        .digital-journey-leaf {
+            font-size: 2rem;
+            color: rgba(212, 175, 55, 0.15);
+        }
+        
+        .digital-journey-caption {
+            font-style: italic;
+            color: rgba(24, 76, 58, 0.6);
+            font-size: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-family: 'Georgia', serif;
+        }
+        
+        .digital-journey-card.animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .digital-journey-card.animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 992px) {
+            .digital-journey-heading {
+                font-size: 32px;
+            }
+            
+            .founder-name {
+                font-size: 20px;
+            }
+            
+            .signature-name {
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .digital-journey-section {
+                padding: 3rem 1.5rem;
+            }
+            
+            .digital-journey-card {
+                padding: 2rem;
+            }
+            
+            .digital-journey-heading {
+                font-size: 28px;
+            }
+            
+            .digital-journey-description {
+                font-size: 0.95rem;
+            }
+            
+            .founder-name {
+                font-size: 18px;
+            }
+            
+            .signature-content {
+                align-items: center;
+                text-align: center;
+            }
+            
+            .signature-divider {
+                margin: 1rem auto;
+            }
+            
+            .digital-journey-decoration-top {
+                top: 10px;
+                right: 15px;
+            }
+            
+            .digital-journey-decoration-bottom {
+                bottom: 20px;
+                left: 10px;
+            }
+            
+            .digital-journey-leaf {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .digital-journey-card.animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .digital-journey-card.animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -102,6 +314,9 @@
     <!-- Header Navigation -->
     <header>
         <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <a href="index.html" class="logo">
                 <img src="assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
             </a>
@@ -111,18 +326,38 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="product.html">Products</a></li>
                     <li><a href="about.html" class="active">About</a></li>
-                    <li><a href="about.html#contact">Contact</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                     <li><a href="checkout.html">Order</a></li>
                 </ul>
             </nav>
             
             <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="cart-icon-btn" aria-label="Shopping Cart">
                     <i class="fa-solid fa-basket-shopping"></i>
                     <span class="cart-badge">0</span>
-                </button>
-                <button class="menu-toggle" aria-label="Toggle menu">
-                    <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
@@ -197,6 +432,34 @@
                             <p>Dried banana chips are milled into a silky soft flour, double tested for impurities, and sealed immediately in food-safe bags.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Digital Journey Section -->
+        <section class="digital-journey-section">
+            <div class="digital-journey-card">
+                <div class="digital-journey-decoration-top">
+                    <i class="fa-solid fa-leaf digital-journey-leaf"></i>
+                </div>
+                <div class="digital-journey-content">
+                    <div class="digital-journey-label">OUR DIGITAL JOURNEY</div>
+                    <h2 class="digital-journey-heading">Website Launch</h2>
+                    <p class="digital-journey-description">While pursuing his degree in Artificial Intelligence and Data Science, <span class="founder-name">Hari Haran.L</span> built Fruitingo as his very first website. Designed and developed from scratch, Fruitingo began as a personal project to gain hands-on experience in web development and gradually grew into a complete e-commerce website focused on a clean, responsive, and user-friendly shopping experience.</p>
+                    
+                    <div class="digital-journey-signature">
+                        <div class="signature-divider"></div>
+                        <div class="signature-content">
+                            <h3 class="signature-name">Hari Haran.L</h3>
+                            <p class="signature-title">Founder & Developer of Fruitingo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="digital-journey-decoration-bottom">
+                        <i class="fa-solid fa-leaf digital-journey-leaf"></i>
+                    </div>
+                    
+                    <p class="digital-journey-caption">"Every great journey begins with a single idea and the courage to build it."</p>
                 </div>
             </div>
         </section>
@@ -286,9 +549,9 @@
                 <img src="assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
                 <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
                 <div class="footer-socials">
-                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
                 </div>
             </div>
             
@@ -347,6 +610,83 @@
         </div>
     </div>
 
+    <script>
+        // Digital Journey Card Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const digitalJourneyCard = document.querySelector('.digital-journey-card');
+            if (digitalJourneyCard) {
+                digitalJourneyCard.classList.add('animate');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show');
+                        }
+                    });
+                }, {
+                    threshold: 0.1
+                });
+                
+                observer.observe(digitalJourneyCard);
+            }
+        });
+    </script>
+
     <script src="main.js"></script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
 </body>
 </html>
