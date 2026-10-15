@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 560" fill="none" aria-hidden="true">
+  <g stroke="#D8C27A" stroke-linecap="round" stroke-linejoin="round" opacity="0.18">
+    <path d="M42 548 C 48 430 54 300 62 168 C 66 108 78 52 96 18" stroke-width="1.35"/>
+    <path d="M62 420 C 28 398 18 360 36 336 C 58 308 92 332 98 368 C 102 396 84 416 62 420 Z" stroke-width="1.15"/>
+    <path d="M62 420 C 48 392 52 356 72 348" stroke-width="0.85"/>
+    <path d="M58 404 C 40 392 34 372 44 358" stroke-width="0.7"/>
+    <path d="M70 408 C 58 390 62 370 78 364" stroke-width="0.7"/>
+    <path d="M70 300 C 118 248 186 252 214 312 C 168 292 108 324 70 300 Z" stroke-width="1.2"/>
+    <path d="M70 300 C 122 286 168 298 214 312" stroke-width="0.9"/>
+    <path d="M88 292 C 124 268 156 274 178 292" stroke-width="0.65"/>
+    <path d="M84 308 C 122 292 154 302 180 320" stroke-width="0.65"/>
+    <path d="M90 322 C 126 312 154 324 176 340" stroke-width="0.65"/>
+    <path d="M86 278 C 120 256 150 258 172 272" stroke-width="0.65"/>
+    <path d="M78 188 C 132 118 214 128 228 214 C 176 182 118 214 78 188 Z" stroke-width="1.2"/>
+    <path d="M78 188 C 136 172 186 188 228 214" stroke-width="0.9"/>
+    <path d="M96 176 C 138 146 176 154 198 176" stroke-width="0.65"/>
+    <path d="M94 196 C 140 176 176 188 202 210" stroke-width="0.65"/>
+    <path d="M98 212 C 140 200 172 214 196 232" stroke-width="0.65"/>
+    <path d="M96 160 C 132 136 164 138 186 152" stroke-width="0.65"/>
+    <path d="M90 96 C 128 42 198 52 210 122 C 166 92 118 114 90 96 Z" stroke-width="1.1"/>
+    <path d="M90 96 C 136 82 176 96 210 122" stroke-width="0.85"/>
+    <path d="M104 86 C 138 62 168 70 186 90" stroke-width="0.6"/>
+    <path d="M104 106 C 140 90 168 102 188 122" stroke-width="0.6"/>
+    <path d="M108 118 C 140 110 164 122 182 138" stroke-width="0.6"/>
+    <path d="M52 470 C 22 458 12 430 28 412 C 46 392 74 408 76 434 C 78 454 66 468 52 470 Z" stroke-width="1.05"/>
+    <path d="M52 470 C 40 450 42 428 56 420" stroke-width="0.75"/>
+    <path d="M112 248 C 108 236 116 224 128 226" stroke-width="0.8"/>
+    <path d="M118 140 C 114 128 122 118 134 120" stroke-width="0.8"/>
+  </g>
+</svg>

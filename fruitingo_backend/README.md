@@ -35,7 +35,7 @@ python manage.py runserver
 ### Fruitingo Admin Security
 - Username: `admin`
 - Password: `admin123`
-- Recovery Email: `hari12348ahdy@gmail.com`
+- Recovery Email: `your-admin-email@example.com`
 
 ## Database Models
 

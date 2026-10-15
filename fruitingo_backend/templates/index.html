@@ -1,0 +1,440 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Premium Nendran Banana Powder | Organic & 100% Natural Baby Food</title>
+    <meta name="description" content="Discover Fruitingo Nendran Banana Powder. Sourced from local farms, 100% natural, preservative-free health supplement and organic baby food. Rich in potassium and fiber.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="{% url 'index' %}" class="logo">
+                <img src="{% static 'assets/fruitingo_logo.png' %}" alt="Fruitingo Logo" class="nav-logo-img">
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="{% url 'index' %}" class="active">Home</a></li>
+                    <li><a href="{% url 'product' %}">Products</a></li>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'checkout' %}">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main>
+        <!-- Image Slider Section -->
+        <section class="slider-section">
+            <div class="slider-wrapper">
+                <!-- Slide 1 -->
+                <div class="slide active">
+                    <img src="{% static 'assets/fruitingo_product.jpg" alt="Fruitingo Premium Nendran Banana Powder">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption">
+                        <h2>Fruitingo Banana Powder</h2>
+                        <p>100% Pure, Organic Nendran Banana Powder. Sourced directly from farms, sun-dried and finely ground.</p>
+                        <a href="#shop" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+                
+                <!-- Slide 2 -->
+                <div class="slide">
+                    <img src="{% static 'assets/fruitingo_farm.jpg" alt="Organic Banana Farms in Western Ghats">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption">
+                        <h2>Western Ghats Sourcing</h2>
+                        <p>Harvested by local agricultural clusters. Sourced ethically under organic farming guidelines.</p>
+                        <a href="{% url 'about' %}" class="btn btn-secondary">Our Sourcing Story</a>
+                    </div>
+                </div>
+                
+                <!-- Slide 3 -->
+                <div class="slide">
+                    <img src="{% static 'assets/fruitingo_porridge.jpg" alt="Steaming bowl of Nendran Banana Porridge">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption">
+                        <h2>Nourishing First Foods</h2>
+                        <p>Gentle on infant tummies. High in potassium, calcium, and essential prebiotic fiber.</p>
+                        <a href="{% url 'product' %}" class="btn btn-primary">Nutritional Details</a>
+                    </div>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="slide">
+                    <img src="{% static 'assets/fruitingo_kitchen.jpg" alt="Fresh Nendran banana recipe ingredients">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption">
+                        <h2>Gluten-Free Baking Alternative</h2>
+                        <p>Perfect healthy flour substitute for banana bread, pancakes, cookies, and high-protein shakes.</p>
+                        <a href="#shop" class="btn btn-primary">View Packs</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide Arrows -->
+            <button class="slider-arrow prev" aria-label="Previous Slide"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="slider-arrow next" aria-label="Next Slide"><i class="fa-solid fa-chevron-right"></i></button>
+
+            <!-- Indicators -->
+            <div class="slider-dots">
+                <button class="slider-dot active" data-slide="0"></button>
+                <button class="slider-dot" data-slide="1"></button>
+                <button class="slider-dot" data-slide="2"></button>
+                <button class="slider-dot" data-slide="3"></button>
+            </div>
+        </section>
+
+        <!-- Why Choose Fruitingo -->
+        <section class="why-choose" id="why-choose" aria-labelledby="why-choose-heading">
+            <div class="why-choose-inner">
+                <div class="why-choose-header why-choose-reveal">
+                    <span class="why-choose-badge">🌿 100% Natural Banana Flour</span>
+                    <h2 id="why-choose-heading">PURE NENDRAN BANANA GOODNESS</h2>
+                    <p>Fruitingo Nendran Banana Flour is made from carefully selected raw Nendran bananas, bringing you pure, natural goodness in a simple and easy-to-use form.</p>
+                </div>
+
+                <div class="why-choose-grid">
+                    <article class="why-choose-card why-choose-reveal" style="--delay: 0.08s;">
+                        <div class="why-choose-icon" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <path d="M16 34c1.2 6 8.4 9.6 16.2 5.6 7-3.6 10-11.2 8.2-18.2-1.6-6.4-7.6-10-13.8-8.2" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M26.4 13.6c-.4 4.8 1.2 10.2 5.2 14.4" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M24.8 12.2c-1.6-2.4-4.4-3.6-7.2-3.2" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3>EASY TO PREPARE</h3>
+                        <p>Enjoy it as a smooth porridge or mix it into dosa batter, pancakes, smoothies, and your favorite baking recipes.</p>
+                    </article>
+
+                    <article class="why-choose-card why-choose-reveal" style="--delay: 0.16s;">
+                        <div class="why-choose-icon" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <path d="M12 20h24l-2.2 16.4A4 4 0 0 1 29.8 40H18.2a4 4 0 0 1-4-3.6L12 20Z" stroke="#D8C27A" stroke-width="1.6" stroke-linejoin="round"/>
+                                <path d="M10 20h28" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M18 20V14a6 6 0 0 1 12 0v6" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3>SIMPLE, CLEAN INGREDIENTS</h3>
+                        <p>Made with 100% raw Nendran bananas — no preservatives, no added sugar, and no artificial additives.</p>
+                    </article>
+
+                    <article class="why-choose-card why-choose-reveal" style="--delay: 0.24s;">
+                        <div class="why-choose-icon" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <path d="M24 40c10-6.4 16-13.6 16-22.4C40 10.8 33.2 8 24 8 14.8 8 8 10.8 8 17.6 8 26.4 14 33.6 24 40Z" stroke="#D8C27A" stroke-width="1.6" stroke-linejoin="round"/>
+                                <path d="M24 8v32" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M16 18c2.4 2.4 5.2 3.6 8 3.6s5.6-1.2 8-3.6" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3>CAREFULLY DEHYDRATED</h3>
+                        <p>Each banana is carefully washed, peeled, thinly sliced, dehydrated at a controlled temperature, and finely powdered to preserve its natural quality.</p>
+                    </article>
+
+                    <article class="why-choose-card why-choose-reveal" style="--delay: 0.32s;">
+                        <div class="why-choose-icon" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <path d="M24 8 10 13.2v10.4c0 8.8 5.6 14.8 14 17.6 8.4-2.8 14-8.8 14-17.6V13.2L24 8Z" stroke="#D8C27A" stroke-width="1.6" stroke-linejoin="round"/>
+                                <path d="M18 24.4 22.2 28.6 30.4 19.6" stroke="#D8C27A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3>PURE &amp; TRUSTED QUALITY</h3>
+                        <p>Naturally processed with care to retain the authentic goodness of Nendran bananas for everyday nutrition.</p>
+                    </article>
+                </div>
+
+                <div class="why-choose-pills why-choose-reveal" style="--delay: 0.4s;">
+                    <span class="why-choose-pill">
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        NO PRESERVATIVES
+                    </span>
+                    <span class="why-choose-pill">
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        NO ADDED SUGAR
+                    </span>
+                    <span class="why-choose-pill">
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        NO ARTIFICIAL ADDITIVES
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section (Shop) -->
+        <section class="products-section" id="shop">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>Choose Your Pack</h2>
+                    <p>Order fresh batches of Fruitingo Nendran Banana Powder. Ships within 24 hours of packing.</p>
+                </div>
+                
+                <div class="products-grid" id="products-container">
+                    <!-- Populated dynamically via main.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Dosage & Recipe Calculator -->
+        <section class="calculator-section">
+            <div class="calculator-container">
+                <div class="calculator-intro">
+                    <h2>Smart Dosage & Recipe Calculator</h2>
+                    <p>Not sure how much Nendran banana powder to use? Select the age group and wellness goal, and our instant calculator will give you the perfect serving size and preparation directions!</p>
+                    
+                    <div class="calc-bullet">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <p>Tailored portions from babies to senior citizens.</p>
+                    </div>
+                    <div class="calc-bullet">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <p>Actionable culinary tips for gluten-free diets.</p>
+                    </div>
+                </div>
+                
+                <div class="calculator-box">
+                    <div class="form-group">
+                        <label for="calc-age">Select Age Group</label>
+                        <select id="calc-age" class="form-select">
+                            <option value="baby">6 - 12 Month Baby</option>
+                            <option value="toddler">1 - 3 Year Toddler</option>
+                            <option value="adult" selected>Kids & Adults (Workout/Dietary)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="calc-goal">Primary Wellness Goal</label>
+                        <select id="calc-goal" class="form-select">
+                            <option value="weight">Healthy Weight Gain / Fueling</option>
+                            <option value="digest">Better Digestion & Gut Health</option>
+                            <option value="bake" selected>Cooking & Gluten-free Baking</option>
+                            <option value="immunity">Boosting Immune Health</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="btn-calculate" style="width: 100%; padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+                        <i class="fa-solid fa-calculator"></i> Calculate Dosage
+                    </button>
+                    
+                    <!-- Result Box -->
+                    <div id="calc-result" class="calc-result">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>Loved by 10,000+ Happy Families</h2>
+                    <p>See why mothers, health coaches, and home bakers prefer Fruitingo.</p>
+                </div>
+                
+                <div id="dynamic-reviews-grid" class="testimonials-grid">
+                    <!-- Feedbacks dynamically generated by JS -->
+                </div>
+
+                <div class="add-feedback-section" style="max-width: 600px; margin: 3rem auto 0 auto; background: var(--white); padding: 2rem; border-radius: 16px;">
+                    <h3 style="color: var(--chocolate); margin-bottom: 1rem; text-align: center; font-size: 1.5rem;">Leave Your Feedback</h3>
+                    <form id="feedback-form" onsubmit="submitFeedback(event)">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <input type="text" id="fb-name" class="form-input" placeholder="Your Name" required style="width: 100%; border: 1px solid var(--border-color); background: var(--gray-light); color: var(--dark); padding: 0.8rem; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <input type="text" id="fb-role" class="form-input" placeholder="Role (e.g. Mother, Baker, Customer)" required style="width: 100%; border: 1px solid var(--border-color); background: var(--gray-light); color: var(--dark); padding: 0.8rem; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display: block; color: var(--dark); margin-bottom: 0.5rem; font-weight: 600;">Rating:</label>
+                            <div id="star-rating-widget" style="display: flex; gap: 0.5rem; font-size: 1.5rem; color: var(--gray-muted); cursor: pointer;">
+                                <i class="fa-solid fa-star" data-val="1"></i>
+                                <i class="fa-solid fa-star" data-val="2"></i>
+                                <i class="fa-solid fa-star" data-val="3"></i>
+                                <i class="fa-solid fa-star" data-val="4"></i>
+                                <i class="fa-solid fa-star" data-val="5"></i>
+                            </div>
+                            <input type="hidden" id="fb-rating" value="5">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <textarea id="fb-text" class="form-input" rows="4" placeholder="Share your experience..." required style="width: 100%; border: 1px solid var(--border-color); background: var(--gray-light); color: var(--dark); padding: 0.8rem; border-radius: 8px; resize: none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem; border-radius: 8px; font-weight: 700;">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="{% static 'assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'product' %}">Nutritional Details</a></li>
+                    <li><a href="{% url 'about' %}">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-backdrop"></div>
+    <div class="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Basket</h3>
+            <button class="cart-close-btn" aria-label="Close Basket">&times;</button>
+        </div>
+        <div class="cart-body">
+            <!-- Populated dynamically via main.js -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-value">₹0</span>
+            </div>
+            <a href="{% url 'checkout' %}" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1rem;">
+                <i class="fa-solid fa-basket-shopping"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <script src="{% static 'main.js' %}"></script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
+
+    <script src="{% static 'api.js' %}"></script>
+</body>
+</html>

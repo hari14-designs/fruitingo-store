@@ -2,6 +2,7 @@
 // Fruitingo Admin Password Verification
 
 const https = require('https');
+const crypto = require('crypto');
 
 // In-memory OTP storage (Note: In production, use Redis or database)
 const otpStorage = {};
@@ -15,10 +16,13 @@ const RESEND_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Generate secure 6-digit OTP
+ * Generate cryptographically secure 6-digit OTP
  */
 function generateOTP() {
-  const otp = Math.floor(100000 + Math.random() * 900000);
+  // Use crypto.randomBytes for secure random number generation
+  const randomBytes = crypto.randomBytes(3);
+  const randomValue = randomBytes.readUIntBE(0, 3);
+  const otp = randomValue % 900000 + 100000;
   return otp.toString();
 }
 

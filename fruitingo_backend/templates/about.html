@@ -1,0 +1,695 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitingo - Our Story, Sourcing & FAQs | Nendran Banana Powder</title>
+    <meta name="description" content="Learn about the traditional story of Nendran Banana Powder sourcing. Find answers to FAQs about baby nutrition, storage, and preparation.">
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        .about-hero {
+            background-color: var(--chocolate);
+            color: var(--white);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+        .about-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .about-hero p {
+            max-width: 600px;
+            margin: 0 auto;
+            color: #E4E4E7;
+            font-size: 1.1rem;
+        }
+        .about-container {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        .story-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 5rem;
+        }
+        .story-content h2 {
+            font-size: 2rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        .story-content p {
+            color: var(--gray-muted);
+            margin-bottom: 1.25rem;
+        }
+        .story-image {
+            background-color: var(--sand);
+            border-radius: 24px;
+            padding: 2rem;
+            border: none;
+            box-shadow: var(--neu-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .story-image img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 12px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.05));
+        }
+        /* Contact Form Layout */
+        .contact-box {
+            background-color: var(--white);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: var(--neu-light);
+            margin-top: 4rem;
+        }
+        .contact-box h2 {
+            font-size: 2rem;
+            color: var(--chocolate);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .contact-box p {
+            text-align: center;
+            color: var(--gray-muted);
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) {
+            .story-block {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .contact-box {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Digital Journey Section */
+        .digital-journey-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        .digital-journey-card {
+            background-color: #FFFDF8;
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 36px 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .digital-journey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        .digital-journey-content {
+            position: relative;
+        }
+        
+        .digital-journey-label {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            color: #D4AF37;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .digital-journey-heading {
+            font-size: 38px;
+            color: #184C3A;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .digital-journey-description {
+            color: var(--gray-dark);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            max-width: 100%;
+        }
+        
+        .founder-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0B5D3B;
+            position: relative;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+        
+        .founder-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+        }
+        
+        .digital-journey-signature {
+            margin-top: 2rem;
+        }
+        
+        .signature-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+            margin-bottom: 1rem;
+        }
+        
+        .signature-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .signature-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #184C3A;
+            margin: 0;
+        }
+        
+        .signature-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6B7280;
+            margin: 0;
+        }
+        
+        .digital-journey-decoration-top {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+        }
+        
+        .digital-journey-decoration-bottom {
+            position: absolute;
+            bottom: 40px;
+            left: 20px;
+        }
+        
+        .digital-journey-leaf {
+            font-size: 2rem;
+            color: rgba(212, 175, 55, 0.15);
+        }
+        
+        .digital-journey-caption {
+            font-style: italic;
+            color: rgba(24, 76, 58, 0.6);
+            font-size: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-family: 'Georgia', serif;
+        }
+        
+        .digital-journey-card.animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .digital-journey-card.animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 992px) {
+            .digital-journey-heading {
+                font-size: 32px;
+            }
+            
+            .founder-name {
+                font-size: 20px;
+            }
+            
+            .signature-name {
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .digital-journey-section {
+                padding: 3rem 1.5rem;
+            }
+            
+            .digital-journey-card {
+                padding: 2rem;
+            }
+            
+            .digital-journey-heading {
+                font-size: 28px;
+            }
+            
+            .digital-journey-description {
+                font-size: 0.95rem;
+            }
+            
+            .founder-name {
+                font-size: 18px;
+            }
+            
+            .signature-content {
+                align-items: center;
+                text-align: center;
+            }
+            
+            .signature-divider {
+                margin: 1rem auto;
+            }
+            
+            .digital-journey-decoration-top {
+                top: 10px;
+                right: 15px;
+            }
+            
+            .digital-journey-decoration-bottom {
+                bottom: 20px;
+                left: 10px;
+            }
+            
+            .digital-journey-leaf {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .digital-journey-card.animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .digital-journey-card.animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="{% url 'index' %}" class="logo">
+                <img src="{% static 'assets/fruitingo_logo.png" alt="Fruitingo Logo" class="nav-logo-img">
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'product' %}">Products</a></li>
+                    <li><a href="{% url 'about' %}" class="active">About</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'checkout' %}">Order</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                <div id="auth-section">
+                    <button class="btn" onclick="openLoginModal()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 30px; background: var(--secondary); color: var(--white);">
+                        LOGIN / REGISTER
+                    </button>
+                </div>
+                <div class="notification-bell-container" id="notification-bell" style="display: none;">
+                    <button class="notification-bell-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-dropdown-header">
+                            <h4>🔔 Fruitingo Notifications</h4>
+                            <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list">
+                            <div class="notification-empty">
+                                <i class="fa-solid fa-bell"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="cart-icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <h1>Birthed in South Indian Farms</h1>
+        <p>Bringing you the natural goodness of pure sun-dried Nendran Bananas, directly from organic agricultural clusters to your kitchen table.</p>
+    </section>
+
+    <div class="about-container">
+        <!-- Story Block 1 -->
+        <div class="story-block">
+            <div class="story-content">
+                <h2>The Premium Nendran Legacy</h2>
+                <p>Nendran plantains (French Plantain variety) are exclusive fruits cultivated majorly in Kerala and parts of Western Tamil Nadu. Known for their unique starch properties, these bananas are rich in nutrition and highly prized in Ayurveda.</p>
+                <p>We source raw, unripe bananas at the precise pre-ripening stage. This ensures the starch is resistant starch, acting as a prebiotic that feeds gut-healthy probiotics.</p>
+            </div>
+            <div class="story-image">
+                <img src="{% static 'assets/fruitingo_product.jpg" alt="Fruitingo Banana farm sourcing">
+            </div>
+        </div>
+
+        <!-- Story Block 2 -->
+        <div class="story-block">
+            <div class="story-image" style="order: 2;">
+                <img src="{% static 'assets/fruitingo_product.jpg" alt="Fruitingo Packing and Sun drying">
+            </div>
+            <div class="story-content" style="order: 1;">
+                <h2>Sun-Dried & Cleanly Crafted</h2>
+                <p>Traditional methods matter. Rather than relying on industrial dehydrators that operate at extreme temperatures and strip vital minerals, our bananas are micro-sliced and sun-dried in clean, enclosed solar domes.</p>
+                <p>This retains the bright pale yellow color of the bananas and seals the delicate sweetness and vitamins. No artificial colors, preservatives, or sweeteners are added. It's just 100% pure banana.</p>
+            </div>
+        </div>
+    </div>
+
+        <!-- Sourcing Flow (From Farm to Bowl) -->
+        <section class="timeline-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>Our Sourcing & Packing Journey</h2>
+                    <p>We trace every single banana back to organic orchards in Western Ghats foothills.</p>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot">1</div>
+                        <div class="timeline-content">
+                            <h3>Organic Farming</h3>
+                            <p>Naturally grown raw Nendran plantains cultivated by farmers under strict organic norms without chemical pesticides.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">2</div>
+                        <div class="timeline-content">
+                            <h3>Manual Hand-Picking</h3>
+                            <p>Only raw green bananas at optimal starch content are selected, washed thoroughly in running clean water, and peeled.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">3</div>
+                        <div class="timeline-content">
+                            <h3>Traditional Sun Drying</h3>
+                            <p>Bananas are cut into micro-slices and laid on pristine clean racks. They dry naturally under the hot tropical sun to retain maximum enzymes and nutrients.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">4</div>
+                        <div class="timeline-content">
+                            <h3>Fine Milling & Sealing</h3>
+                            <p>Dried banana chips are milled into a silky soft flour, double tested for impurities, and sealed immediately in food-safe bags.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Digital Journey Section -->
+        <section class="digital-journey-section">
+            <div class="digital-journey-card">
+                <div class="digital-journey-decoration-top">
+                    <i class="fa-solid fa-leaf digital-journey-leaf"></i>
+                </div>
+                <div class="digital-journey-content">
+                    <div class="digital-journey-label">OUR DIGITAL JOURNEY</div>
+                    <h2 class="digital-journey-heading">Website Launch</h2>
+                    <p class="digital-journey-description">While pursuing his degree in Artificial Intelligence and Data Science, <span class="founder-name">Hari Haran.L</span> built Fruitingo as his very first website. Designed and developed from scratch, Fruitingo began as a personal project to gain hands-on experience in web development and gradually grew into a complete e-commerce website focused on a clean, responsive, and user-friendly shopping experience.</p>
+                    
+                    <div class="digital-journey-signature">
+                        <div class="signature-divider"></div>
+                        <div class="signature-content">
+                            <h3 class="signature-name">Hari Haran.L</h3>
+                            <p class="signature-title">Founder & Developer of Fruitingo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="digital-journey-decoration-bottom">
+                        <i class="fa-solid fa-leaf digital-journey-leaf"></i>
+                    </div>
+                    
+                    <p class="digital-journey-caption">"Every great journey begins with a single idea and the courage to build it."</p>
+                </div>
+            </div>
+        </section>
+
+    <div class="about-container">
+        <!-- FAQ Section -->
+        <section id="faq">
+            <h2 style="font-size: 2.25rem; color: var(--chocolate); font-weight: 800; text-align: center; margin-bottom: 1rem;">Frequently Asked Questions</h2>
+            <p style="text-align: center; color: var(--gray-muted); margin-bottom: 3rem;">All you need to know about preparing, storing, and buying Fruitingo Nendran Banana powder.</p>
+            
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Is it safe to give Nendran Banana Powder to a 6-month-old baby?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Yes, absolutely. Raw Nendran Banana powder is a traditional first solid food recommended for babies in South India. It is highly digestible, hypoallergenic, and does not cause cold or cough, unlike regular bananas.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Are there any added sugars or artificial flavors?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>No. Fruitingo Nendran Banana Powder contains exactly one ingredient: 100% raw Nendran bananas. We add zero white sugar, salt, milk solids, starch thickeners, or artificial colors.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>How should I store the powder and what is the shelf life?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Our powder has a shelf life of 6 months from packaging. Once opened, transfer it to a dry, airtight jar. Store in a cool dry cupboard. You can also refrigerate it to preserve freshness longer in humid regions.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>Does it help in baby weight gain?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Yes. Raw banana powder contains healthy complex carbohydrates and potassium that help in steady, natural weight gain in growing infants and toddlers, without causing bloating.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Box -->
+        <div class="contact-box">
+            <h2>Have Questions? Reach Out!</h2>
+            <p>Our nutrition experts and support team are here to help you choose the best diet plan for your family.</p>
+            
+            <form onsubmit="event.preventDefault(); alert('Thank you! Your message has been received. Our team will contact you back in 24 hours.'); this.reset();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact-name">Your Name</label>
+                        <input type="text" id="contact-name" class="form-input" placeholder="Enter name" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email Address</label>
+                        <input type="email" id="contact-email" class="form-input" placeholder="Enter email" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color);">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact-msg">Message</label>
+                    <textarea id="contact-msg" class="form-input" rows="4" placeholder="How can we help you?" required style="color: var(--dark); background: var(--gray-light); border: 1px solid var(--border-color); resize: none;"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 12px;">
+                    <i class="fa-solid fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="{% static 'assets/fruitingo_footer_logo.png" alt="Fruitingo Logo" class="footer-logo-img">
+                <p>Pure, organic, and locally sourced Nendran banana powder to enrich your family's lifestyle. Supporting local farmers in India.</p>
+                <div class="footer-socials">
+                    <a href="https://wa.me/8508991426" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/fruitingo_?igsi=d2xtMjhsNTN6M3V6" target="_blank" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://t.me/fruitingo" class="social-btn" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'product' %}">Nutritional Details</a></li>
+                    <li><a href="{% url 'about' %}">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Help & Info</h4>
+                <ul>
+                    <li><a href="about.html#faq">FAQs & Usage</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-newsletter">
+                <h4>Stay Healthy</h4>
+                <p>Subscribe to receive organic recipes, dosage charts, and limited-time discount codes.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! Your 10% coupon code is: FRUITINGO10'); this.reset();">
+                    <input type="email" placeholder="Enter email" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fruitingo Foods Pvt Ltd. All rights reserved.</p>
+            <p>Made with 💚 for local organic farming.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-backdrop"></div>
+    <div class="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Basket</h3>
+            <button class="cart-close-btn" aria-label="Close Basket">&times;</button>
+        </div>
+        <div class="cart-body">
+            <!-- Populated dynamically via main.js -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-value">₹0</span>
+            </div>
+            <a href="{% url 'checkout' %}" class="btn btn-primary" style="width: 100%; border-radius: 12px; padding: 1rem;">
+                <i class="fa-solid fa-basket-shopping"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Digital Journey Card Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const digitalJourneyCard = document.querySelector('.digital-journey-card');
+            if (digitalJourneyCard) {
+                digitalJourneyCard.classList.add('animate');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('show');
+                        }
+                    });
+                }, {
+                    threshold: 0.1
+                });
+                
+                observer.observe(digitalJourneyCard);
+            }
+        });
+    </script>
+
+    <script src="{% static 'main.js' %}"></script>
+    
+    <!-- Login/Register Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-modal-content">
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2>Welcome to Fruitingo</h2>
+                <p>Login to access your account and track orders</p>
+            </div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form active" id="login-form" onsubmit="handleLogin(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="login-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form class="login-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="login-input-group">
+                    <label>Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code-fixed">🇮🇳 +91</div>
+                        <input type="tel" id="register-mobile" class="phone-input-field" placeholder="Enter Mobile Number" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="login-input-group">
+                    <label>Display Name</label>
+                    <input type="text" id="register-name" class="login-input" placeholder="Your Name" required>
+                </div>
+                <button type="submit" class="login-submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="success-toast">
+        <div class="success-toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <h4 id="toast-title">Success</h4>
+            <p id="toast-message">Operation completed successfully</p>
+        </div>
+    </div>
+
+    <script src="{% static 'api.js' %}"></script>
+</body>
+</html>

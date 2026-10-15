@@ -5,7 +5,7 @@ This guide explains how to configure EmailJS to send real OTP emails for the Fru
 
 ## Prerequisites
 - EmailJS account (free tier available at https://www.emailjs.com/)
-- Admin email address (e.g., fruitingonaturals@gmail.com)
+- Admin email address (e.g., your-admin-email@example.com)
 
 ## Step 1: Create EmailJS Account
 

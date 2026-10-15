@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('username', models.CharField(max_length=50, unique=True)),
                 ('password', models.CharField(max_length=255)),
-                ('recovery_email', models.EmailField(default='hari12348ahdy@gmail.com', max_length=254)),
+                ('recovery_email', models.EmailField(default='fruitingonaturals@gmail.com', max_length=254)),
                 ('last_password_changed', models.DateTimeField(blank=True, null=True)),
                 ('password_change_count', models.IntegerField(default=0)),
                 ('password_reset_count', models.IntegerField(default=0)),
