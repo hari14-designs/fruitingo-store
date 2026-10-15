@@ -23,7 +23,7 @@
 
 ### 2. Email Migration - All References Updated
 **Old Email**: `hari12348ahdy@gmail.com`  
-**New Email**: `fruitingonaturals@gmail.com`
+**New Email**: Official Fruitingo admin email
 
 **Files Updated**:
 - ✅ `AdminHomepage.html` - Admin authentication, forgot password, OTP functions
@@ -42,7 +42,7 @@
 ```javascript
 {
     "username": "admin",
-    "email": "fruitingonaturals@gmail.com",
+    "email": "your-admin-email@example.com",
     "password": "existing password",
     "lastPasswordChanged": null,
     "passwordChangeCount": 0,
@@ -57,15 +57,15 @@
 
 **Changes Made**:
 - Added `adminEmail` field to security configuration
-- Default email set to `fruitingonaturals@gmail.com`
-- Recovery email also defaults to `fruitingonaturals@gmail.com`
+- Default email set to official Fruitingo admin email
+- Recovery email also defaults to official Fruitingo admin email
 - OTP configuration updated with new structure
 - Data persistence maintained after refresh
 
 ### 4. Forgot Password Flow Updated
 **New Flow**:
 1. Admin clicks "Forgot Password"
-2. Admin enters email (must match `fruitingonaturals@gmail.com`)
+2. Admin enters email (must match official Fruitingo admin email)
 3. Email validation against stored admin email
 4. If correct: Send OTP via Netlify backend, show success toast, start 60-second countdown
 5. If incorrect: Show premium error toast "This email is not registered as Fruitingo Admin"
@@ -80,7 +80,7 @@
 
 ### 5. Email Change Feature Compatibility
 **Maintained Functionality**:
-- Current admin email defaults to `fruitingonaturals@gmail.com`
+- Current admin email defaults to official Fruitingo admin email
 - Admin can change email from Admin Settings
 - OTP sent to new email before updating
 - Security history records email change
@@ -108,8 +108,8 @@ fetch('/api/send-otp', {
 ### Netlify Environment Variables (Required)
 Set these in Netlify dashboard before deployment:
 - `BREVO_API_KEY` - Your Brevo API key
-- `ADMIN_EMAIL` - `fruitingonaturals@gmail.com`
-- `FROM_EMAIL` - `fruitingonaturals@gmail.com`
+- `ADMIN_EMAIL` - Your admin email address
+- `FROM_EMAIL` - Your FROM email address
 
 ### Security Features
 - ✅ No secrets exposed in frontend code
